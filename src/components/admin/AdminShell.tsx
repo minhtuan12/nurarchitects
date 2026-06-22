@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/assets/images/logo.png";
@@ -11,7 +11,6 @@ import {
   Image,
   Layout,
   Menu,
-  message,
   theme,
   Typography,
 } from "antd";
@@ -50,6 +49,42 @@ export async function adminFetch(
   });
 }
 
+const findActiveKeys = (routes: any[], pathname: string): string[] => {
+  for (const route of routes) {
+    if (route.href === pathname) {
+      return [route.key];
+    }
+
+    if (route.children?.length) {
+      const childKeys = findActiveKeys(route.children, pathname);
+
+      if (childKeys.length) {
+        return [route.key, ...childKeys];
+      }
+    }
+  }
+
+  return [];
+};
+
+const findRouteByKey = (routes: any[], key: string): any => {
+  for (const route of routes) {
+    if (route.key === key) {
+      return route;
+    }
+
+    if (route.children?.length) {
+      const found = findRouteByKey(route.children, key);
+
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+};
+
 const MAIN_PAGE = process.env.NEXT_PUBLIC_SITE_URL!;
 
 const queryClient = new QueryClient();
@@ -64,6 +99,20 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const renderMenuItems = useCallback((items: any) => {
+    return items.map((item: any) => ({
+      label: item.label,
+      key: item.key,
+      icon: <item.icon size={16} />,
+      ...(!item.children && {
+        onClick: () => router.push(item.href),
+      }),
+      ...(item.children?.length && {
+        children: renderMenuItems(item.children),
+      }),
+    }));
+  }, [router]);
 
   useEffect(() => {
     if (isLogin) {
@@ -98,20 +147,25 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }, [isLogin, pathname, router]);
 
   const activeKeys = useMemo(
-    () =>
-      ADMIN_ROUTES.filter((item) => pathname.includes(item.href))?.map(
-        (item) => item.key,
-      ),
+    () => findActiveKeys(ADMIN_ROUTES, pathname),
     [pathname],
   );
 
   useEffect(() => {
-    const title =
-      ADMIN_ROUTES.find((r) =>
-        r.key.includes(activeKeys[activeKeys.length - 1]),
-      )?.label || "";
-    setPageTitle(title);
+    const currentKey = activeKeys[activeKeys.length - 1];
+
+    const currentRoute = findRouteByKey(
+      ADMIN_ROUTES,
+      currentKey
+    );
+
+    setPageTitle(currentRoute?.label || "");
   }, [activeKeys]);
+
+  const openKeys = useMemo(
+    () => activeKeys.slice(0, -1),
+    [activeKeys]
+  );
 
   if (isLogin) {
     return children;
@@ -164,14 +218,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 mode="inline"
                 defaultSelectedKeys={["homepage"]}
                 selectedKeys={activeKeys}
-                items={
-                  ADMIN_ROUTES.map((item) => ({
-                    label: item.label,
-                    key: item.key,
-                    icon: <item.icon size={16} />,
-                    onClick: () => router.push(item.href),
-                  })) as any
-                }
+                defaultOpenKeys={openKeys}
+                items={renderMenuItems(ADMIN_ROUTES)}
               />
             </Sider>
             <Layout className="min-h-screen overflow-auto">

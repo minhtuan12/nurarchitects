@@ -51,7 +51,7 @@ function coerceFilterValue(raw: string): unknown {
   return raw;
 }
 
-function queryFromRequest(request: NextRequest, config: ApiConfig) {
+export function queryFromRequest(request: NextRequest, config: ApiConfig) {
   const { searchParams } = new URL(request.url);
   const page = Math.max(Number(searchParams.get("page") ?? 1), 1);
   const limit = Math.min(Math.max(Number(searchParams.get("limit") ?? 20), 1), 100);
@@ -114,7 +114,7 @@ export function createCollectionHandlers(
         await connectDb();
         const { query, page, limit, sort } = queryFromRequest(request, config);
         const [items, total] = await Promise.all([
-          Model.find(query).populate('thumbnailId')
+          Model.find(query).populate([{ path: 'thumbnail', strictPopulate: false }])
             .sort(sort)
             .skip((page - 1) * limit)
             .limit(limit)

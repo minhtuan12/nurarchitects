@@ -211,7 +211,7 @@ export default function ProjectsAdminPage() {
                                 data.error ?? "Cannot delete project",
                             );
                         }
-                        messageApi.success("Da xoa du an");
+                        messageApi.success("Đã xóa dự án");
                         const nextPage =
                             projects.length === 1 && currentPage > 1
                                 ? currentPage - 1
@@ -227,7 +227,7 @@ export default function ProjectsAdminPage() {
                             });
                         }
                     } catch {
-                        messageApi.error("Khong the xoa du an");
+                        messageApi.error("Không thể xóa dự án");
                         throw new Error("Delete project failed");
                     } finally {
                         setDeletingId(null);

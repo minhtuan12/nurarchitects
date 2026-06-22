@@ -39,13 +39,16 @@ img {
 
 .custom-menu {
     .ant-menu-item,
-    .ant-menu-item-selected {
+    .ant-menu-item-selected,
+    .ant-menu-submenu-title {
         font-weight: 500;
         color: #18181b;
     }
 }
 
-.ant-input, .ant-input-number, .ant-select {
+.ant-input,
+.ant-input-number,
+.ant-select {
     height: 42px;
 }
 
