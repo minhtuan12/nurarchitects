@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
-import { BuildPlan, ContactFormStatus, Social } from "./shared";
+import { ContactFormStatus, Social } from "./shared";
+import { BuildPlan } from "./project";
 
 export interface IContactForm {
 	_id: Types.ObjectId;
