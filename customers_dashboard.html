@@ -1,0 +1,183 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:#1a1d2e;display:flex;flex-direction:column;padding:0;z-index:10}
+.logo{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:0.5px solid rgba(255,255,255,0.1)}
+.logo-icon{width:28px;height:28px;background:#6366f1;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-text{color:#fff;font-size:14px;font-weight:500}
+.workspace{padding:12px 16px;border-bottom:0.5px solid rgba(255,255,255,0.1)}
+.workspace-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.workspace-name{color:#fff;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:space-between}
+.nav{padding:12px 8px;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:rgba(255,255,255,0.55);font-size:13px;cursor:pointer;margin-bottom:2px}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:#fff}
+.nav-item.active{background:#6366f1;color:#fff}
+.nav-item i{font-size:16px}
+.sidebar-bottom{padding:16px}
+.promo{background:rgba(255,255,255,0.06);border-radius:8px;padding:12px;margin-bottom:12px}
+.promo-title{color:#fff;font-size:12px;font-weight:500;margin-bottom:2px}
+.promo-sub{color:rgba(255,255,255,0.45);font-size:11px;margin-bottom:10px}
+.promo-img{width:100%;height:60px;background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
+.pro-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:#6366f1;color:#fff;border:none;border-radius:6px;padding:9px;font-size:13px;font-weight:500;cursor:pointer;width:100%}
+.main{margin-left:220px;min-height:100vh;background:var(--color-background-tertiary)}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:6px 12px;min-width:200px}
+.topbar-left i{color:var(--color-text-tertiary);font-size:16px}
+.topbar-left span{color:var(--color-text-tertiary);font-size:13px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-right i{font-size:20px;color:var(--color-text-secondary);cursor:pointer}
+.avatar{width:32px;height:32px;border-radius:50%;background:#e0c4a8;overflow:hidden;cursor:pointer;position:relative}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.notif-dot{width:8px;height:8px;background:#22c55e;border-radius:50%;position:absolute;top:-1px;right:-1px;border:2px solid var(--color-background-primary)}
+.content{padding:28px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-title{font-size:24px;font-weight:500;color:var(--color-text-primary)}
+.add-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+.actions{display:flex;gap:16px;margin-bottom:20px}
+.action-btn{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--color-text-secondary);font-size:13px;cursor:pointer;padding:0}
+.action-btn i{font-size:16px}
+.table-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:10px;overflow:hidden}
+.search-wrap{padding:16px 20px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:8px;padding:8px 14px;max-width:340px}
+.search-box i{color:var(--color-text-tertiary);font-size:16px}
+.search-box input{background:none;border:none;outline:none;color:var(--color-text-primary);font-size:13px;width:100%}
+.search-box input::placeholder{color:var(--color-text-tertiary)}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:0.5px solid var(--color-border-tertiary)}
+th{padding:10px 16px;font-size:12px;font-weight:500;color:var(--color-text-secondary);text-align:left}
+td{padding:12px 16px;font-size:13px;color:var(--color-text-primary);border-bottom:0.5px solid var(--color-border-tertiary)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--color-background-secondary)}
+.check-col{width:40px}
+.cb{width:16px;height:16px;border:1.5px solid var(--color-border-secondary);border-radius:4px;cursor:pointer;accent-color:#6366f1}
+.name-cell{display:flex;align-items:center;gap:10px}
+.avatar-sm{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.avatar-initials{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.email-text{color:var(--color-text-secondary)}
+.footer{display:flex;align-items:center;justify-content:flex-end;gap:16px;padding:12px 20px;border-top:0.5px solid var(--color-border-tertiary)}
+.rows-label{font-size:13px;color:var(--color-text-secondary)}
+.rows-select{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;padding:3px 6px;font-size:13px;color:var(--color-text-primary);outline:none}
+.page-info{font-size:13px;color:var(--color-text-secondary)}
+.page-nav{display:flex;gap:4px}
+.page-nav button{background:none;border:none;color:var(--color-text-secondary);cursor:pointer;padding:4px 6px;border-radius:4px;display:flex;align-items:center}
+.page-nav button:hover{background:var(--color-background-secondary)}
+.page-nav button i{font-size:18px}
+</style>
+
+<h2 class="sr-only">Customers dashboard with sidebar navigation and data table</h2>
+
+<div style="display:flex;min-height:600px">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-layout-dashboard" style="color:#fff;font-size:16px" aria-hidden="true"></i></div>
+      <span class="logo-text">DeviasKit</span>
+    </div>
+    <div class="workspace">
+      <div class="workspace-label">Workspace</div>
+      <div class="workspace-name">Devias <i class="ti ti-chevron-down" style="font-size:14px;color:rgba(255,255,255,0.5)" aria-hidden="true"></i></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-item"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Overview</div>
+      <div class="nav-item active"><i class="ti ti-users" aria-hidden="true"></i>Customers</div>
+      <div class="nav-item"><i class="ti ti-plug" aria-hidden="true"></i>Integrations</div>
+      <div class="nav-item"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+      <div class="nav-item"><i class="ti ti-user" aria-hidden="true"></i>Account</div>
+      <div class="nav-item"><i class="ti ti-alert-circle" aria-hidden="true"></i>Error</div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="promo">
+        <div class="promo-title">Need more features?</div>
+        <div class="promo-sub">Check out our Pro solution template.</div>
+        <div class="promo-img">
+          <i class="ti ti-layout-board-split" style="color:rgba(255,255,255,0.7);font-size:28px" aria-hidden="true"></i>
+        </div>
+      </div>
+      <button class="pro-btn"><i class="ti ti-external-link" style="font-size:15px" aria-hidden="true"></i>Pro version</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <span>Search</span>
+      </div>
+      <div class="topbar-right">
+        <i class="ti ti-users" aria-hidden="true"></i>
+        <i class="ti ti-bell" aria-hidden="true"></i>
+        <div class="avatar" style="position:relative">
+          <div style="width:100%;height:100%;background:#c9a97a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff">A</div>
+          <div class="notif-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-header">
+        <h1 class="page-title">Customers</h1>
+        <button class="add-btn"><i class="ti ti-plus" style="font-size:16px" aria-hidden="true"></i>Add</button>
+      </div>
+
+      <div class="actions">
+        <button class="action-btn"><i class="ti ti-upload" aria-hidden="true"></i>Import</button>
+        <button class="action-btn"><i class="ti ti-download" aria-hidden="true"></i>Export</button>
+      </div>
+
+      <div class="table-card">
+        <div class="search-wrap">
+          <div class="search-box">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <input type="text" placeholder="Search customer" />
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th class="check-col"><input type="checkbox" class="cb" aria-label="Select all" /></th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Location</th>
+              <th>Phone</th>
+              <th>Signed Up</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+
+        <div class="footer">
+          <span class="rows-label">Rows per page:</span>
+          <select class="rows-select" aria-label="Rows per page"><option>5</option><option>10</option><option>25</option></select>
+          <span class="page-info">1–5 of 5</span>
+          <div class="page-nav">
+            <button aria-label="Previous page"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+            <button aria-label="Next page"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const customers = [
+  {name:"Alcides Antonio",email:"alcides.antonio@devias.io",location:"Madrid, Comunidad de Madrid, Spain",phone:"908-691-3242",signed:"Jun 27, 2025",color:"#6366f1",initials:"AA"},
+  {name:"Marcus Finn",email:"marcus.finn@devias.io",location:"Carson City, Nevada, USA",phone:"415-907-2647",signed:"Jun 27, 2025",color:"#0ea5e9",initials:"MF"},
+  {name:"Jie Yan",email:"jie.yan.song@devias.io",location:"North Canton, Ohio, USA",phone:"770-635-2682",signed:"Jun 27, 2025",color:"#f59e0b",initials:"JY"},
+  {name:"Nasimiyu Danai",email:"nasimiyu.danai@devias.io",location:"Salt Lake City, Utah, USA",phone:"801-301-7894",signed:"Jun 27, 2025",color:"#ec4899",initials:"ND"},
+  {name:"Iulia Albu",email:"iulia.albu@devias.io",location:"Murray, Utah, USA",phone:"313-812-8947",signed:"Jun 27, 2025",color:"#10b981",initials:"IA"},
+];
+const tbody = document.getElementById("tbody");
+customers.forEach(c => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="check-col"><input type="checkbox" class="cb" aria-label="Select ${c.name}" /></td>
+    <td><div class="name-cell"><div class="avatar-initials" style="background:${c.color}22;color:${c.color}">${c.initials}</div>${c.name}</div></td>
+    <td class="email-text">${c.email}</td>
+    <td>${c.location}</td>
+    <td>${c.phone}</td>
+    <td>${c.signed}</td>`;
+  tbody.appendChild(tr);
+});
+</script>

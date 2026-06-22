@@ -1,0 +1,60 @@
+@import "tailwindcss" important;
+@import "../styles/_variables.scss";
+@import "../styles/_keyframe-animations.scss";
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: #f7f5ef;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+.rich-text {
+    color: #403c34;
+    line-height: 1.8;
+}
+
+.rich-text :first-child {
+    margin-top: 0;
+}
+
+.rich-text :last-child {
+    margin-bottom: 0;
+}
+
+.custom-menu {
+    .ant-menu-item,
+    .ant-menu-item-selected {
+        font-weight: 500;
+        color: #18181b;
+    }
+}
+
+.ant-input, .ant-input-number, .ant-select {
+    height: 42px;
+}
+
+textarea {
+    padding-block: 10px;
+}
+
+.custom-upload {
+    .ant-upload-select {
+        width: 100%;
+    }
+}
