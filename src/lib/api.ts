@@ -114,7 +114,7 @@ export function createCollectionHandlers(
         await connectDb();
         const { query, page, limit, sort } = queryFromRequest(request, config);
         const [items, total] = await Promise.all([
-          Model.find(query).populate([{ path: 'thumbnail', strictPopulate: false }])
+          Model.find(query).populate([{ path: 'thumbnailId', strictPopulate: false }])
             .sort(sort)
             .skip((page - 1) * limit)
             .limit(limit)
