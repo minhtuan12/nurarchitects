@@ -94,6 +94,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const isLogin = pathname === "/admin/login";
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [pageTitle, setPageTitle] = useAtom(pageTitleAtom);
   const {
@@ -115,10 +116,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }, [router]);
 
   useEffect(() => {
-    if (isLogin) {
-      return;
-    }
-
     let cancelled = false;
 
     fetch("/api/admin/auth/session", {
@@ -130,15 +127,26 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
         if (response.ok) {
           setIsAuthenticated(true);
-          return;
+          if (isLogin) {
+            // đã login rồi mà vẫn vào /admin/login → đẩy về trang chính
+            router.replace("/admin/homepage");
+          }
+        } else {
+          setIsAuthenticated(false);
+          if (!isLogin) {
+            router.replace("/admin/login");
+          }
         }
-
-        router.replace("/admin/login");
       })
       .catch(() => {
         if (!cancelled) {
-          router.replace("/admin/login");
+          setIsAuthenticated(false);
+          if (!isLogin) {
+            router.replace("/admin/login");
+          }
         }
+      }).finally(() => {
+        if (!cancelled) setCheckingAuth(false);
       });
 
     return () => {
@@ -167,10 +175,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
     [activeKeys]
   );
 
-  if (isLogin) {
-    return children;
+  // Đang check session → chưa render gì để tránh nhấp nháy UI
+  if (checkingAuth) {
+    return null;
   }
 
+  // Trang login: chỉ hiển thị nếu CHƯA đăng nhập
+  if (isLogin) {
+    return isAuthenticated ? null : children;
+  }
+
+  // Các trang khác: chỉ hiển thị nếu ĐÃ đăng nhập
   if (!isAuthenticated) {
     return null;
   }

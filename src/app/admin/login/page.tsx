@@ -131,9 +131,10 @@ export default function AdminLoginPage() {
               type="submit"
               variant="contained"
               disabled={isPending}
+              loading={isPending}
               sx={{ bgcolor: "rgb(5, 7, 10)", height: 45, fontSize: 16, textTransform: 'none', fontWeight: 500, '&:hover': { bgcolor: "rgb(38, 41, 45))" } }}
             >
-              {isPending ? <Loading size="small" className="mr-3"/> : ''}Đăng nhập
+              Đăng nhập
             </Button>
           </Stack>
         </Card>
