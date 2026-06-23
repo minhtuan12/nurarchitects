@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import slugify from "slugify";
 import {
 	Button,
 	Col,
@@ -30,6 +29,7 @@ import { useMessage } from "@/contexts/AdminMessageContext";
 import { EBuildPlan, type BuildPlan, type IProject } from "@/types/project";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import SeoFormFields from "@/components/admin/seo/SeoFormFields";
+import { toSlug } from "@/helpers";
 
 const { Title } = Typography;
 
@@ -97,9 +97,6 @@ const defaultValues: ProjectFormValues = {
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const idToString = (value: unknown) => (value ? String(value) : null);
-
-const toSlug = (value: string) =>
-	slugify(value, { lower: true, strict: true, locale: "vi" });
 
 export default function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
 	const router = useRouter();

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import slugify from "slugify";
 import {
 	Button,
 	Col,
@@ -29,6 +28,7 @@ import SeoFormFields from "@/components/admin/seo/SeoFormFields";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { useMessage } from "@/contexts/AdminMessageContext";
 import type { INewsPopulated } from "@/types/news";
+import { toSlug } from "@/helpers";
 
 const { Title } = Typography;
 
@@ -104,9 +104,6 @@ const defaultValues: NewsFormValues = {
 	seoCanonicalUrl: "",
 	seoFocusKeywords: [],
 };
-
-const toSlug = (value: string) =>
-	slugify(value, { lower: true, strict: true, locale: "vi" });
 
 const idToString = (value: unknown) => {
 	if (!value) return undefined;

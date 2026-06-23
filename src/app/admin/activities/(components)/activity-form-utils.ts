@@ -1,5 +1,5 @@
-import slugify from "slugify";
 import type { IActivityPopulated } from "@/types/activity";
+import { toSlug } from "@/helpers";
 
 export interface ActivityFormValues {
 	name: string;
@@ -51,9 +51,6 @@ export const defaultActivityValues: ActivityFormValues = {
 	seoCanonicalUrl: "",
 	seoFocusKeywords: [],
 };
-
-export const toSlug = (value: string) =>
-	slugify(value, { lower: true, strict: true, locale: "vi" });
 
 export function toActivityFormValues(
 	activity: Partial<ActivityResponse>,

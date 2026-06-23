@@ -143,14 +143,22 @@ export const contactFormSchema = z.object({
   status: z.enum(contactFormStatuses).default("new"),
 });
 
+export const locationSchema = z.object({
+  _id: z.string().optional(),
+  name: z.string().min(1, "Tên địa điểm là bắt buộc").max(200),
+  address: z.string().max(2000).default(""),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+ 
 export const contactConfigSchema = z.object({
   phone: z.string().max(60).default(""),
-  email: z.string().email().or(z.literal("")).default(""),
-  addresses: z.string().max(2000).default(""),
-  facebookUrl: z.string().url().or(z.literal("")).default(""),
-  instagramUrl: z.string().url().or(z.literal("")).default(""),
-  youtubeUrl: z.string().url().or(z.literal("")).default(""),
-  tiktokUrl: z.string().url().or(z.literal("")).default(""),
+  email: z.email().or(z.literal("")).default(""),
+  locations: z.array(locationSchema).default([]),
+  facebookUrl: z.url().or(z.literal("")).default(""),
+  instagramUrl: z.url().or(z.literal("")).default(""),
+  youtubeUrl: z.url().or(z.literal("")).default(""),
+  tiktokUrl: z.url().or(z.literal("")).default(""),
   otherSocials: z.array(socialSchema).default([]),
 });
 

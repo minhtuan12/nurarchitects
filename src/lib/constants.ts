@@ -1,3 +1,5 @@
+import { EArea, EContactFormStatus } from "@/types/contact";
+import { EBuildPlan } from "@/types/project";
 import {
     BookOpenText,
     BriefcaseBusiness,
@@ -5,7 +7,9 @@ import {
     Columns3,
     Handshake,
     Home,
+    Info,
     Layers,
+    ListCollapse,
     ListOrdered,
     Newspaper,
     NotebookTabs,
@@ -50,7 +54,7 @@ export const ADMIN_ROUTES = [
                 href: "/admin/news/categories",
                 icon: Columns3,
             },
-			{
+            {
                 key: "list",
                 label: "Danh sách tin tức",
                 href: "/admin/news/list",
@@ -60,9 +64,23 @@ export const ADMIN_ROUTES = [
     },
     {
         key: "contact",
-        label: "Quản lý Liên hệ",
+        label: "Liên hệ",
         href: "/admin/contact",
         icon: NotebookTabs,
+        children: [
+            {
+                key: "info",
+                label: "Thông tin liên hệ",
+                href: "/admin/contact/info",
+                icon: Info,
+            },
+            {
+                key: "consultings",
+                label: "Danh sách yêu cầu tư vấn",
+                href: "/admin/contact/consultings",
+                icon: ListCollapse,
+            },
+        ],
     },
     {
         key: "cooperations",
@@ -86,3 +104,18 @@ export const STATUS_OPTIONS = [
     { value: "published", label: "Công khai" },
     { value: "draft", label: "Nháp" },
 ];
+
+export const BUILD_PLAN_OPTIONS = Object.entries(EBuildPlan).map(([value, meta]) => ({
+    value,
+    label: meta.label,
+}));
+
+export const BUILD_AREA_OPTIONS = Object.entries(EArea).map(([value, meta]) => ({
+    value,
+    label: meta.label,
+}));
+
+export const CONTACT_FORM_STATUS_OPTIONS = Object.entries(EContactFormStatus).map(([value, meta]) => ({
+    value,
+    label: meta.label,
+}));

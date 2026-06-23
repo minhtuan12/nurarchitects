@@ -24,7 +24,7 @@ import NoData from "@/components/NoData";
 import { SquarePen, Trash } from "lucide-react";
 import { SortOrder } from "@/types/shared";
 import { SorterResult } from "antd/es/table/interface";
-import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS, STATUS_OPTIONS } from "@/lib/constants";
+import { BUILD_PLAN_OPTIONS, DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS, STATUS_OPTIONS } from "@/lib/constants";
 
 const { Text } = Typography;
 
@@ -52,11 +52,6 @@ const FEATURED_OPTIONS = [
     { value: "true", label: "Nổi bật" },
     { value: "false", label: "Không nổi bật" },
 ];
-
-const CATEGORY_OPTIONS = Object.entries(EBuildPlan).map(([value, meta]) => ({
-    value,
-    label: meta.label,
-}));
 
 const shortId = (value: unknown) => {
     if (!value) return "-";
@@ -386,7 +381,7 @@ export default function ProjectsAdminPage() {
                 width: 180,
                 minWidth: 180,
                 filterMultiple: false,
-                filters: CATEGORY_OPTIONS.map((option) => ({
+                filters: BUILD_PLAN_OPTIONS.map((option) => ({
                     text: option.label,
                     value: option.value,
                 })),

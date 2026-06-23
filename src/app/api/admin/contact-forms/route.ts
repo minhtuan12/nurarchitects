@@ -6,6 +6,8 @@ export const runtime = "nodejs";
 
 const handlers = createCollectionHandlers(ContactForm, contactFormSchema, {
   searchFields: ["fullName", "phone", "address"],
+  filterFields: ["status", "buildPlan", "area"],
+  sortFields: ["createdAt"],
 });
 
 export const GET = handlers.list;

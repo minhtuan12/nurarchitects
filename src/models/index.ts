@@ -1,6 +1,7 @@
 import mongoose, { Schema, type Model } from "mongoose";
 import {
   applicationStatuses,
+  buildAreas,
   buildPlans,
   contactFormStatuses,
   jobStatuses,
@@ -160,7 +161,7 @@ const ContactFormSchema = new Schema(
     phone: { type: String, required: true, trim: true },
     planningToBuild: { type: String, default: "" },
     buildPlan: { type: String, enum: buildPlans, required: true },
-    area: { type: String, default: "" },
+    area: { type: String, enum: buildAreas, required: true },
     floors: { type: Number },
     address: { type: String, default: "" },
     specialRequirement: { type: String, default: "" },
@@ -169,17 +170,28 @@ const ContactFormSchema = new Schema(
   { timestamps: true },
 );
 
+const LocationSchema = new Schema(
+  {
+    name: { type: String, required: true, default: "" }, // Tên địa điểm, ví dụ: "Văn phòng Hà Nội"
+    address: { type: String, default: "" }, // Địa chỉ dạng text hiển thị
+    lat: { type: Number, required: true }, // Vĩ độ
+    lng: { type: Number, required: true }, // Kinh độ
+  },
+  { _id: true }, // mỗi địa điểm có _id riêng để sửa/xoá trên UI
+);
+
 const ContactConfigSchema = new Schema(
   {
     _type: { type: String, required: true, default: "contact", immutable: true, unique: true },
     phone: { type: String, default: "" },
     email: { type: String, default: "" },
-    addresses: { type: String, default: "" },
+    locations: { type: [LocationSchema], default: [] },
     facebookUrl: { type: String, default: "" },
     instagramUrl: { type: String, default: "" },
     youtubeUrl: { type: String, default: "" },
     tiktokUrl: { type: String, default: "" },
     otherSocials: { type: [socialSchema], default: [] },
+    bannerId: { type: objectId, ref: "Media" },
   },
   { timestamps: true },
 );

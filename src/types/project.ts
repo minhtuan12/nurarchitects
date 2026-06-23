@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { IProjectCategory, VisibleStatus } from "./shared";
+import { VisibleStatus } from "./shared";
 import { IMedia } from "./media";
 
 export interface IProject {
@@ -29,17 +29,12 @@ export interface IProjectPopulated extends Omit<
 }
 
 export type BuildPlan = 'home' | 'businessHome' | 'villa' | 'office' | 'others';
+export type BuildArea = 'under' | 'between' | 'above';
 
 export const EBuildPlan = {
 	home: { value: "home", label: "Nhà phố", color: 'magneta' },
 	businessHome: { value: "businessHome", label: "Nhà phố kết hợp kinh doanh", color: 'volcano' },
 	villa: { value: "villa", label: "Biệt thự - Villa", color: 'green' },
-	office: { value: "office", label: "Văn phòng", color: 'green' },
+	office: { value: "office", label: "Văn phòng", color: 'blue' },
 	others: { value: "others", label: "Khác", color: 'purple' },
 };
-
-export const EArea = {
-	under: { value: 'under', label: 'Dưới 70m2' },
-	between: { value: 'between', label: '70-100m2' },
-	above: { value: 'above', label: 'Trên 100m2' },
-}

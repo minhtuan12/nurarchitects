@@ -27,7 +27,7 @@ import SeoFormFields from "@/components/admin/seo/SeoFormFields";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { useMessage } from "@/contexts/AdminMessageContext";
 import { IActivity } from "@/types/activity";
-import slugify from "slugify";
+import { toSlug } from "@/helpers";
 // import {
 // 	buildActivityPayload,
 // 	defaultActivityValues,
@@ -89,9 +89,6 @@ export const defaultActivityValues: ActivityFormValues = {
 	seoCanonicalUrl: "",
 	seoFocusKeywords: [],
 };
-
-export const toSlug = (value: string) =>
-	slugify(value, { lower: true, strict: true, locale: "vi" });
 
 export function toActivityFormValues(
 	activity: Partial<ActivityResponse>,

@@ -1,11 +1,11 @@
 import { Types } from "mongoose";
 
 export type VisibleStatus = "draft" | "published" | "hidden";
-export type ContactFormStatus = "new" | "processing" | "done"; // replace as needed
-export type JobStatus = "recruiting" | "closed"; // replace as needed
-export type ApplicationStatus = "new" | "reviewing" | "accepted" | "rejected"; // replace as needed
+export type ContactFormStatus = "new" | "contacted" | "processed";
+export type JobStatus = "recruiting" | "closed"; 
+export type ApplicationStatus = "new" | "reviewing" | "accepted" | "rejected";
 export type SeoEntityType = string; // replace with actual seoEntityTypes values
-export type WorkingType = "full-time" | "part-time" | "remote" | "hybrid"; // replace as needed
+export type WorkingType = "full-time" | "part-time" | "remote" | "hybrid";
 export type ResourceType = "image" | "video" | "raw" | "auto";
 export type SortOrder = "ascend" | "descend" | undefined;
 
