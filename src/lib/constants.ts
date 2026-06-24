@@ -1,10 +1,12 @@
 import { EArea, EContactFormStatus } from "@/types/contact";
 import { EBuildPlan } from "@/types/project";
 import {
+    Blocks,
     BookOpenText,
     BriefcaseBusiness,
     Building2,
     Columns3,
+    FileUser,
     Handshake,
     Home,
     Info,
@@ -14,6 +16,7 @@ import {
     Newspaper,
     NotebookTabs,
     ScanSearch,
+    UserSearch,
 } from "lucide-react";
 
 export const ADMIN_ROUTES = [
@@ -93,6 +96,26 @@ export const ADMIN_ROUTES = [
         label: "Quản lý Tuyển dụng",
         href: "/admin/jobs",
         icon: BriefcaseBusiness,
+        children: [
+            {
+                key: "departments",
+                label: "Quản lý phòng ban",
+                href: "/admin/jobs/departments",
+                icon: Blocks,
+            },
+            {
+                key: "positions",
+                label: "Vị trí tuyển dụng",
+                href: "/admin/jobs/positions",
+                icon: UserSearch,
+            },
+            {
+                key: "applicants",
+                label: "Danh sách ứng viên",
+                href: "/admin/jobs/applicants",
+                icon: FileUser,
+            },
+        ],
     },
     { key: "seo", label: "Quản lý SEO", href: "/admin/seo", icon: ScanSearch },
 ];

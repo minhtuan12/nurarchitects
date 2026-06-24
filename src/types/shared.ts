@@ -25,10 +25,3 @@ export interface Social {
 	name: string;
 	url: string;
 }
-
-export interface CooperationStep {
-	order: number;
-	name: string;
-	description: string;
-}
-

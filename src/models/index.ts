@@ -38,6 +38,14 @@ const cooperationStepSchema = new Schema(
   { _id: false },
 );
 
+const cooperationFieldSchema = new Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    imageId: { type: objectId, ref: "Media" },
+  },
+  { _id: false },
+);
+
 const socialSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -201,6 +209,7 @@ const CooperationConfigSchema = new Schema(
     _type: { type: String, required: true, default: "cooperation", immutable: true, unique: true },
     introduction: { type: String, default: "" },
     steps: { type: [cooperationStepSchema], default: [] },
+    neededFields: { type: [cooperationFieldSchema], default: [] },
     imageIds: [{ type: objectId, ref: "Media" }],
     firstCtaBtn: { type: String, default: "" },
     secondCtaBtn: { type: String, default: "" },

@@ -12,7 +12,6 @@ import { AppImage } from "@/components/AppImage";
 import Logo from "@/assets/images/logo.png";
 import { styled } from "@mui/material/styles";
 import MuiCard from '@mui/material/Card';
-import Loading from "@/components/Loading";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -45,7 +44,7 @@ export default function AdminLoginPage() {
         bgcolor: "#f8fafc",
         display: "flex",
         placeItems: "center",
-        px: 20,
+        px: 40,
       }}
     >
       <Box

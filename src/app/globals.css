@@ -48,7 +48,8 @@ img {
 
 .ant-input,
 .ant-input-number,
-.ant-select {
+.ant-select,
+.ant-picker {
     height: 42px;
 }
 
