@@ -123,11 +123,11 @@ export default function FeaturedProjectsSection({
 				)}
 			</div>
 
-			{!loading && projects.length > 0 && (
+			{/* {!loading && projects.length > 0 && (
 				<Button type="primary" loading={saving} onClick={handleSave} className="mt-4 h-[38px]">
 					Lưu thay đổi
 				</Button>
-			)}
+			)} */}
 		</div>
 	);
 }

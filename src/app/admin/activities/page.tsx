@@ -376,7 +376,7 @@ export default function ActivitiesAdminPage() {
 				</Button>
 			</div>
 			<Block>
-				<Table scroll={{ y: 500 }}
+				<Table
 					rowKey="_id"
 					columns={columns}
 					dataSource={activities}

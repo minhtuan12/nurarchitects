@@ -20,7 +20,7 @@ export default function FeaturedActivitiesSection({
 	setSelected: Dispatch<SetStateAction<string[]>>;
 }) {
 	const messageApi = useMessage();
-	const [activities, setProjects] = useState<IActivityPopulated[]>([]);
+	const [activities, setActivities] = useState<IActivityPopulated[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const router = useRouter();
@@ -34,10 +34,10 @@ export default function FeaturedActivitiesSection({
 			),
 			adminFetch("/api/admin/homepage").then((res) => res.json()),
 		])
-			.then(([projectsData, configData]) => {
+			.then(([data, configData]) => {
 				if (cancelled) return;
-				setProjects(projectsData.items ?? []);
-				setSelected(configData.item?.featuredProjectIds ?? []);
+				setActivities(data.items ?? []);
+				setSelected(configData.item?.activities ?? []);
 			})
 			.catch(() =>
 				messageApi.error("Không thể tải danh sách lĩnh vực hoạt động"),
@@ -64,7 +64,7 @@ export default function FeaturedActivitiesSection({
 		adminFetch("/api/admin/homepage", {
 			method: "PATCH",
 			headers: { "content-type": "application/json" },
-			body: JSON.stringify({ featuredProjectIds: selected }),
+			body: JSON.stringify({ activities: selected }),
 		})
 			.then((res) => res.json())
 			.then((data) => {
@@ -104,7 +104,7 @@ export default function FeaturedActivitiesSection({
 						</Button>
 					</NoData>
 				) : (
-					<div className="grid grid-cols-1 lg:!grid-cols-3 gap-2 max-h-[400px] overflow-y-auto">
+					<div className="grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto">
 						{activities.map((activity) => {
 							const id = activity._id as string;
 							const isChecked = selected.includes(id);
@@ -145,7 +145,7 @@ export default function FeaturedActivitiesSection({
 				)}
 			</div>
 
-			{!loading && activities.length > 0 && (
+			{/* {!loading && activities.length > 0 && (
 				<Button
 					type="primary"
 					loading={saving}
@@ -154,7 +154,7 @@ export default function FeaturedActivitiesSection({
 				>
 					Lưu thay đổi
 				</Button>
-			)}
+			)} */}
 		</div>
 	);
 }

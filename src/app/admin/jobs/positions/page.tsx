@@ -415,7 +415,7 @@ export default function JobPositionsAdminPage() {
 				</Button>
 			</div>
 			<Block>
-				<Table scroll={{ y: 500 }}
+				<Table
 					rowKey="_id"
 					columns={columns}
 					dataSource={jobs}

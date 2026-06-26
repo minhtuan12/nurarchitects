@@ -395,7 +395,7 @@ export default function ContactFormListAdminPage() {
 			</div>
 
 			<Block>
-				<Table scroll={{ y: 500 }}
+				<Table
 					rowKey="_id"
 					columns={columns}
 					dataSource={items}

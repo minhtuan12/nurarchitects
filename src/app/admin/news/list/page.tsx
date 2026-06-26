@@ -388,7 +388,6 @@ export default function NewsAdminPage() {
 					columns={columns}
 					dataSource={news}
 					loading={isFetching}
-					scroll={{ y: 500 }}
 					pagination={{
 						current: currentPage,
 						pageSize,

@@ -584,7 +584,6 @@ export default function ProjectsAdminPage() {
                     columns={columns}
                     dataSource={projects}
                     loading={isFetching}
-                    scroll={{ y: 500 }}
                     pagination={{
                         current: currentPage,
                         pageSize,

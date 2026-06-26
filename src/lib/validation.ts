@@ -68,7 +68,7 @@ export const homepageConfigSchema = z.object({
   introduction: htmlSchema,
   featuredProjectIds: z.array(objectIdSchema).default([]),
   featuredInteriorProductIds: z.array(objectIdSchema).default([]),
-  activities: z.array(activityBlockSchema).default([]),
+  activities: z.array(objectIdSchema).default([]),
   contactCtaContent: htmlSchema,
   mediaIds: z.array(objectIdSchema).default([]),
 });
@@ -158,7 +158,7 @@ export const locationSchema = z.object({
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
 });
- 
+
 export const contactConfigSchema = z.object({
   phone: z.string().max(60).default(""),
   email: z.email().or(z.literal("")).default(""),

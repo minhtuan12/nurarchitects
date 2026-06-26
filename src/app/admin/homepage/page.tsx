@@ -2,14 +2,13 @@
 
 import Block from "@/components/Block";
 import UploadSection from "@/components/UploadSection";
-import { Button, Col, Input, Row, Typography } from "antd";
+import { Button, Col, Input, Row, Tabs, Typography } from "antd";
 import FeaturedProjectsSection from "./(components)/FeaturedProjectsSection";
 import { useEffect, useState } from "react";
 import FeaturedActivitiesSection from "./(components)/FeaturedActivitiesSection";
 import { adminFetch } from "@/components/admin/AdminShell";
 import { useMessage } from "@/contexts/AdminMessageContext";
 import SeoSection, { SeoFormValue } from "./(components)/SeoSection";
-import Developing from "@/components/admin/Developing";
 
 const { Title } = Typography;
 
@@ -54,9 +53,7 @@ export default function () {
 						),
 					);
 					setSelectedActivities(
-						(homepage.activities ?? []).map((id: unknown) =>
-							String(id),
-						),
+						(homepage.activities ?? []).map((id: unknown) => String(id)),
 					);
 					setCtaContent(homepage.contactCtaContent ?? "");
 				}
@@ -96,7 +93,7 @@ export default function () {
 		const seoPayload = {
 			entityType: "page",
 			slug: HOMEPAGE_SEO_SLUG,
-			title: seoValue.title || 'Nurarchitects | Chuyên gia Xây dựng',
+			title: seoValue.title || "Nurarchitects | Chuyên gia Xây dựng",
 			description: seoValue.description,
 			ogImage: seoValue.ogImage,
 			canonicalUrl: seoValue.canonicalUrl,
@@ -126,102 +123,124 @@ export default function () {
 			.finally(() => setSaving(false));
 	};
 
+	// ── Tab items ─────────────────────────────────────────────────────────────
+
+	const tabItems = [
+		{
+			key: "general",
+			label: "Tổng quan",
+			children: (
+				<Row gutter={[16, 16]}>
+					<Col xs={24} lg={10}>
+						<Block className="h-full">
+							<Title level={5} className="!mb-4">
+								Banner
+							</Title>
+							<div className="flex-1 min-h-0">
+								<UploadSection />
+							</div>
+						</Block>
+					</Col>
+					<Col xs={24} lg={14}>
+						<Block className="h-full">
+							<Title level={5} className="!mb-3">
+								Tiêu đề giới thiệu
+							</Title>
+							<Input
+								placeholder="NUR Architects chúng tôi là ai?"
+								value={introTitle}
+								onChange={(e) => setIntroTitle(e.target.value)}
+								disabled={loading}
+							/>
+							<Title level={5} className="!mb-3 mt-6">
+								Nội dung giới thiệu
+							</Title>
+							<Input.TextArea
+								placeholder="Nội dung giới thiệu"
+								autoSize={{ minRows: 4, maxRows: 4 }}
+								value={introContent}
+								onChange={(e) => setIntroContent(e.target.value)}
+								disabled={loading}
+							/>
+							<Title level={5} className="!mb-3 mt-6">
+								Nội dung CTA
+							</Title>
+							<Input
+								placeholder="Ví dụ: Tìm hiểu thêm"
+								value={ctaContent}
+								onChange={(e) => setCtaContent(e.target.value)}
+								disabled={loading}
+							/>
+						</Block>
+					</Col>
+				</Row>
+			),
+		},
+		{
+			key: "projects-activities",
+			label: "Công trình/Lĩnh vực nổi bật",
+			children: (
+				<Row gutter={[16, 16]}>
+					<Col xs={24} md={12} lg={8}>
+						<Block>
+							<FeaturedProjectsSection
+								selected={selectedProjects}
+								setSelected={setSelectedProjects}
+							/>
+						</Block>
+					</Col>
+					<Col xs={24} md={12} lg={10}>
+						<Block>
+							<FeaturedActivitiesSection
+								selected={selectedActivities}
+								setSelected={setSelectedActivities}
+							/>
+						</Block>
+					</Col>
+				</Row>
+			),
+		},
+		{
+			key: "seo",
+			label: "Quản lý SEO",
+			children: (
+				<Row gutter={[16, 16]}>
+					<Col span={24}>
+						<Block>
+							<SeoSection
+								value={seoValue}
+								onChange={setSeoValue}
+								disabled={loading}
+							/>
+						</Block>
+					</Col>
+				</Row>
+			),
+		},
+	];
+
+	// ── Render ────────────────────────────────────────────────────────────────
+
 	return (
 		<>
-			<Row
-				gutter={[16, 16]}
-				className="flex items-center justify-end mb-5 px-1"
-			>
+			<div className="flex items-center justify-end mb-5 px-1">
 				<Button
 					type="primary"
 					size="large"
 					loading={saving}
 					disabled={loading}
 					onClick={handleSave}
+					className="h-[38px]"
 				>
 					Cập nhật
 				</Button>
-			</Row>
-			<Row gutter={[16, 16]}>
-				<Col span={10}>
-					<Block className="h-full">
-						<Title level={5} className="!mb-4">
-							Banner
-						</Title>
-						<div className="flex-1 min-h-0">
-							<UploadSection />
-						</div>
-					</Block>
-				</Col>
-				<Col span={14}>
-					<Block className="h-full">
-						<Title level={5} className="!mb-3">
-							Tiêu đề giới thiệu
-						</Title>
-						<Input
-							placeholder="NUR Architects chúng tôi là ai?"
-							value={introTitle}
-							onChange={(e) => setIntroTitle(e.target.value)}
-							disabled={loading}
-						/>
-						<Title level={5} className="!mb-3 mt-6">
-							Nội dung giới thiệu
-						</Title>
-						<Input.TextArea
-							placeholder="Nội dung giới thiệu"
-							autoSize={{ minRows: 4, maxRows: 4 }}
-							value={introContent}
-							onChange={(e) => setIntroContent(e.target.value)}
-							disabled={loading}
-						/>
-					</Block>
-				</Col>
-			</Row>
-			<Row gutter={[16, 16]} className="mt-4">
-				<Col span={10}>
-					<Block className="h-full">
-						<FeaturedProjectsSection
-							selected={selectedProjects}
-							setSelected={setSelectedProjects}
-						/>
-					</Block>
-				</Col>
-				<Col span={14}>
-					<Block className="h-full">
-						<FeaturedActivitiesSection
-							selected={selectedActivities}
-							setSelected={setSelectedActivities}
-						/>
-					</Block>
-				</Col>
-			</Row>
-			<Row gutter={[16, 16]} className="mt-4">
-				<Col span={10}>
-					<Block className="h-full">
-						<Title level={5} className="!mb-3">
-							Nội dung CTA
-						</Title>
-						<Input
-							placeholder="Ví dụ: Tìm hiểu thêm"
-							value={ctaContent}
-							onChange={(e) => setCtaContent(e.target.value)}
-							disabled={loading}
-						/>
-					</Block>
-				</Col>
-				<Col span={14}>
-					<Block className="h-full">
-						<Title level={5} className="!mb-3">
-							Quản lý SEO
-						</Title>
-						<SeoSection
-							value={seoValue}
-							onChange={setSeoValue}
-							disabled={loading}
-						/>
-					</Block>
-				</Col>
-			</Row>
+			</div>
+
+			<Tabs
+				type="card"
+				items={tabItems}
+				className="[&_.ant-tabs-content-holder]:pt-4 custom-tabs"
+			/>
 		</>
 	);
 }
