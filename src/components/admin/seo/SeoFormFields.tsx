@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, Input, Select } from "antd";
+import { Col, Form, Input, Row, Select } from "antd";
 import SeoOgImageField from "@/components/admin/seo/SeoOgImageField";
 
 type SeoFieldName = string | number | (string | number)[];
@@ -31,28 +31,38 @@ export default function SeoFormFields({ names, disabled }: SeoFormFieldsProps) {
 
 	return (
 		<>
-			<Form.Item
-				label="Tiêu đề SEO (title)"
-				name={fieldNames.title}
-				rules={[{ required: true, message: "Vui lòng nhập tiêu đề SEO" }]}
-			>
-				<Input placeholder="Ví dụ: NUR Architects - Kiến trúc & Nội thất" />
-			</Form.Item>
+			<Row gutter={40}>
+				<Col span={12}>
+					<Form.Item
+						label="Tiêu đề SEO (title)"
+						name={fieldNames.title}
+						rules={[{ required: true, message: "Vui lòng nhập tiêu đề SEO" }]}
+					>
+						<Input placeholder="Ví dụ: NUR Architects - Kiến trúc & Nội thất" />
+					</Form.Item>
+				</Col>
+				<Col span={12}>
+					<Form.Item label="Canonical URL" name={fieldNames.canonicalUrl}>
+						<Input placeholder="https://nurarchitects.com" />
+					</Form.Item>
+				</Col>
+			</Row>
 
-			<Form.Item label="Canonical URL" name={fieldNames.canonicalUrl}>
-				<Input placeholder="https://nurarchitects.com" />
-			</Form.Item>
-
-			<Form.Item label="Mô tả (description)" name={fieldNames.description}>
-				<Input.TextArea
-					placeholder="Mô tả ngắn hiển thị trên kết quả tìm kiếm"
-					autoSize={{ minRows: 3, maxRows: 3 }}
-				/>
-			</Form.Item>
-
-			<Form.Item label="Ảnh OG (ogImage)" name={fieldNames.ogImage}>
-				<SeoOgImageField disabled={disabled} />
-			</Form.Item>
+			<Row gutter={40}>
+				<Col span={12}>
+					<Form.Item label="Mô tả (description)" name={fieldNames.description}>
+						<Input.TextArea
+							placeholder="Mô tả ngắn hiển thị trên kết quả tìm kiếm"
+							autoSize={{ minRows: 7, maxRows: 7 }}
+						/>
+					</Form.Item>
+				</Col>
+				<Col span={12}>
+					<Form.Item label="Ảnh OG (ogImage)" name={fieldNames.ogImage}>
+						<SeoOgImageField disabled={disabled} />
+					</Form.Item>
+				</Col>
+			</Row>
 
 			<Form.Item
 				label="Từ khóa trọng tâm (focus keywords)"

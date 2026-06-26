@@ -6,6 +6,7 @@ export const runtime = "nodejs";
 
 const handlers = createCollectionHandlers(SeoSetting, seoSettingSchema, {
   searchFields: ["title", "slug", "description"],
+  filterFields: ["slug", "entityType"],
 });
 
 export const GET = handlers.list;

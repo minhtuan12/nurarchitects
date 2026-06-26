@@ -45,13 +45,18 @@ export default function SeoSection({ value, onChange, disabled }: SeoSectionProp
 	};
 
 	return (
-		<Form
-			form={form}
-			layout="vertical"
-			disabled={disabled}
-			onValuesChange={(_, allValues) => emitChange(allValues)}
-		>
-			<SeoFormFields disabled={disabled} />
-		</Form>
+		<div>
+			<Title level={4} className="!mb-3">
+				Quản lý SEO
+			</Title>
+			<Form
+				form={form}
+				layout="vertical"
+				disabled={disabled}
+				onValuesChange={(_, allValues) => emitChange(allValues)}
+			>
+				<SeoFormFields disabled={disabled} />
+			</Form>
+		</div>
 	);
 }

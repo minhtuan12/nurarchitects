@@ -293,26 +293,27 @@ export const handleImageUpload = async (
     onProgress?: (event: { progress: number }) => void,
     abortSignal?: AbortSignal
 ): Promise<string> => {
-    // Validate file
-    if (!file) {
-        throw new Error("No file provided")
-    }
+    if (!file) throw new Error("No file provided");
 
     if (file.size > MAX_FILE_SIZE) {
-        toast.warning(`Ảnh không vượt quá ${MAX_FILE_SIZE / (1024 * 1024)}MB`)
+        toast.warning(`Ảnh không vượt quá ${MAX_FILE_SIZE / (1024 * 1024)}MB`);
     }
-    // For demo/testing: Simulate upload progress. In production, replace the following code
-    // with your own upload implementation.
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('key', 'image_url');
     formData.append('type', 'image');
+
     const result = await uploadFileApi(formData);
-    if (!result || !result?.success) {
+    // API trả về object trực tiếp, không phải array
+    const url = result?.item?.secureUrl || result?.item?.url || result?.data?.item?.secureUrl || result?.data?.item?.url;
+
+    if (!url) {
         toast.warning('Đã xảy ra lỗi, vui lòng thử lại');
-        return '';
+        throw new Error('Upload failed: No URL returned');
     }
-    return result?.data?.[0]?.url || '';
+
+    return url;
 }
 
 type ProtocolOptions = {

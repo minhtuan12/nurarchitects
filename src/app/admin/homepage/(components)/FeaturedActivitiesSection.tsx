@@ -80,7 +80,7 @@ export default function FeaturedActivitiesSection({
 	return (
 		<div className="flex flex-col h-full">
 			<div className="flex items-center justify-between mb-4">
-				<Title level={4} className="!mb-0">
+				<Title level={5} className="!mb-0">
 					Lĩnh vực hoạt động
 				</Title>
 				<Tag
@@ -104,7 +104,7 @@ export default function FeaturedActivitiesSection({
 						</Button>
 					</NoData>
 				) : (
-					<div className="flex flex-col gap-2">
+					<div className="grid grid-cols-1 lg:!grid-cols-3 gap-2 max-h-[400px] overflow-y-auto">
 						{activities.map((activity) => {
 							const id = activity._id as string;
 							const isChecked = selected.includes(id);
@@ -150,7 +150,7 @@ export default function FeaturedActivitiesSection({
 					type="primary"
 					loading={saving}
 					onClick={handleSave}
-					className="mt-4"
+					className="mt-4 h-[38px]"
 				>
 					Lưu thay đổi
 				</Button>

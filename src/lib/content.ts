@@ -76,7 +76,9 @@ export async function getJobBySlug(slug: string) {
   return serialize(await Job.findOne({ slug, status: "recruiting" }).populate("departmentId").lean());
 }
 
-export async function getSeoBySlug(slug: string) {
+type SeoEntityType = "post" | "page";
+
+export async function getSeoBySlug(slug: string, entityType: SeoEntityType = "page") {
   if (!(await tryConnectDb())) return null;
-  return serialize(await SeoSetting.findOne({ slug }).lean());
+  return serialize(await SeoSetting.findOne({ slug, entityType }).lean());
 }

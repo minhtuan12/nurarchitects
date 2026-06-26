@@ -1,4 +1,4 @@
-import type { Model } from "mongoose";
+import type { Model, Schema, Document } from "mongoose";
 import { NextResponse, type NextRequest } from "next/server";
 import { z, ZodError } from "zod";
 import { connectDb } from "@/lib/db";
@@ -224,4 +224,87 @@ export function createSingletonHandlers(
 export async function publicList(Model: ApiModel, query: Record<string, unknown> = {}, limit = 24) {
   await connectDb();
   return Model.find(query).sort({ createdAt: -1 }).limit(limit).lean();
+}
+
+/**
+ * Recursively walks a Mongoose schema and collects every dot-notation path
+ * whose SchemaType has `ref === "Media"`.
+ *
+ * Examples for IntroductionConfigSchema:
+ *   "imageIds"          → top-level array of ObjectIds ref Media
+ *   "members.imageId"   → nested inside members sub-schema
+ */
+function collectMediaPaths(schema: Schema, prefix = ""): string[] {
+  const paths: string[] = [];
+
+  schema.eachPath((pathName, schemaType) => {
+    // eachPath on a sub-schema is called with the local name,
+    // so we build the full dot-notation path ourselves.
+    const fullPath = prefix ? `${prefix}.${pathName}` : pathName;
+
+    const options = (schemaType as any).options ?? {};
+    const caster = (schemaType as any).caster;         // present on ArrayType
+    const schema_ = (schemaType as any).schema as Schema | undefined; // present on DocumentArray / Subdocument
+
+    // 1. Direct ref on this path  (e.g. imageId: { type: ObjectId, ref: "Media" })
+    if (options.ref === "Media") {
+      paths.push(fullPath);
+      return; // no need to go deeper on a leaf ObjectId
+    }
+
+    // 2. Array of ObjectIds  (e.g. imageIds: [{ type: ObjectId, ref: "Media" }])
+    if (caster && (caster.options?.ref === "Media")) {
+      paths.push(fullPath);
+      return;
+    }
+
+    // 3. DocumentArray or nested sub-schema — recurse into it
+    if (schema_) {
+      const nested = collectMediaPaths(schema_, fullPath);
+      paths.push(...nested);
+    }
+  });
+
+  return paths;
+}
+
+/**
+ * Given a Mongoose model and a lean document, populate every Media ref path
+ * that actually has data in the document (avoids unnecessary DB round-trips).
+ *
+ * Returns the fully-populated document.
+ */
+export async function populateMediaFields<T extends Document>(
+  Model: ApiModel,
+  doc: any,
+): Promise<any> {
+  if (!doc) return doc;
+
+  const mediaPaths = collectMediaPaths(Model.schema);
+  if (mediaPaths.length === 0) return doc;
+
+  // Filter to paths that are actually present and non-empty in the document
+  const pathsToPopulate = mediaPaths.filter((dotPath) => {
+    const value = getNestedValue(doc, dotPath);
+    if (value === undefined || value === null) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    return true;
+  });
+
+  if (pathsToPopulate.length === 0) return doc;
+
+  // Use Model.populate() — works on plain objects returned by .lean()
+  return Model.populate(doc, pathsToPopulate.map((path) => ({ path, model: "Media" })));
+}
+
+/** Safely read a dot-notation path from a plain object, traversing arrays. */
+function getNestedValue(obj: any, dotPath: string): any {
+  return dotPath.split(".").reduce((current, key) => {
+    if (current === undefined || current === null) return undefined;
+    // If current is an array, peek at the first element (enough to check existence)
+    if (Array.isArray(current)) {
+      return current.length > 0 ? current[0]?.[key] : undefined;
+    }
+    return current[key];
+  }, obj);
 }

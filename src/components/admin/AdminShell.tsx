@@ -209,7 +209,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   pb: 3,
                   pt: 4,
                   bgcolor: "white",
-                  marginRight: "-10px",
                   height: "auto",
                   display: "flex",
                   justifyContent: "center",
@@ -266,7 +265,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                       height: 64,
                     }}
                   />
-                  <Title level={5} className="!mb-0">{pageTitle}</Title>
+                  <Title level={5} className="!mb-0 !text-black">{pageTitle}</Title>
                 </Flex>
                 <AdminMenu />
               </Header>

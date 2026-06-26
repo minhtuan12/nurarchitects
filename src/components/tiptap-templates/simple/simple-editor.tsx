@@ -170,10 +170,14 @@ const MobileToolbarContent = ({
 
 async function handleImageUploadWithState(file: File, setUploading: any) {
     try {
-        setUploading(true);
+        if (setUploading) {
+            setUploading(true);
+        }
         return await handleImageUpload(file);
     } finally {
-        setUploading(false);
+        if (setUploading) {
+            setUploading(false);
+        }
     }
 }
 

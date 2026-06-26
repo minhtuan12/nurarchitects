@@ -38,13 +38,13 @@ export default function () {
 
 	useEffect(() => {
 		Promise.all([
-			adminFetch("/admin/homepage").then((res) => res.json()),
+			adminFetch("/api/admin/homepage").then((res) => res.json()),
 			adminFetch(
-				`/admin/seo-settings?entityType=page&slug=${HOMEPAGE_SEO_SLUG}`,
+				`/api/admin/seo-settings?entityType=page&slug=${HOMEPAGE_SEO_SLUG}`,
 			).then((res) => res.json()),
 		])
 			.then(([homepageRes, seoRes]) => {
-				const homepage = homepageRes?.data ?? homepageRes;
+				const homepage = homepageRes?.item ?? homepageRes?.data ?? homepageRes;
 				if (homepage) {
 					setIntroTitle(homepage.introductionTitle ?? "");
 					setIntroContent(homepage.introductionContent ?? "");
@@ -61,7 +61,7 @@ export default function () {
 					setCtaContent(homepage.contactCtaContent ?? "");
 				}
 
-				const seo = seoRes?.data ?? seoRes?.item ?? seoRes;
+				const seo = seoRes?.items?.[0] ?? seoRes?.data ?? seoRes?.item ?? seoRes;
 				if (seo && seo.slug) {
 					setSeoId(seo._id);
 					setSeoValue({
@@ -81,7 +81,7 @@ export default function () {
 	const handleSave = () => {
 		setSaving(true);
 
-		const homepageRequest = adminFetch("/admin/homepage", {
+		const homepageRequest = adminFetch("/api/admin/homepage", {
 			method: "PATCH",
 			headers: { "content-type": "application/json" },
 			body: JSON.stringify({
@@ -96,14 +96,14 @@ export default function () {
 		const seoPayload = {
 			entityType: "page",
 			slug: HOMEPAGE_SEO_SLUG,
-			title: seoValue.title,
+			title: seoValue.title || 'Nurarchitects | Chuyên gia Xây dựng',
 			description: seoValue.description,
 			ogImage: seoValue.ogImage,
 			canonicalUrl: seoValue.canonicalUrl,
 			focusKeywords: seoValue.focusKeywords,
 		};
 		const seoRequest = adminFetch(
-			seoId ? `/admin/seo-settings/${seoId}` : "/admin/seo-settings",
+			seoId ? `/api/admin/seo-settings/${seoId}` : "/api/admin/seo-settings",
 			{
 				method: seoId ? "PATCH" : "POST",
 				headers: { "content-type": "application/json" },
@@ -116,8 +116,8 @@ export default function () {
 				if (homepageData.error) throw new Error(homepageData.error);
 				if (seoData.error) throw new Error(seoData.error);
 
-				if (!seoId && seoData?.data?._id) {
-					setSeoId(seoData.data._id);
+				if (!seoId && (seoData?.item?._id ?? seoData?.data?._id)) {
+					setSeoId(seoData?.item?._id ?? seoData?.data?._id);
 				}
 
 				messageApi.success("Lưu thành công");
@@ -127,100 +127,101 @@ export default function () {
 	};
 
 	return (
-		// <>
-		// 	<Row
-		// 		gutter={[16, 16]}
-		// 		className="flex items-center justify-between mb-5 px-1"
-		// 	>
-		// 		<Title level={4}>Quản lý Trang chủ</Title>
-		// 		<Button
-		// 			type="primary"
-		// 			size="large"
-		// 			loading={saving}
-		// 			disabled={loading}
-		// 			onClick={handleSave}
-		// 		>
-		// 			Cập nhật
-		// 		</Button>
-		// 	</Row>
-		// 	<Row gutter={[16, 16]}>
-		// 		<Col span={10}>
-		// 			<Block className="h-full">
-		// 				<Title level={4} className="!mb-4">
-		// 					Banner
-		// 				</Title>
-		// 				<div className="flex-1 min-h-0">
-		// 					<UploadSection />
-		// 				</div>
-		// 			</Block>
-		// 		</Col>
-		// 		<Col span={14}>
-		// 			<Block className="h-full">
-		// 				<Title level={4} className="!mb-3">
-		// 					Tiêu đề giới thiệu
-		// 				</Title>
-		// 				<Input
-		// 					placeholder="NUR Architects chúng tôi là ai?"
-		// 					value={introTitle}
-		// 					onChange={(e) => setIntroTitle(e.target.value)}
-		// 					disabled={loading}
-		// 				/>
-		// 				<Title level={4} className="!mb-3 mt-6">
-		// 					Nội dung giới thiệu
-		// 				</Title>
-		// 				<Input.TextArea
-		// 					placeholder="Nội dung giới thiệu"
-		// 					autoSize={{ minRows: 4, maxRows: 4 }}
-		// 					value={introContent}
-		// 					onChange={(e) => setIntroContent(e.target.value)}
-		// 					disabled={loading}
-		// 				/>
-		// 			</Block>
-		// 		</Col>
-		// 	</Row>
-		// 	<Row gutter={[16, 16]} className="mt-4">
-		// 		<Col span={10}>
-		// 			<Block className="h-full">
-		// 				<FeaturedProjectsSection
-		// 					selected={selectedProjects}
-		// 					setSelected={setSelectedProjects}
-		// 				/>
-		// 			</Block>
-		// 		</Col>
-		// 		<Col span={14}>
-		// 			<Block className="h-full">
-		// 				<FeaturedActivitiesSection
-		// 					selected={selectedActivities}
-		// 					setSelected={setSelectedActivities}
-		// 				/>
-		// 			</Block>
-		// 		</Col>
-		// 	</Row>
-		// 	<Row gutter={[16, 16]} className="mt-4">
-		// 		<Col span={10}>
-		// 			<Block className="h-full">
-		// 				<Title level={4} className="!mb-3">
-		// 					Nội dung CTA
-		// 				</Title>
-		// 				<Input
-		// 					placeholder="Ví dụ: Tìm hiểu thêm"
-		// 					value={ctaContent}
-		// 					onChange={(e) => setCtaContent(e.target.value)}
-		// 					disabled={loading}
-		// 				/>
-		// 			</Block>
-		// 		</Col>
-		// 		<Col span={14}>
-		// 			<Block className="h-full">
-		// 				<SeoSection
-		// 					value={seoValue}
-		// 					onChange={setSeoValue}
-		// 					disabled={loading}
-		// 				/>
-		// 			</Block>
-		// 		</Col>
-		// 	</Row>
-		// </>
-		<Developing />
+		<>
+			<Row
+				gutter={[16, 16]}
+				className="flex items-center justify-end mb-5 px-1"
+			>
+				<Button
+					type="primary"
+					size="large"
+					loading={saving}
+					disabled={loading}
+					onClick={handleSave}
+				>
+					Cập nhật
+				</Button>
+			</Row>
+			<Row gutter={[16, 16]}>
+				<Col span={10}>
+					<Block className="h-full">
+						<Title level={5} className="!mb-4">
+							Banner
+						</Title>
+						<div className="flex-1 min-h-0">
+							<UploadSection />
+						</div>
+					</Block>
+				</Col>
+				<Col span={14}>
+					<Block className="h-full">
+						<Title level={5} className="!mb-3">
+							Tiêu đề giới thiệu
+						</Title>
+						<Input
+							placeholder="NUR Architects chúng tôi là ai?"
+							value={introTitle}
+							onChange={(e) => setIntroTitle(e.target.value)}
+							disabled={loading}
+						/>
+						<Title level={5} className="!mb-3 mt-6">
+							Nội dung giới thiệu
+						</Title>
+						<Input.TextArea
+							placeholder="Nội dung giới thiệu"
+							autoSize={{ minRows: 4, maxRows: 4 }}
+							value={introContent}
+							onChange={(e) => setIntroContent(e.target.value)}
+							disabled={loading}
+						/>
+					</Block>
+				</Col>
+			</Row>
+			<Row gutter={[16, 16]} className="mt-4">
+				<Col span={10}>
+					<Block className="h-full">
+						<FeaturedProjectsSection
+							selected={selectedProjects}
+							setSelected={setSelectedProjects}
+						/>
+					</Block>
+				</Col>
+				<Col span={14}>
+					<Block className="h-full">
+						<FeaturedActivitiesSection
+							selected={selectedActivities}
+							setSelected={setSelectedActivities}
+						/>
+					</Block>
+				</Col>
+			</Row>
+			<Row gutter={[16, 16]} className="mt-4">
+				<Col span={10}>
+					<Block className="h-full">
+						<Title level={5} className="!mb-3">
+							Nội dung CTA
+						</Title>
+						<Input
+							placeholder="Ví dụ: Tìm hiểu thêm"
+							value={ctaContent}
+							onChange={(e) => setCtaContent(e.target.value)}
+							disabled={loading}
+						/>
+					</Block>
+				</Col>
+				<Col span={14}>
+					<Block className="h-full">
+						<Title level={5} className="!mb-3">
+							Quản lý SEO
+						</Title>
+						<SeoSection
+							value={seoValue}
+							onChange={setSeoValue}
+							disabled={loading}
+						/>
+					</Block>
+				</Col>
+			</Row>
+		</>
 	);
 }

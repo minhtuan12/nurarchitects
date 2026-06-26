@@ -8,7 +8,7 @@ type UploadResponse = {
 };
 
 export async function uploadFileApi(formData: FormData): Promise<UploadResponse> {
-    const response = await fetch('/api/admin/upload', {
+    const response = await fetch('/api/admin/media', {
         method: 'POST',
         body: formData,
         credentials: 'include',

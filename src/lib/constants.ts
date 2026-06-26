@@ -44,6 +44,32 @@ export const ADMIN_ROUTES = [
         label: "Quản lý Giới thiệu",
         href: "/admin/introduction",
         icon: BookOpenText,
+        children: [
+            {
+                key: "content",
+                label: "Quản lý Nội dung",
+                href: "/admin/introduction/content",
+                icon: Columns3,
+            },
+            {
+                key: "history",
+                label: "Lịch sử, Tầm nhìn, ...",
+                href: "/admin/introduction/history",
+                icon: BookOpenText,
+            },
+            {
+                key: "members",
+                label: "Quản lý nhân sự",
+                href: "/admin/introduction/members",
+                icon: FileUser,
+            },
+            {
+                key: "introduction-seo",
+                label: "Quản lý SEO",
+                href: "/admin/introduction/seo",
+                icon: ScanSearch,
+            },
+        ],
     },
     {
         key: "news",
@@ -81,7 +107,7 @@ export const ADMIN_ROUTES = [
                 key: "consultings",
                 label: "Danh sách yêu cầu tư vấn",
                 href: "/admin/contact/consultings",
-                icon: ListCollapse,
+                icon: ListOrdered,
             },
         ],
     },
@@ -117,7 +143,7 @@ export const ADMIN_ROUTES = [
             },
         ],
     },
-    { key: "seo", label: "Quản lý SEO", href: "/admin/seo", icon: ScanSearch },
+    // { key: "seo", label: "Quản lý SEO", href: "/admin/seo", icon: ScanSearch },
 ];
 
 export const DEFAULT_PAGE_SIZE = 20;

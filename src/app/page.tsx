@@ -4,14 +4,21 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { JsonLd } from "@/components/JsonLd";
 import { Hero, ListingGrid, RichContent } from "@/components/PageSections";
-import { getContact, getHomepage, getPublishedNews, getPublishedProjects } from "@/lib/content";
+import { getContact, getHomepage, getPublishedNews, getPublishedProjects, getSeoBySlug } from "@/lib/content";
 import { buildMetadata, organizationJsonLd } from "@/lib/seo";
 import { SiteShell } from "@/components/SiteShell";
 
-export const metadata = buildMetadata({
-  title: "Architecture and Interior Studio",
-  description: "NUR Architects creates calm, precise architecture and interiors for contemporary living.",
-});
+export async function generateMetadata() {
+  const seo = await getSeoBySlug("homepage", "page");
+  return buildMetadata({
+    title: seo?.title ?? "Trang chủ",
+    description:
+      seo?.description ?? "NUR Architects creates calm, precise architecture and interiors for contemporary living.",
+    canonicalUrl: seo?.canonicalUrl,
+    ogImage: seo?.ogImage,
+    focusKeywords: seo?.focusKeywords,
+  });
+}
 
 export default async function HomePage() {
   const [homepage, projects, news, contact] = await Promise.all([

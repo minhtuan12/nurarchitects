@@ -379,7 +379,7 @@ export default function ActivityFormPage({
 				<Block>
 					<Row gutter={90}>
 						<Col xs={24}>
-							<Title level={4} className="!mb-5">
+							<Title level={5} className="!mb-5">
 								Thông tin cơ bản
 							</Title>
 						</Col>
@@ -502,7 +502,7 @@ export default function ActivityFormPage({
 				<Block className="mt-4">
 					<Row gutter={16}>
 						<Col xs={24}>
-							<Title level={4} className="!mb-3">
+							<Title level={5} className="!mb-3">
 								Quản lý SEO
 							</Title>
 						</Col>

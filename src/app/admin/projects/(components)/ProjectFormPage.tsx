@@ -376,7 +376,7 @@ export default function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
 				<Block>
 					<Row gutter={90}>
 						<Col xs={24}>
-							<Title level={4} className="!mb-5">
+							<Title level={5} className="!mb-5">
 								Thông tin cơ bản
 							</Title>
 						</Col>
@@ -486,7 +486,7 @@ export default function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
 				<Block className="mt-4">
 					<Row gutter={90}>
 						<Col xs={24}>
-							<Title level={4} className="!mb-5">
+							<Title level={5} className="!mb-5">
 								Thông tin khác
 							</Title>
 						</Col>
@@ -562,7 +562,7 @@ export default function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
 				<Block className="mt-4">
 					<Row gutter={16}>
 						<Col xs={24}>
-							<Title level={4} className="!mb-3">
+							<Title level={5} className="!mb-3">
 								Quản lý SEO
 							</Title>
 						</Col>

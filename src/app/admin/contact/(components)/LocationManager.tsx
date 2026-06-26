@@ -46,7 +46,9 @@ export default function LocationManager({
 	onChange,
 	disabled,
 }: LocationManagerProps) {
-	console.log(value)
+	const [openKeys, setOpenKeys] = useState<string[]>(() =>
+		value.map((loc, i) => (!loc.name.trim() ? String(i) : null)).filter(Boolean) as string[]
+	);
 	const messageApi = useMessage();
 	// Lưu giá trị input link tạm thời theo index, để không phải parse lại liên tục
 	const [mapLinkDrafts, setMapLinkDrafts] = useState<Record<number, string>>(
@@ -54,7 +56,9 @@ export default function LocationManager({
 	);
 
 	const handleAdd = () => {
+		const newIndex = value.length;
 		onChange([...value, createEmptyLocation()]);
+		setOpenKeys((prev) => [...prev, String(newIndex)]);
 	};
 
 	const handleRemove = (index: number) => {
@@ -216,13 +220,14 @@ export default function LocationManager({
 	return (
 		<div>
 			<div className="flex items-center justify-between mb-5">
-				<Title level={5} className="!mb-0">
+				<Title level={5} className="!mb-0 !text-black">
 					Bản đồ - Địa điểm
 				</Title>
 				<Button
 					icon={<PlusOutlined />}
 					onClick={handleAdd}
 					disabled={disabled}
+					className="h-[38px] border-[#1677ff] text-[#1677ff] hover:bg-[#1677ff] hover:text-white"
 				>
 					Thêm địa điểm
 				</Button>
@@ -235,6 +240,8 @@ export default function LocationManager({
 			{value.length > 0 && (
 				<Space orientation="vertical" size={16} className="w-full">
 					<Collapse
+						activeKey={openKeys}
+						onChange={(keys) => setOpenKeys(keys as string[])}
 						expandIcon={({ isActive }) => (
 							<CaretRightOutlined
 								rotate={isActive ? 90 : 0}

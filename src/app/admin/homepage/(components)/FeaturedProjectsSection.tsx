@@ -74,7 +74,7 @@ export default function FeaturedProjectsSection({
 	return (
 		<div className="flex flex-col h-full">
 			<div className="flex items-center justify-between mb-4">
-				<Title level={4} className="!mb-0">
+				<Title level={5} className="!mb-0">
 					Công trình nổi bật
 				</Title>
 				<Tag color={selected.length === MAX_FEATURED ? "green" : "default"}>
@@ -124,7 +124,7 @@ export default function FeaturedProjectsSection({
 			</div>
 
 			{!loading && projects.length > 0 && (
-				<Button type="primary" loading={saving} onClick={handleSave} className="mt-4">
+				<Button type="primary" loading={saving} onClick={handleSave} className="mt-4 h-[38px]">
 					Lưu thay đổi
 				</Button>
 			)}

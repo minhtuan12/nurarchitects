@@ -395,12 +395,11 @@ export default function ContactFormListAdminPage() {
 			</div>
 
 			<Block>
-				<Table
+				<Table scroll={{ y: 500 }}
 					rowKey="_id"
 					columns={columns}
 					dataSource={items}
 					loading={isFetching}
-					scroll={{ x: 980 }}
 					pagination={{
 						current: currentPage,
 						pageSize,
@@ -412,7 +411,7 @@ export default function ContactFormListAdminPage() {
 						emptyText: <NoData description="Chưa có yêu cầu tư vấn nào" />,
 					}}
 					onChange={handleTableChange as any}
-					className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6 [&_.ant-table-body]:min-h-[calc(100vh-330px)] [&_.ant-table-body]:max-h-[calc(100vh-330px)]"
+					className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6"
 				/>
 			</Block>
 
@@ -447,7 +446,7 @@ export default function ContactFormListAdminPage() {
 									detailRecord.buildPlan}
 							</Descriptions.Item>
 							<Descriptions.Item label="Diện tích">
-								{detailRecord.area || "-"}
+								{EArea[detailRecord.area as BuildArea].label || "-"}
 							</Descriptions.Item>
 							<Descriptions.Item label="Số tầng">
 								{detailRecord.floors ?? "-"}
@@ -472,10 +471,11 @@ export default function ContactFormListAdminPage() {
 							>
 								<Tag
 									color={EContactFormStatus[detailRecord.status]?.color ?? "default"}
-									className="cursor-pointer select-none text-sm py-1 px-3"
+									className="cursor-pointer select-none text-sm py-1 px-3 flex items-center justify-center gap-1"
 								>
 									{EContactFormStatus[detailRecord.status]?.label ??
 										detailRecord.status}
+									<ChevronDown size={13.5} />
 								</Tag>
 							</Dropdown>
 						</div>

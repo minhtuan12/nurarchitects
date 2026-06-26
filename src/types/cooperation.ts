@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import { IMedia } from "./media";
+import { MediaUploadFile } from "@/components/admin/media/media-upload-file";
 
 export interface CooperationStep {
 	order: number;
@@ -38,4 +39,25 @@ export interface ICooperationNeededFieldsPopulated extends Omit<
 	"imageId"
 > {
 	imageId: IMedia;
+}
+
+// ─── NeededField list ─────────────────────────────────────────────────────────
+
+export interface NeededFieldItemState {
+	name: string;
+	description?: string;
+	imageId?: string;
+	imageFile?: MediaUploadFile;
+}
+
+export interface NeededFieldListProps {
+	fields: NeededFieldItemState[];
+	onChange: (fields: NeededFieldItemState[]) => void;
+	disabled?: boolean;
+}
+
+export interface CooperationStep {
+	order: number;
+	name: string;
+	description: string;
 }

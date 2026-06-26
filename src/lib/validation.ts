@@ -22,6 +22,13 @@ export const introductionContentSchema = z.object({
   description: htmlSchema,
 });
 
+export const introductionMemberSchema = z.object({
+  imageId: objectIdSchema.optional(),
+  name: z.string().min(1).max(160),
+  description: htmlSchema,
+  experiences: z.array(introductionContentSchema).default([]),
+});
+
 export const activityBlockSchema = z.object({
   name: z.string().min(1).max(160),
   description: htmlSchema,
@@ -73,6 +80,7 @@ export const introductionConfigSchema = z.object({
   mission: z.array(introductionContentSchema).default([]),
   coreValues: z.array(introductionContentSchema).default([]),
   achievements: z.array(introductionContentSchema).default([]),
+  members: z.array(introductionMemberSchema).default([]),
   imageIds: z.array(objectIdSchema).default([]),
 });
 

@@ -4,14 +4,20 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { AppImage } from "@/components/AppImage";
 import { PageIntro, RichContent } from "@/components/PageSections";
-import { getIntroduction } from "@/lib/content";
+import { getIntroduction, getSeoBySlug } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 
-export const metadata = buildMetadata({
-  title: "Giới thiệu",
-  slug: "gioi-thieu",
-  description: "Tìm hiểu triết lý, tầm nhìn, sứ mệnh và giá trị cốt lõi của NUR Architects.",
-});
+export async function generateMetadata() {
+  const seo = await getSeoBySlug("gioi-thieu", "page");
+  return buildMetadata({
+    title: seo?.title ?? "Giới thiệu",
+    slug: "gioi-thieu",
+    description: seo?.description ?? "Tìm hiểu triết lý, tầm nhìn, sứ mệnh và giá trị cốt lõi của NUR Architects.",
+    canonicalUrl: seo?.canonicalUrl,
+    ogImage: seo?.ogImage,
+    focusKeywords: seo?.focusKeywords,
+  });
+}
 
 export default async function IntroductionPage() {
   const data = await getIntroduction();

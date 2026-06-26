@@ -415,7 +415,7 @@ export default function JobPositionsAdminPage() {
 				</Button>
 			</div>
 			<Block>
-				<Table
+				<Table scroll={{ y: 500 }}
 					rowKey="_id"
 					columns={columns}
 					dataSource={jobs}
@@ -433,7 +433,7 @@ export default function JobPositionsAdminPage() {
 						),
 					}}
 					onChange={handleTableChange}
-					className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6 [&_.ant-table-body]:min-h-[calc(100vh-330px)] [&_.ant-table-body]:max-h-[calc(100vh-330px)]"
+					className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6"
 				/>
 			</Block>
 		</div>

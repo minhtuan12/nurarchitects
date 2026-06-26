@@ -6,6 +6,18 @@ export interface IntroductionContent {
 	description: string;
 }
 
+export interface IntroductionMemberExperience {
+	name: string;
+	description: string;
+}
+
+export interface IntroductionMember {
+	imageId?: string;
+	name: string;
+	description: string;
+	experiences: IntroductionMemberExperience[];
+}
+
 export interface IIntroductionConfig {
 	_id: Types.ObjectId;
 	_type: "introduction";
@@ -15,6 +27,7 @@ export interface IIntroductionConfig {
 	mission: IntroductionContent[];
 	coreValues: IntroductionContent[];
 	achievements: IntroductionContent[];
+	members: IntroductionMember[];
 	imageIds: Types.ObjectId[];
 	createdAt: Date;
 	updatedAt: Date;

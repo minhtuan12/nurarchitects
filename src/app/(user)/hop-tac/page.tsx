@@ -3,14 +3,20 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { AppImage } from "@/components/AppImage";
 import { PageIntro, RichContent } from "@/components/PageSections";
-import { getCooperation } from "@/lib/content";
+import { getCooperation, getSeoBySlug } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 
-export const metadata = buildMetadata({
-  title: "Hợp tác",
-  slug: "hop-tac",
-  description: "Quy trình hợp tác thiết kế và thi công cùng NUR Architects.",
-});
+export async function generateMetadata() {
+  const seo = await getSeoBySlug("hop-tac", "page");
+  return buildMetadata({
+    title: seo?.title ?? "Hợp tác",
+    slug: "hop-tac",
+    description: seo?.description ?? "Quy trình hợp tác thiết kế và thi công cùng NUR Architects.",
+    canonicalUrl: seo?.canonicalUrl,
+    ogImage: seo?.ogImage,
+    focusKeywords: seo?.focusKeywords,
+  });
+}
 
 export default async function CooperationPage() {
   const data = await getCooperation();

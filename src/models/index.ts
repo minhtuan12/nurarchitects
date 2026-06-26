@@ -13,39 +13,6 @@ import { EBuildPlan } from "@/types/project";
 
 const objectId = Schema.Types.ObjectId;
 
-const introductionContentSchema = new Schema(
-  {
-    name: { type: String, required: true, trim: true },
-    description: { type: String, default: "" },
-  },
-  { _id: false },
-);
-
-const activityBlockSchema = new Schema(
-  {
-    name: { type: String, required: true, trim: true },
-    description: { type: String, default: "" },
-  },
-  { _id: false },
-);
-
-const cooperationStepSchema = new Schema(
-  {
-    order: { type: Number, required: true, default: 0 },
-    name: { type: String, required: true, trim: true },
-    description: { type: String, default: "" },
-  },
-  { _id: false },
-);
-
-const cooperationFieldSchema = new Schema(
-  {
-    name: { type: String, required: true, trim: true },
-    imageId: { type: objectId, ref: "Media" },
-  },
-  { _id: false },
-);
-
 const socialSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -94,6 +61,32 @@ const HomepageConfigSchema = new Schema(
   { timestamps: true },
 );
 
+const introductionContentSchema = new Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    description: { type: String, default: "" },
+  },
+  { _id: false },
+);
+
+const memberSchema = new Schema(
+  {
+    imageId: { type: objectId, ref: "Media" },
+    name: { type: String, required: true, trim: true },
+    description: { type: String, default: "" },
+    experiences: {
+      type: [
+        {
+          name: { type: String, required: true, trim: true },
+          description: { type: String, default: "" },
+        },
+      ],
+      default: []
+    }
+  },
+  { _id: false },
+);
+
 const IntroductionConfigSchema = new Schema(
   {
     _type: { type: String, required: true, default: "introduction", immutable: true, unique: true },
@@ -103,6 +96,7 @@ const IntroductionConfigSchema = new Schema(
     mission: { type: [introductionContentSchema], default: [] },
     coreValues: { type: [introductionContentSchema], default: [] },
     achievements: { type: [introductionContentSchema], default: [] },
+    members: { type: [memberSchema], default: [] },
     imageIds: [{ type: objectId, ref: "Media" }],
   },
   { timestamps: true },
@@ -204,9 +198,28 @@ const ContactConfigSchema = new Schema(
   { timestamps: true },
 );
 
+const cooperationStepSchema = new Schema(
+  {
+    order: { type: Number, required: true, default: 0 },
+    name: { type: String, required: true, trim: true },
+    description: { type: String, default: "" },
+  },
+  { _id: false },
+);
+
+const cooperationFieldSchema = new Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    description: { type: String },
+    imageId: { type: objectId, ref: "Media" },
+  },
+  { _id: false },
+);
+
 const CooperationConfigSchema = new Schema(
   {
     _type: { type: String, required: true, default: "cooperation", immutable: true, unique: true },
+    bannerId: { type: objectId, ref: "Media" },
     introduction: { type: String, default: "" },
     steps: { type: [cooperationStepSchema], default: [] },
     neededFields: { type: [cooperationFieldSchema], default: [] },

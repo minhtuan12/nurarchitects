@@ -10,6 +10,7 @@ import {
 	Input,
 	Row,
 	Select,
+	Tabs,
 	Typography,
 } from "antd";
 import dayjs from "dayjs";
@@ -255,45 +256,15 @@ export default function PositionFormPage({
 		}
 	};
 
-	return (
-		<div className="flex flex-col gap-5">
-			<div className="flex items-center justify-between gap-3 px-1">
-				<Title level={4} className="!mb-0">
-					{mode === "edit"
-						? `Cập nhật vị trí ${form.getFieldValue("title") ?? ""}`
-						: "Tạo vị trí tuyển dụng mới"}
-				</Title>
-				<div className="flex justify-end gap-3">
-					<Button onClick={() => router.push("/admin/jobs/positions")}>
-						Quay lại
-					</Button>
-					<Button
-						type="primary"
-						loading={saving}
-						onClick={() => form.submit()}
-					>
-						{mode === "edit" ? "Lưu" : "Tạo vị trí"}
-					</Button>
-				</div>
-			</div>
+	// ── Tab items ─────────────────────────────────────────────────────────────
 
-			<Form<JobFormValues>
-				form={form}
-				layout="vertical"
-				initialValues={defaultValues}
-				disabled={loading || saving}
-				onValuesChange={handleValuesChange}
-				onFinish={handleSubmit}
-				className="[&_.ant-form-item-label>label]:font-semibold"
-			>
+	const tabItems = [
+		{
+			key: "basic",
+			label: "Thông tin cơ bản",
+			children: (
 				<Block>
 					<Row gutter={70}>
-						<Col xs={24}>
-							<Title level={4} className="!mb-5">
-								Thông tin cơ bản
-							</Title>
-						</Col>
-
 						<Col xs={24} lg={12}>
 							<Form.Item
 								label="Tiêu đề vị trí"
@@ -367,40 +338,97 @@ export default function PositionFormPage({
 								<Input placeholder="Địa chỉ làm việc" />
 							</Form.Item>
 						</Col>
+					</Row>
 
-						<Form.Item name="slug" hidden>
-							<Input />
-						</Form.Item>
-					</Row>
-					<Row>
-						<Col xs={24}>
-							<Form.Item label="Mô tả công việc" name="description">
-								<SimpleEditor />
-							</Form.Item>
-						</Col>
-					</Row>
-					<Row>
-						<Col xs={24}>
-							<Form.Item label="Yêu cầu" name="requirements">
-								<SimpleEditor />
-							</Form.Item>
-						</Col>
-					</Row>
-					<Row>
-						<Col xs={24}>
-							<Form.Item label="Quyền lợi" name="benefits">
-								<SimpleEditor />
-							</Form.Item>
-						</Col>
-					</Row>
 					<Row>
 						<Col span={24}>
 							<Form.Item label="Thông tin liên hệ" name="contacts">
-								<SimpleEditor />
+								<SimpleEditor className="min-h-[400px]" />
 							</Form.Item>
 						</Col>
 					</Row>
+
+					<Form.Item name="slug" hidden>
+						<Input />
+					</Form.Item>
 				</Block>
+			),
+		},
+		{
+			key: "description",
+			label: "Mô tả công việc",
+			children: (
+				<Block>
+					<Form.Item label="Mô tả công việc" name="description">
+						<SimpleEditor className="min-h-[400px]" />
+					</Form.Item>
+				</Block>
+			),
+		},
+		{
+			key: "requirements",
+			label: "Yêu cầu",
+			children: (
+				<Block>
+					<Form.Item label="Yêu cầu" name="requirements">
+						<SimpleEditor className="min-h-[400px]" />
+					</Form.Item>
+				</Block>
+			),
+		},
+		{
+			key: "benefits",
+			label: "Quyền lợi",
+			children: (
+				<Block>
+					<Form.Item label="Quyền lợi" name="benefits">
+						<SimpleEditor className="min-h-[400px]" />
+					</Form.Item>
+				</Block>
+			),
+		},
+	];
+
+	// ── Render ────────────────────────────────────────────────────────────────
+
+	return (
+		<div className="flex flex-col gap-5">
+			{/* Header */}
+			<div className="flex items-center justify-between gap-3 px-1">
+				<Title level={4} className="!mb-0">
+					{mode === "edit"
+						? `Cập nhật vị trí ${form.getFieldValue("title") ?? ""}`
+						: "Tạo vị trí tuyển dụng mới"}
+				</Title>
+				<div className="flex justify-end gap-3">
+					<Button onClick={() => router.push("/admin/jobs/positions")} className="h-[38px]">
+						Quay lại
+					</Button>
+					<Button
+						type="primary"
+						loading={saving}
+						onClick={() => form.submit()}
+						className="h-[38px]"
+					>
+						{mode === "edit" ? "Lưu" : "Tạo vị trí"}
+					</Button>
+				</div>
+			</div>
+
+			<Form<JobFormValues>
+				form={form}
+				layout="vertical"
+				initialValues={defaultValues}
+				disabled={loading || saving}
+				onValuesChange={handleValuesChange}
+				onFinish={handleSubmit}
+				className="[&_.ant-form-item-label>label]:font-semibold"
+			>
+				<Tabs
+					type="card"
+					items={tabItems}
+					className="[&_.ant-tabs-content-holder]:pt-4 custom-tabs"
+				/>
 			</Form>
 		</div>
 	);

@@ -22,7 +22,7 @@ import { useMessage } from "@/contexts/AdminMessageContext";
 import { EBuildPlan, type BuildPlan, type IProject } from "@/types/project";
 import NoData from "@/components/NoData";
 import { SquarePen, Trash } from "lucide-react";
-import { SortOrder } from "@/types/shared";
+import { SortOrder, VisibleStatus } from "@/types/shared";
 import { SorterResult } from "antd/es/table/interface";
 import { BUILD_PLAN_OPTIONS, DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS, STATUS_OPTIONS } from "@/lib/constants";
 
@@ -239,14 +239,10 @@ export default function ProjectsAdminPage() {
             setTogglingId(record._id);
 
             // optimistic update: cập nhật cache ngay, rollback nếu lỗi
-            const previousData = queryClient.getQueryData<ProjectsResponse>([
-                "admin-projects",
-                currentPage,
-                pageSize,
-            ]);
+            const previousData = queryClient.getQueryData<ProjectsResponse>(queryKey);
 
             queryClient.setQueryData<ProjectsResponse | undefined>(
-                ["admin-projects", currentPage, pageSize],
+                queryKey,
                 (current) =>
                     current
                         ? {
@@ -292,6 +288,59 @@ export default function ProjectsAdminPage() {
         [currentPage, messageApi, pageSize, queryClient],
     );
 
+    const [recordStatusId, setRecordStatusId] = useState<string | null>(null);
+    const handleToggleStatus = useCallback(
+        async (record: ProjectRow, checked: boolean) => {
+            setRecordStatusId(record._id);
+
+            // optimistic update: cập nhật cache ngay, rollback nếu lỗi
+            const previousData = queryClient.getQueryData<ProjectsResponse>(queryKey);
+
+            queryClient.setQueryData<ProjectsResponse | undefined>(
+                queryKey,
+                (current) =>
+                    current
+                        ? {
+                            ...current,
+                            items: current.items.map((item) =>
+                                item._id === record._id
+                                    ? { ...item, status: checked ? 'published' : 'draft' }
+                                    : item,
+                            ),
+                        }
+                        : current,
+            );
+
+            try {
+                const response = await adminFetch(
+                    `/api/admin/projects/${record._id}`,
+                    {
+                        method: "PATCH",
+                        headers: { "content-type": "application/json" },
+                        body: JSON.stringify({ status: checked ? 'published' : 'draft' }),
+                    },
+                );
+                const data = await response.json();
+                if (!response.ok || data.error) {
+                    throw new Error(data.error ?? "Cannot update project");
+                }
+                messageApi.success(
+                    "Đã cập nhật trạng thái dự án"
+                );
+            } catch {
+                // rollback nếu lỗi
+                queryClient.setQueryData(
+                    ["admin-projects", currentPage, pageSize],
+                    previousData,
+                );
+                messageApi.error("Không thể cập nhật trạng thái dự án");
+            } finally {
+                setRecordStatusId(null);
+            }
+        },
+        [currentPage, messageApi, pageSize, queryClient],
+    );
+
     const columns = useMemo<ColumnsType<ProjectRow>>(
         () => [
             {
@@ -315,7 +364,6 @@ export default function ProjectsAdminPage() {
                 dataIndex: "address",
                 key: "address",
                 width: 160,
-                minWidth: 160,
                 ellipsis: true,
                 render: (value?: string) => value || "-",
             },
@@ -364,13 +412,21 @@ export default function ProjectsAdminPage() {
                     value: option.value,
                 })),
                 filteredValue: filters.status ? [filters.status] : null,
-                render: (value: string) => (
-                    <Tag
-                        color={value === "published" ? "green" : "default"}
-                        variant="outlined"
-                    >
-                        {value === "published" ? "Công khai" : "Nháp"}
-                    </Tag>
+                render: (value: VisibleStatus, record) => (
+                    <Switch
+                        checked={value === 'published'}
+                        loading={recordStatusId === record._id}
+                        onChange={(checked) =>
+                            handleToggleStatus(record, checked)
+                        }
+                        checkedChildren="Công khai"
+                        unCheckedChildren="Nháp"
+                        styles={{
+                            root: {
+                                backgroundColor: value === 'published' ? '#39a049' : '#d9d9d9',
+                            },
+                        }}
+                    />
                 ),
             },
             {
@@ -427,7 +483,6 @@ export default function ProjectsAdminPage() {
                 title: "Thao tác",
                 key: "actions",
                 width: 100,
-                minWidth: 100,
                 fixed: "right",
                 align: "center",
                 render: (_, record) => (
@@ -457,6 +512,8 @@ export default function ProjectsAdminPage() {
             router,
             sortState,
             togglingId,
+            recordStatusId,
+            handleToggleStatus,
             yearOptions,
         ],
     );
@@ -527,7 +584,7 @@ export default function ProjectsAdminPage() {
                     columns={columns}
                     dataSource={projects}
                     loading={isFetching}
-                    scroll={{ x: 1680, y: 100 }}
+                    scroll={{ y: 500 }}
                     pagination={{
                         current: currentPage,
                         pageSize,
@@ -541,7 +598,7 @@ export default function ProjectsAdminPage() {
                         ),
                     }}
                     onChange={handleTableChange as any}
-                    className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6 [&_.ant-table-body]:min-h-[calc(100vh-330px)] [&_.ant-table-body]:max-h-[calc(100vh-330px)]"
+                    className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6"
                 />
             </Block>
         </div>

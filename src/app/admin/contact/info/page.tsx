@@ -170,7 +170,7 @@ export default function ContactPage() {
 			<Row gutter={[16, 16]}>
 				<Col span={12}>
 					<Block className="h-full">
-						<Title level={5} className="!mb-3">
+						<Title level={5} className="!mb-3 !text-black">
 							Số điện thoại
 						</Title>
 						<Input
@@ -179,7 +179,7 @@ export default function ContactPage() {
 							onChange={(e) => setPhone(e.target.value)}
 							disabled={loading}
 						/>
-						<Title level={5} className="!mb-3 mt-6">
+						<Title level={5} className="!mb-3 mt-6 !text-black">
 							Email
 						</Title>
 						<Input
@@ -193,7 +193,7 @@ export default function ContactPage() {
 
 				<Col span={12}>
 					<Block className="h-full">
-						<Title level={5} className="!mb-3">
+						<Title level={5} className="!mb-3 !text-black">
 							Mạng xã hội
 						</Title>
 						<Input

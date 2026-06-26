@@ -486,7 +486,7 @@ export default function ApplicationListAdminPage() {
 		// 				emptyText: <NoData description="Chưa có ứng viên nào" />,
 		// 			}}
 		// 			onChange={handleTableChange as any}
-		// 			className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6 [&_.ant-table-body]:min-h-[calc(100vh-330px)] [&_.ant-table-body]:max-h-[calc(100vh-330px)]"
+		// 			className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6"
 		// 		/>
 		// 	</Block>
 
