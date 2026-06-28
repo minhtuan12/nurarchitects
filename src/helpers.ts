@@ -24,3 +24,22 @@ export function isValidUrl(value: string): boolean {
 		return false;
 	}
 }
+
+type ApiListResponse<T> = {
+	items?: T[];
+	item?: T;
+};
+
+const SITE_ORIGIN =
+	process.env.NEXT_PUBLIC_SITE_URL ||
+	(process.env.VERCEL_URL ? process.env.BASE_URL : "http://localhost:3000");
+
+export async function fetchApi<T>(path: string): Promise<ApiListResponse<T> | null> {
+	try {
+		const response = await fetch(new URL(path, SITE_ORIGIN), { cache: "no-store" });
+		if (!response.ok) return null;
+		return (await response.json()) as ApiListResponse<T>;
+	} catch {
+		return null;
+	}
+}

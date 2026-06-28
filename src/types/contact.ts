@@ -18,12 +18,19 @@ export interface IContactForm {
 	updatedAt: Date;
 }
 
+export interface IContactLocation {
+	name: string;
+	address: string;
+	lat: number;
+	lng: number;
+}
+
 export interface IContactConfig {
 	_id: Types.ObjectId;
 	_type: "contact";
 	phone: string;
 	email: string;
-	addresses: string;
+	locations: IContactLocation[];
 	facebookUrl: string;
 	instagramUrl: string;
 	youtubeUrl: string;

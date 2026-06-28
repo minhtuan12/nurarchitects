@@ -10,7 +10,7 @@ export default function YoutubeIcon({
 }: YoutubeIconProps) {
 	return (
 		<svg viewBox="0 0 24 24" height="16px"
-			width="16px" fill="none" xmlns="http://www.w3.org/2000/svg" stroke={color} {...props}>
+			width="16px" fill={props.fill || 'none'} xmlns="http://www.w3.org/2000/svg" stroke={color} {...props}>
 			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
 			<g
 				id="SVGRepo_tracerCarrier"
