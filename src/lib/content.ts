@@ -28,7 +28,7 @@ async function tryConnectDb() {
 
 export async function getHomepage() {
   if (!(await tryConnectDb())) return null;
-  return serialize(await HomepageConfig.findOne({ _type: "homepage" }).populate("bannerMediaId mediaIds featuredProjectIds").lean());
+  return serialize(await HomepageConfig.findOne({ _type: "homepage" }).populate("bannerId mediaIds featuredProjectIds").lean());
 }
 
 export async function getIntroduction() {

@@ -48,7 +48,7 @@ export type NewsCard = {
 };
 
 export type HomepageConfig = {
-  bannerMediaId?: MediaLike | null;
+  bannerId?: MediaLike | null;
   introductionTitle?: string;
   introductionContent?: string;
   contactCtaContent?: string;
@@ -352,7 +352,7 @@ export function HomepageLanding({ homepage, projects, news, contact }: HomepageL
   const featuredProjects = homepage?.featuredProjectIds?.length ? homepage.featuredProjectIds : projects.slice(0, 3);
   const leadProject = featuredProjects[0] ?? projects[0];
   const secondaryProjects = featuredProjects.slice(1, 3);
-  const galleryMedia = [homepage?.bannerMediaId, ...(homepage?.mediaIds ?? [])].filter(Boolean) as MediaLike[];
+  const galleryMedia = [homepage?.bannerId, ...(homepage?.mediaIds ?? [])].filter(Boolean) as MediaLike[];
   const introBody =
     homepage?.introductionContent ||
     "NUR Architects develops calm and precise homes, villas, and working spaces with a focus on proportion, material, and everyday use.";
@@ -471,8 +471,8 @@ export function HomepageLanding({ homepage, projects, news, contact }: HomepageL
               <Stack gap={2} sx={{ p: { xs: 2, md: 2.5 }, height: "100%" }}>
                 <Box sx={{ position: "relative", flex: "1 1 auto", minHeight: { xs: 320, md: 420 } }}>
                   <AppImage
-                    alt={homepage?.bannerMediaId?.alt || "NUR Architects banner"}
-                    media={homepage?.bannerMediaId}
+                    alt={homepage?.bannerId?.alt || "NUR Architects banner"}
+                    media={homepage?.bannerId}
                     fill
                     aspectRatio="4 / 5"
                     sizes="(max-width: 900px) 100vw, 38vw"

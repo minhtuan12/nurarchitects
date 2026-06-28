@@ -10,7 +10,7 @@ export interface ActivityBlock {
 export interface IHomepageConfig {
 	_id: Types.ObjectId;
 	_type: "homepage";
-	bannerMediaId?: Types.ObjectId;
+	bannerId?: Types.ObjectId;
 	introductionContent: string;
 	introductionTitle: string;
 	featuredProjectIds: Types.ObjectId[];
@@ -24,9 +24,9 @@ export interface IHomepageConfig {
 
 export interface IHomepageConfigPopulated extends Omit<
 	IHomepageConfig,
-	"bannerMediaId" | "featuredProjectIds" | "mediaIds"
+	"bannerId" | "featuredProjectIds" | "mediaIds"
 > {
-	bannerMediaId?: IMedia;
+	bannerId?: IMedia;
 	featuredProjectIds: IProject[];
 	mediaIds: IMedia[];
 }

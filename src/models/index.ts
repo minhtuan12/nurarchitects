@@ -49,7 +49,7 @@ const MediaSchema = new Schema(
 const HomepageConfigSchema = new Schema(
   {
     _type: { type: String, required: true, default: "homepage", immutable: true, unique: true },
-    bannerMediaId: { type: objectId, ref: "Media" },
+    bannerId: { type: objectId, ref: "Media" },
     introductionContent: { type: String, default: "" },
     introductionTitle: { type: String, default: "" },
     featuredProjectIds: [{ type: objectId, ref: "Project" }],
