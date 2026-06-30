@@ -108,9 +108,9 @@ export default function FeaturedProjectsSection({
 										disabled={isDisabled}
 										onChange={(e) => toggleSelect(id, e.target.checked)}
 									/>
-									{project.thumbnailId?.secureUrl && (
+									{project.thumbnailId?.secureUrl || project.thumbnailId?.url && (
 										<img
-											src={project.thumbnailId.secureUrl as string}
+											src={(project.thumbnailId?.secureUrl || project.thumbnailId?.url) as string}
 											alt={project.name}
 											className="w-10 h-10 rounded object-cover shrink-0"
 										/>

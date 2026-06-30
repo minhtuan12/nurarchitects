@@ -202,7 +202,7 @@ export default function ({ projects }: { projects: IProjectPopulated[] }) {
 													}}
 												>
 													<Image
-														src={p?.thumbnailId?.secureUrl || ""}
+														src={p?.thumbnailId?.secureUrl || p?.thumbnailId?.url || ""}
 														alt={p?.name || ""}
 														fill
 														style={{ objectFit: "cover" }}

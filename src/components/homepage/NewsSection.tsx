@@ -80,7 +80,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 									}}
 								>
 									<Image
-										src={featured.thumbnailId?.secureUrl || ""}
+										src={featured.thumbnailId?.secureUrl || featured.thumbnailId?.url || ""}
 										alt={featured.title}
 										fill
 										style={{ objectFit: "cover" }}
@@ -159,7 +159,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 													<Image
 														src={
 															item.thumbnailId
-																?.secureUrl || ""
+																?.secureUrl || item.thumbnailId?.url || ""
 														}
 														alt={item.title}
 														fill

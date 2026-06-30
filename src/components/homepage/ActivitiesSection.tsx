@@ -31,7 +31,7 @@ export default function ActivitiesSection({
 	ctaHref = "/linh-vuc",
 	activities,
 }: ActivitiesSectionProps) {
-	const displayedActivities = activities?.filter(a => a.thumbnailId?.secureUrl);
+	const displayedActivities = activities?.filter(a => a.thumbnailId?.secureUrl || a.thumbnailId?.url);
 	const hasActivities = displayedActivities?.length > 0;
 	const [activeId, setActiveId] = useState<string>(
 		"",
@@ -169,7 +169,7 @@ export default function ActivitiesSection({
 							{/* Ảnh 1 — cao hơn */}
 
 							{displayedActivities.map(a => {
-								return a?.thumbnailId?.secureUrl ?
+								return (a?.thumbnailId?.secureUrl || a.thumbnailId?.url) ?
 									<Grid
 										size={6}
 										key={String(a._id)}
@@ -181,7 +181,7 @@ export default function ActivitiesSection({
 										}}
 									>
 										<Image
-											src={a?.thumbnailId?.secureUrl as string}
+											src={(a?.thumbnailId?.secureUrl || a.thumbnailId?.url) as string}
 											alt={a?.name ?? ""}
 											fill
 											style={{
