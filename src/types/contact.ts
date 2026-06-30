@@ -4,7 +4,7 @@ import { BuildArea, BuildPlan } from "./project";
 import { IMedia } from "./media";
 
 export interface IContactForm {
-	_id: Types.ObjectId;
+	_id?: Types.ObjectId | string;
 	fullName: string;
 	phone: string;
 	planningToBuild: string;
@@ -12,10 +12,10 @@ export interface IContactForm {
 	area: BuildArea;
 	floors?: number;
 	address: string;
-	specialRequirement: string;
-	status: ContactFormStatus;
-	createdAt: Date;
-	updatedAt: Date;
+	specialRequirement?: string;
+	status?: ContactFormStatus;
+	createdAt?: Date;
+	updatedAt?: Date;
 }
 
 export interface IContactLocation {

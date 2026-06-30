@@ -65,7 +65,8 @@ export const mediaCreateSchema = z.object({
 
 export const homepageConfigSchema = z.object({
   bannerId: optionalObjectIdSchema,
-  introduction: htmlSchema,
+  introductionContent: z.string().max(500).default(""),
+  introductionTitle: z.string().max(200).default(""),
   featuredProjectIds: z.array(objectIdSchema).default([]),
   featuredInteriorProductIds: z.array(objectIdSchema).default([]),
   activities: z.array(objectIdSchema).default([]),

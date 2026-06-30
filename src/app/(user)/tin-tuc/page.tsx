@@ -1,6 +1,8 @@
+import Developing from "@/components/admin/Developing";
 import { ListingGrid, PageIntro } from "@/components/PageSections";
 import { getPublishedNews } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
+import { Box } from "@mui/material";
 
 export const metadata = buildMetadata({
   title: "Tin tức",
@@ -12,8 +14,11 @@ export default async function NewsPage() {
   const news = await getPublishedNews();
   return (
     <>
-      <PageIntro label="Tin tức" title="Góc nhìn về kiến trúc, nội thất và thi công." />
-      <ListingGrid items={news} basePath="/tin-tuc" empty="Chưa có bài viết được xuất bản." />
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
+      {/* <PageIntro label="Tin tức" title="Góc nhìn về kiến trúc, nội thất và thi công." />
+      <ListingGrid items={news} basePath="/tin-tuc" empty="Chưa có bài viết được xuất bản." /> */}
     </>
   );
 }

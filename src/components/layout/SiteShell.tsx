@@ -1,20 +1,15 @@
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Link from "@/components/Link";
 import theme from "@/theme";
 import { SiteHeader } from "./SiteHeader";
 import { fetchApi } from "@/helpers";
 import { IContactConfig } from "@/types/contact";
 import { FlyingContact } from "./FlyingContact";
 import GoToTopBtn from "./GoToTopBtn";
-import ConcreteBg from '@/assets/images/concrete-bg.jpg';
 import SiteFooter from "./SiteFooter";
+import { INewsCategory } from "@/types/shared";
 
 const nav = [
   ["Về chúng tôi", "/gioi-thieu"],
@@ -27,10 +22,29 @@ const nav = [
 ] as const;
 
 export async function SiteShell({ children }: { children: React.ReactNode }) {
-  const [contactRes] = await Promise.all([
+  const [contactRes, newsCategoriesRes] = await Promise.all([
     fetchApi<IContactConfig>("/api/contact"),
+    fetchApi<INewsCategory>("/api/news/categories"),
   ]);
   const contact = contactRes?.item ?? { phone: '0987654321' };
+  const newsCategories = newsCategoriesRes?.items ?? [];
+
+  const nav = [
+    { label: "Trang chủ", href: "/" },
+    { label: "Về chúng tôi", href: "/gioi-thieu" },
+    { label: "Lĩnh vực", href: "/linh-vuc" },
+    { label: "Dự án", href: "/du-an" },
+    {
+      label: "Tin tức",
+      href: "/tin-tuc",
+      children: newsCategories.map((cat) => ({
+        label: cat.name,
+        href: `/tin-tuc/${cat.slug}`,
+      })),
+    },
+    { label: "Hợp tác", href: "/hop-tac" },
+    { label: "Tuyển dụng", href: "/tuyen-dung" },
+  ];
 
   return (
     <AppRouterCacheProvider>
@@ -38,7 +52,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
         <CssBaseline />
 
         {/* SiteHeader handles: HotlineBar + AppBar + scroll/route logic */}
-        <SiteHeader phone={contact?.phone} />
+        <SiteHeader phone={contact?.phone} nav={nav} />
 
         {!!contact?.phone && <FlyingContact phone={contact?.phone} />}
 

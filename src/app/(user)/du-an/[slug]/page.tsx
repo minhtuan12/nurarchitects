@@ -8,6 +8,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { PageIntro, RichContent } from "@/components/PageSections";
 import { getProjectBySlug } from "@/lib/content";
 import { buildMetadata, projectJsonLd } from "@/lib/seo";
+import Developing from "@/components/admin/Developing";
+import { Box } from "@mui/material";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -27,7 +29,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <JsonLd data={projectJsonLd(project)} />
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
+      {/* <JsonLd data={projectJsonLd(project)} />
       <PageIntro label="Dự án" title={project.name} body={project.shortDescription} />
       <Container maxWidth="xl" sx={{ pb: 10 }}>
         <Grid container spacing={6}>
@@ -43,7 +48,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             </Stack>
           </Grid>
         </Grid>
-      </Container>
+      </Container> */}
     </>
   );
 }

@@ -3,20 +3,8 @@ import { Types } from "mongoose";
 
 export type MediaResourceType = "image" | "video" | "raw" | "auto";
 
-export interface MediaLike {
-  _id?: string;
-  url?: string;
-  secureUrl?: string;
-  publicId?: string;
-  width?: number;
-  height?: number;
-  alt?: string;
-  caption?: string;
-  resourceType?: MediaResourceType;
-}
-
 export interface IMedia {
-  _id: Types.ObjectId;
+  _id: Types.ObjectId | string;
   filename: string;
   originalName: string;
   mimeType: string;

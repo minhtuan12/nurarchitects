@@ -20,11 +20,7 @@ import { AppImage } from "@/components/AppImage";
 import { RichContent } from "@/components/PageSections";
 import Link from "@/components/Link";
 import { EBuildPlan } from "@/types/project";
-import type { MediaLike } from "@/types/media";
-
-export type HomepageMedia = MediaLike & {
-  _id?: string;
-};
+import type { IMedia } from "@/types/media";
 
 export type ProjectCard = {
   _id?: string;
@@ -34,7 +30,7 @@ export type ProjectCard = {
   address?: string;
   category?: string;
   implementationYear?: number;
-  thumbnailId?: MediaLike;
+  thumbnailId?: IMedia;
   isFeatured?: boolean;
 };
 
@@ -44,16 +40,16 @@ export type NewsCard = {
   title: string;
   shortDescription?: string;
   createdAt?: string;
-  thumbnailId?: MediaLike;
+  thumbnailId?: IMedia;
 };
 
 export type HomepageConfig = {
-  bannerId?: MediaLike | null;
+  bannerId?: IMedia | null;
   introductionTitle?: string;
   introductionContent?: string;
   contactCtaContent?: string;
   featuredProjectIds?: ProjectCard[];
-  mediaIds?: HomepageMedia[];
+  mediaIds?: IMedia[];
 };
 
 export type ContactConfig = {
@@ -352,7 +348,7 @@ export function HomepageLanding({ homepage, projects, news, contact }: HomepageL
   const featuredProjects = homepage?.featuredProjectIds?.length ? homepage.featuredProjectIds : projects.slice(0, 3);
   const leadProject = featuredProjects[0] ?? projects[0];
   const secondaryProjects = featuredProjects.slice(1, 3);
-  const galleryMedia = [homepage?.bannerId, ...(homepage?.mediaIds ?? [])].filter(Boolean) as MediaLike[];
+  const galleryMedia = [homepage?.bannerId, ...(homepage?.mediaIds ?? [])].filter(Boolean) as IMedia[];
   const introBody =
     homepage?.introductionContent ||
     "NUR Architects develops calm and precise homes, villas, and working spaces with a focus on proportion, material, and everyday use.";
@@ -512,7 +508,7 @@ export function HomepageLanding({ homepage, projects, news, contact }: HomepageL
                 {galleryMedia.length ? (
                   <Grid container spacing={1.2}>
                     {galleryMedia.slice(0, 3).map((media, index) => (
-                      <Grid key={media._id ?? media.publicId ?? index} size={{ xs: 4 }}>
+                      <Grid key={String(media._id) ?? media.publicId ?? index} size={{ xs: 4 }}>
                         <Box
                           sx={{
                             position: "relative",

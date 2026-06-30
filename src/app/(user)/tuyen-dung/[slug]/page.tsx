@@ -8,6 +8,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { PageIntro, RichContent } from "@/components/PageSections";
 import { getJobBySlug } from "@/lib/content";
 import { buildMetadata, jobJsonLd } from "@/lib/seo";
+import { Box } from "@mui/material";
+import Developing from "@/components/admin/Developing";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -26,7 +28,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
   return (
     <>
-      <JsonLd data={jobJsonLd(job)} />
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
+      {/* <JsonLd data={jobJsonLd(job)} />
       <PageIntro label="Tuyển dụng" title={job.title} body={`${job.workingType} · ${job.workingAddress}`} />
       <Container maxWidth="xl" sx={{ pb: 10 }}>
         <Grid container spacing={6}>
@@ -42,7 +47,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
             <ApplicationForm jobId={job._id} />
           </Grid>
         </Grid>
-      </Container>
+      </Container> */}
     </>
   );
 }

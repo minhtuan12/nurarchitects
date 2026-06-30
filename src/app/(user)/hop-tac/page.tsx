@@ -5,6 +5,8 @@ import { AppImage } from "@/components/AppImage";
 import { PageIntro, RichContent } from "@/components/PageSections";
 import { getCooperation, getSeoBySlug } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
+import Developing from "@/components/admin/Developing";
+import { Box } from "@mui/material";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("hop-tac", "page");
@@ -22,7 +24,10 @@ export default async function CooperationPage() {
   const data = await getCooperation();
   return (
     <>
-      <PageIntro label="Hợp tác" title="Quy trình rõ ràng cho từng giai đoạn dự án." />
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
+      {/* <PageIntro label="Hợp tác" title="Quy trình rõ ràng cho từng giai đoạn dự án." />
       <Container maxWidth="xl" sx={{ pb: 10 }}>
         <Stack gap={5}>
           <RichContent html={data?.introduction || "Chúng tôi làm việc theo từng bước có mục tiêu, đầu ra và trách nhiệm rõ ràng."} />
@@ -37,7 +42,7 @@ export default async function CooperationPage() {
             </Stack>
           ))}
         </Stack>
-      </Container>
+      </Container> */}
     </>
   );
 }

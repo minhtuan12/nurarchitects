@@ -7,6 +7,7 @@ import {
   IntroductionConfig,
   Job,
   News,
+  NewsCategory,
   Project,
   SeoSetting,
 } from "@/models";
@@ -28,7 +29,29 @@ async function tryConnectDb() {
 
 export async function getHomepage() {
   if (!(await tryConnectDb())) return null;
-  return serialize(await HomepageConfig.findOne({ _type: "homepage" }).populate("bannerId mediaIds featuredProjectIds").lean());
+
+  return serialize(
+    await HomepageConfig.findOne({ _type: "homepage" })
+      .populate("bannerId")
+      .populate("mediaIds")
+      .populate([
+        {
+          path: "featuredProjectIds",
+          populate: [
+            { path: "thumbnailId", model: "Media" },
+            { path: "galleryMediaIds", model: "Media" },
+          ],
+        },
+        {
+          path: "activities",
+          populate: [
+            { path: "thumbnailId", model: "Media" },
+            { path: "galleryMediaIds", model: "Media" },
+          ],
+        },
+      ])
+      .lean(),
+  );
 }
 
 export async function getIntroduction() {
@@ -59,6 +82,11 @@ export async function getProjectBySlug(slug: string) {
 export async function getPublishedNews(limit = 24) {
   if (!(await tryConnectDb())) return [];
   return serialize(await News.find({ status: "published" }).sort({ createdAt: -1 }).limit(limit).populate("thumbnailId").lean());
+}
+
+export async function getNewsCategories() {
+  if (!(await tryConnectDb())) return [];
+  return serialize(await NewsCategory.find().sort({ createdAt: -1 }).lean());
 }
 
 export async function getNewsBySlug(slug: string) {

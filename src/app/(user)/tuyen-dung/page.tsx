@@ -5,6 +5,8 @@ import Link from "@/components/Link";
 import { PageIntro } from "@/components/PageSections";
 import { getRecruitingJobs } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
+import { Box } from "@mui/material";
+import Developing from "@/components/admin/Developing";
 
 export const metadata = buildMetadata({
   title: "Tuyển dụng",
@@ -16,7 +18,10 @@ export default async function JobsPage() {
   const jobs = await getRecruitingJobs();
   return (
     <>
-      <PageIntro label="Tuyển dụng" title="Cùng xây dựng những không gian có giá trị dài hạn." />
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
+      {/* <PageIntro label="Tuyển dụng" title="Cùng xây dựng những không gian có giá trị dài hạn." />
       <Container maxWidth="lg" sx={{ pb: 10 }}>
         <Stack gap={2}>
           {jobs.length ? jobs.map((job) => (
@@ -26,7 +31,7 @@ export default async function JobsPage() {
             </Stack>
           )) : <Typography color="text.secondary">Chưa có vị trí đang tuyển.</Typography>}
         </Stack>
-      </Container>
+      </Container> */}
     </>
   );
 }

@@ -4,11 +4,11 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
+import Typography, { TypographyProps } from "@mui/material/Typography";
 import { ArrowUpRight } from "lucide-react";
 import { AppImage } from "@/components/AppImage";
 import Link from "@/components/Link";
-import type { MediaLike } from "@/types/media";
+import type { IMedia } from "@/types/media";
 
 export function Hero({
   eyebrow,
@@ -19,7 +19,7 @@ export function Hero({
   eyebrow?: string;
   title: string;
   body: string;
-  image?: MediaLike | null;
+  image?: IMedia | null;
 }) {
   return (
     <Box
@@ -132,7 +132,7 @@ export function PageIntro({ label, title, body }: { label: string; title: string
   );
 }
 
-export function ListingGrid<T extends { _id?: string; slug: string; name?: string; title?: string; shortDescription?: string; thumbnailId?: MediaLike }>(
+export function ListingGrid<T extends { _id?: string; slug: string; name?: string; title?: string; shortDescription?: string; thumbnailId?: IMedia }>(
   { items, basePath, empty }: { items: T[]; basePath: string; empty: string },
 ) {
   if (!items.length) {
@@ -195,9 +195,102 @@ export function ListingGrid<T extends { _id?: string; slug: string; name?: strin
   );
 }
 
-export function RichContent({ html }: { html?: string }) {
+interface RichContentProps extends TypographyProps {
+  html?: string;
+}
+
+export function RichContent({ html, className, ...props }: RichContentProps) {
   if (!html) {
     return null;
   }
-  return <Box className="rich-text" dangerouslySetInnerHTML={{ __html: html }} />;
+  return <Typography
+    component="div"
+    className={`max-w-none ${className ?? ""}`}
+    sx={{
+      textAlign: 'justify',
+      // Headings
+      "& h1": { fontSize: "2rem", fontWeight: 700, mt: 3, mb: 1.5, lineHeight: 1.3 },
+      "& h2": { fontSize: "1.5rem", fontWeight: 700, mt: 3, mb: 1.5, lineHeight: 1.3 },
+      "& h3": { fontSize: "1.25rem", fontWeight: 600, mt: 2.5, mb: 1, lineHeight: 1.4 },
+      "& h4": { fontSize: "1.1rem", fontWeight: 600, mt: 2, mb: 1, lineHeight: 1.4 },
+      "& h5": { fontSize: "1rem", fontWeight: 600, mt: 2, mb: 1 },
+      "& h6": { fontSize: "0.9rem", fontWeight: 600, mt: 2, mb: 1 },
+
+      // Paragraph
+      "& p": { mb: 1.5, lineHeight: 1.8 },
+
+      // Lists
+      "& ul": { listStyle: "disc", pl: 3, mb: 1.5 },
+      "& ol": { listStyle: "decimal", pl: 3, mb: 1.5 },
+      "& li": { mb: 0.5, lineHeight: 1.8 },
+      "& li > ul, & li > ol": { mt: 0.5, mb: 0 }, // nested list
+
+      // Inline
+      "& strong, & b": { fontWeight: 700 },
+      "& em, & i": { fontStyle: "italic" },
+      "& u": { textDecoration: "underline" },
+      "& s, & del": { textDecoration: "line-through" },
+      "& mark": { backgroundColor: "#fff176", px: 0.5 },
+      "& code": {
+        fontFamily: "monospace",
+        fontSize: "0.875em",
+        backgroundColor: "rgba(0,0,0,0.06)",
+        px: 0.75,
+        py: 0.25,
+        borderRadius: 1,
+      },
+
+      // Block
+      "& pre": {
+        backgroundColor: "#1e1e1e",
+        color: "#fff",
+        p: 2,
+        borderRadius: 1,
+        overflowX: "auto",
+        mb: 1.5,
+        "& code": { backgroundColor: "transparent", p: 0 },
+      },
+      "& blockquote": {
+        borderLeft: "4px solid",
+        borderColor: "primary.main",
+        pl: 2,
+        ml: 0,
+        my: 2,
+        fontStyle: "italic",
+        color: "text.secondary",
+      },
+      "& hr": { my: 2, borderColor: "divider" },
+
+      // Links
+      "& a": {
+        color: "primary.main",
+        textDecoration: "underline",
+        "&:hover": { textDecoration: "none" },
+      },
+
+      // Media
+      "& img": { maxWidth: "100%", height: "auto", borderRadius: 1, my: 1 },
+      "& video": { maxWidth: "100%", height: "auto", my: 1 },
+      "& iframe": { maxWidth: "100%", my: 1 },
+
+      // Table
+      "& table": { width: "100%", borderCollapse: "collapse", mb: 2 },
+      "& th": {
+        border: "1px solid",
+        borderColor: "divider",
+        p: 1,
+        fontWeight: 700,
+        backgroundColor: "action.hover",
+        textAlign: "left",
+      },
+      "& td": { border: "1px solid", borderColor: "divider", p: 1 },
+
+      // Misc
+      "& sub": { verticalAlign: "sub", fontSize: "0.75em" },
+      "& sup": { verticalAlign: "super", fontSize: "0.75em" },
+      "& abbr": { cursor: "help", textDecoration: "underline dotted" },
+    }}
+    dangerouslySetInnerHTML={{ __html: html }}
+    {...props}
+  />;
 }

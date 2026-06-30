@@ -1,11 +1,11 @@
 import Image, { type ImageProps } from "next/image";
 import Box from "@mui/material/Box";
-import type { MediaLike } from "@/types/media";
+import type { IMedia } from "@/types/media";
 import { buildCloudinaryUrl } from "@/lib/cloudinary-url";
 
 type AppImageProps = Omit<ImageProps, "src" | "alt" | "width" | "height"> & {
   alt: string;
-  media?: MediaLike | null;
+  media?: IMedia | null;
   src?: any;
   cloudinaryPublicId?: string;
   width?: number;

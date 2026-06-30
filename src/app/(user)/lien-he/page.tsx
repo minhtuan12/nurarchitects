@@ -9,6 +9,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { PageIntro } from "@/components/PageSections";
 import { getContact } from "@/lib/content";
 import { buildMetadata, organizationJsonLd } from "@/lib/seo";
+import Developing from "@/components/admin/Developing";
+import { Box } from "@mui/material";
 
 export const metadata = buildMetadata({
   title: "Liên hệ",
@@ -22,7 +24,10 @@ export default async function ContactPage() {
 
   return (
     <>
-      <JsonLd data={organizationJsonLd(contact ?? undefined)} />
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
+      {/* <JsonLd data={organizationJsonLd(contact ?? undefined)} />
       <PageIntro label="Liên hệ" title="Trao đổi về công trình của bạn." />
       <Container maxWidth="xl" sx={{ pb: { xs: 8, md: 12 } }}>
         <Grid container spacing={4}>
@@ -112,7 +117,7 @@ export default async function ContactPage() {
             </Paper>
           </Grid>
         </Grid>
-      </Container>
+      </Container> */}
     </>
   );
 }

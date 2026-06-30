@@ -43,3 +43,14 @@ export async function fetchApi<T>(path: string): Promise<ApiListResponse<T> | nu
 		return null;
 	}
 }
+
+export function capitalize(str: string) {
+	return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+export function capitalizeFirstEachWord(str: string) {
+	return str
+		.split(" ")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.join(" ");
+}

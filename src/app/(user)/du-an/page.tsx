@@ -1,6 +1,8 @@
+import Developing from "@/components/admin/Developing";
 import { ListingGrid, PageIntro } from "@/components/PageSections";
 import { getPublishedProjects } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
+import { Box } from "@mui/material";
 
 export const metadata = buildMetadata({
   title: "Dự án",
@@ -12,8 +14,11 @@ export default async function ProjectsPage() {
   const projects = await getPublishedProjects();
   return (
     <>
-      <PageIntro label="Dự án" title="Không gian được thiết kế từ nhu cầu thật." />
-      <ListingGrid items={projects} basePath="/du-an" empty="Chưa có dự án được xuất bản." />
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
+      {/* <PageIntro label="Dự án" title="Không gian được thiết kế từ nhu cầu thật." />
+      <ListingGrid items={projects} basePath="/du-an" empty="Chưa có dự án được xuất bản." /> */}
     </>
   );
 }

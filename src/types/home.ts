@@ -1,11 +1,7 @@
 import { Types } from "mongoose";
 import { IMedia } from "./media";
 import { IProject } from "./project";
-
-export interface ActivityBlock {
-	name: string;
-	description: string;
-}
+import { IActivityPopulated } from "./activity";
 
 export interface IHomepageConfig {
 	_id: Types.ObjectId;
@@ -15,7 +11,7 @@ export interface IHomepageConfig {
 	introductionTitle: string;
 	featuredProjectIds: Types.ObjectId[];
 	featuredInteriorProductIds: Types.ObjectId[];
-	activities: ActivityBlock[];
+	activities: IActivityPopulated[] | string[];
 	contactCtaContent: string;
 	mediaIds: Types.ObjectId[];
 	createdAt: Date;

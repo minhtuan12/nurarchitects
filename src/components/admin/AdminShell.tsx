@@ -19,7 +19,6 @@ import { ADMIN_ROUTES } from "@/lib/constants";
 import AdminMenu from "./UserMenu";
 import { AntdMessageProvider } from "@/contexts/AdminMessageContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "sonner";
 import "@/app/globals.css";
 import { useAtom } from "jotai";
 import { pageTitleAtom } from "@/atoms/admin";
@@ -192,7 +191,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <AntdMessageProvider>
-      <Toaster position="top-center" richColors />
       <QueryClientProvider client={queryClient}>
         <StyleProvider layer>
           <Layout style={{ height: "100vh" }} hasSider>

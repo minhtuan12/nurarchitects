@@ -5,6 +5,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { PageIntro, RichContent } from "@/components/PageSections";
 import { getNewsBySlug } from "@/lib/content";
 import { articleJsonLd, buildMetadata } from "@/lib/seo";
+import Developing from "@/components/admin/Developing";
+import { Box } from "@mui/material";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -24,12 +26,15 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <>
-      <JsonLd data={articleJsonLd(item)} />
+      {/* <JsonLd data={articleJsonLd(item)} />
       <PageIntro label="Tin tức" title={item.title} body={item.shortDescription} />
       <Container maxWidth="md" sx={{ pb: 10 }}>
         <AppImage alt={item.title} media={item.thumbnailId} fill aspectRatio="16 / 9" priority />
         <RichContent html={item.description} />
-      </Container>
+      </Container> */}
+      <Box sx={{ py: 20 }}>
+        <Developing />
+      </Box>
     </>
   );
 }

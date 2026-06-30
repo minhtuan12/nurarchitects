@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ADMIN_AUTH_COOKIE, bearerToken, verifyAdminToken } from "@/lib/auth-token";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const token = bearerToken(
     request.headers.get("authorization") ||
-      request.headers.get("x-admin-token") ||
-      request.cookies.get(ADMIN_AUTH_COOKIE)?.value ||
-      "",
+    request.headers.get("x-admin-token") ||
+    request.cookies.get(ADMIN_AUTH_COOKIE)?.value ||
+    "",
   );
   const payload = token ? await verifyAdminToken(token) : null;
 

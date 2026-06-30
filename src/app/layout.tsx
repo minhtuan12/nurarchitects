@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { buildMetadata } from "@/lib/seo";
 import "./globals.css";
+import QueryProvider from "@/providers/QueryProvider";
+import { Toaster } from "sonner";
 
 const acherus = localFont({
   src: [
@@ -24,7 +26,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="vi" className={`${acherus.variable} ${arial.variable}`}>
       <body>
-        {children}
+        <QueryProvider>
+          <Toaster position="top-center" richColors />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );
