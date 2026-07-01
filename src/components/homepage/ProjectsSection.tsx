@@ -153,7 +153,7 @@ export default function ({ projects }: { projects: IProjectPopulated[] }) {
 									justifyContent: { sm: "center" },
 								}}
 							>
-								{[...projects, ...projects].map((p, index) => (
+								{projects.map((p, index) => (
 									<GridFadeIn
 										key={`${String(p._id)}-${index}`}
 										fadeInDirection="right"

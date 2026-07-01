@@ -2,7 +2,7 @@ import { IMedia } from "@/types/media";
 import Image from "next/image";
 
 interface MediaRendererProps {
-	media: IMedia;
+	media?: IMedia | null;
 	// Image props
 	fill?: boolean;
 	sizes?: string;
@@ -33,6 +33,8 @@ export default function MediaRenderer({
 	title,
 	decorative = false,
 }: MediaRendererProps) {
+	if (!media) return null;
+
 	const src = media.secureUrl || media.url;
 
 	// Ảnh trang trí → alt rỗng (screen reader bỏ qua)

@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { IMedia } from "./media";
-import { IProject } from "./project";
+import { IProject, IProjectPopulated } from "./project";
 import { IActivityPopulated } from "./activity";
 
 export interface IHomepageConfig {
@@ -23,6 +23,6 @@ export interface IHomepageConfigPopulated extends Omit<
 	"bannerId" | "featuredProjectIds" | "mediaIds"
 > {
 	bannerId?: IMedia;
-	featuredProjectIds: IProject[];
+	featuredProjectIds: IProjectPopulated[];
 	mediaIds: IMedia[];
 }

@@ -36,17 +36,13 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const [homepageRes, projectsRes, newsRes, contactRes] = await Promise.all([
+  const [homepageRes, newsRes] = await Promise.all([
     fetchApi<IHomepageConfigPopulated>("/api/homepage"),
-    fetchApi<IProjectPopulated>("/api/projects"),
     fetchApi<INewsPopulated>("/api/news"),
-    fetchApi<IContactConfigPopulated>("/api/contact"),
   ]);
 
   const homepage = homepageRes?.item ?? null;
-  const projects = projectsRes?.items ?? [];
   const news = newsRes?.items ?? [];
-  const contact = contactRes?.item ?? null;
 
   return (
     <SiteShell>
@@ -182,10 +178,14 @@ export default async function HomePage() {
             </Grid>
           </Container>
         </Box>
-        <ActivitiesSection
-          activities={(homepage?.activities || []) as IActivityPopulated[]}
-        />
-        <ProjectsSection projects={(projects || [])?.slice(0, 3)} />
+        {homepage?.activities && homepage?.activities?.length > 0 && (
+          <ActivitiesSection
+            activities={(homepage?.activities || []) as IActivityPopulated[]}
+          />
+        )}
+        {homepage?.featuredProjectIds && homepage?.featuredProjectIds?.length > 0 && (
+          <ProjectsSection projects={homepage?.featuredProjectIds?.slice(0, 3)} />
+        )}
         <ContactCTASection />
         <NewsSection news={news} />
       </Box>
