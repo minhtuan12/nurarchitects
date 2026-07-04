@@ -9,6 +9,7 @@ import type { ContentItem } from "../types";
 import {
   createEmptyIntroductionSnapshot,
   loadIntroductionSnapshot,
+  mergeIntroductionSnapshot,
   saveIntroductionPayload,
   type IntroductionSnapshot,
 } from "../utils";
@@ -63,18 +64,7 @@ export default function IntroductionHistoryPage() {
       });
 
       if (response?.item) {
-        setBaseIntroduction({
-          content: response.item.content ?? baseIntroduction.content,
-          history: response.item.history ?? history,
-          vision: response.item.vision ?? vision,
-          mission: response.item.mission ?? mission,
-          coreValues: response.item.coreValues ?? coreValues,
-          achievements: response.item.achievements ?? achievements,
-          imageIds: (response.item.imageIds ?? baseIntroduction.imageIds)
-            .map((value: any) => String(value?._id ?? value))
-            .filter(Boolean),
-          members: response.item.members ?? baseIntroduction.members,
-        });
+        setBaseIntroduction(mergeIntroductionSnapshot(baseIntroduction, response.item));
       }
 
       messageApi.success("Cập nhật thành công");

@@ -1,14 +1,12 @@
-"use client";
-
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   cssVariables: true,
   palette: {
     mode: "light",
-    primary: {
-      main: "#1d1c18",
-    },
+    // primary: {
+    //   main: "#1d1c18",
+    // },
     secondary: {
       main: "#8a6f43",
     },

@@ -127,7 +127,7 @@ export default function ContactCTASection() {
 						sx={{
 							display: "flex",
 							flexDirection: { xs: "column", md: "row" },
-							bgcolor: "#1a2a5e",
+							bgcolor: "primary.main",
 							position: "relative",
 							overflow: "hidden",
 							height: 350,

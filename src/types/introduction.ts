@@ -12,7 +12,7 @@ export interface IntroductionMemberExperience {
 }
 
 export interface IntroductionMember {
-	imageId?: string;
+	imageId?: string | IMedia;
 	name: string;
 	description: string;
 	experiences: IntroductionMemberExperience[];
@@ -22,6 +22,7 @@ export interface IIntroductionConfig {
 	_id: Types.ObjectId;
 	_type: "introduction";
 	content: string;
+	bannerId?: Types.ObjectId;
 	history: IntroductionContent[];
 	vision: IntroductionContent[];
 	mission: IntroductionContent[];
@@ -35,7 +36,8 @@ export interface IIntroductionConfig {
 
 export interface IIntroductionConfigPopulated extends Omit<
 	IIntroductionConfig,
-	"imageIds"
+	"bannerId" | "imageIds"
 > {
+	bannerId?: IMedia;
 	imageIds: IMedia[];
 }

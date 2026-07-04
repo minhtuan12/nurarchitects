@@ -1,33 +1,66 @@
 import Box from "@mui/material/Box";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import theme from "@/theme";
+import { cookies } from "next/headers";
 import { SiteHeader } from "./SiteHeader";
 import { fetchApi } from "@/helpers";
 import { IContactConfig } from "@/types/contact";
 import { FlyingContact } from "./FlyingContact";
 import GoToTopBtn from "./GoToTopBtn";
 import SiteFooter from "./SiteFooter";
-import { INewsCategory } from "@/types/shared";
+import { defaultSiteSettings, INewsCategory, SiteSettings } from "@/types/shared";
+import { GlobalStyles } from "@mui/material";
+import ThemeProvider from "./ThemeProvider";
 
-const nav = [
-  ["Về chúng tôi", "/gioi-thieu"],
-  ["Lĩnh vực", "/linh-vuc"],
-  ["Dự án", "/du-an"],
-  ["Tin tức", "/tin-tuc"],
-  ["Hợp tác", "/hop-tac"],
-  ["Tuyển dụng", "/tuyen-dung"],
-  ["Liên hệ", "/lien-he"],
-] as const;
+const PREVIEW_COOKIE_NAME = "preview-theme";
 
-export async function SiteShell({ children }: { children: React.ReactNode }) {
-  const [contactRes, newsCategoriesRes] = await Promise.all([
+export async function SiteShell({
+  children,
+  searchParams,
+}: {
+  children: React.ReactNode;
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
+  const [contactRes, newsCategoriesRes, settingsRes] = await Promise.all([
     fetchApi<IContactConfig>("/api/contact"),
     fetchApi<INewsCategory>("/api/news/categories"),
+    fetchApi<SiteSettings>("/api/settings"),
   ]);
-  const contact = contactRes?.item ?? { phone: '0987654321' };
+  const contact = contactRes?.item ?? { phone: "0987654321" };
   const newsCategories = newsCategoriesRes?.items ?? [];
+
+  const dbSettings = settingsRes?.item ?? defaultSiteSettings;
+
+  // ── Đọc cookie preview ──────────────────────────────────────────────────
+  // Lưu ý: Layout của Next.js KHÔNG bao giờ nhận được `searchParams`,
+  // nên preview chỉ có thể "sống sót" qua các route khác nhau bằng cookie
+  // (do middleware ghi vào khi phát hiện ?preview=1), không phải qua query string.
+  const cookieStore = await cookies();
+  const rawPreview = cookieStore.get(PREVIEW_COOKIE_NAME)?.value;
+
+  let previewFromCookie: Partial<SiteSettings> = {};
+  if (rawPreview) {
+    try {
+      previewFromCookie = JSON.parse(rawPreview);
+    } catch {
+      previewFromCookie = {};
+    }
+  }
+
+  // ── Merge: db < cookie preview < searchParams (nếu Page truyền vào) ─────
+  const searchParamsOverride =
+    searchParams &&
+    Object.fromEntries(
+      Object.entries(searchParams).filter(
+        ([, v]) => typeof v === "string"
+      ) as [string, string][]
+    );
+
+  const settings: SiteSettings = {
+    ...dbSettings,
+    ...previewFromCookie,
+    ...searchParamsOverride,
+  };
 
   const nav = [
     { label: "Trang chủ", href: "/" },
@@ -48,8 +81,19 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AppRouterCacheProvider>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider settings={settings}>
         <CssBaseline />
+
+        <GlobalStyles
+          styles={{
+            ":root": {
+              "--color-header-bg": settings.headerBackgroundColor || "transparent",
+              "--color-header-text": settings.textColor,
+              "--color-footer-bg": settings.footerBackgroundColor,
+              "--color-footer-text": settings.footerTextColor,
+            },
+          }}
+        />
 
         {/* SiteHeader handles: HotlineBar + AppBar + scroll/route logic */}
         <SiteHeader phone={contact?.phone} nav={nav} />

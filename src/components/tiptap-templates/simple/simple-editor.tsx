@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
+import { EditorContent, EditorContext, Extension, useEditor } from "@tiptap/react"
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
@@ -68,6 +68,76 @@ import { TableHeader } from "@tiptap/extension-table-header";
 import { TableCell } from "@tiptap/extension-table-cell";
 import Link from "@tiptap/extension-link";
 import { cn } from "@/lib/utils";
+import { TextStyle, Color, FontSize } from "@tiptap/extension-text-style"
+
+const FONT_SIZES = ["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "40px"]
+
+const FontSizeSelect = () => {
+    const { editor } = React.useContext(EditorContext)
+    const currentSize = editor?.getAttributes("textStyle").fontSize || ""
+
+    return (
+        <select
+            className="tiptap-font-size-select"
+            value={currentSize}
+            onChange={(e) => {
+                const val = e.target.value
+                if (!val) {
+                    editor?.chain().focus().unsetFontSize().run()
+                } else {
+                    editor?.chain().focus().setFontSize(val).run()
+                }
+            }}
+        >
+            <option value="">Default</option>
+            {FONT_SIZES.map((size) => (
+                <option key={size} value={size}>
+                    {size}
+                </option>
+            ))}
+        </select>
+    )
+}
+
+const TextColorButton = () => {
+    const { editor } = React.useContext(EditorContext)
+    const inputRef = React.useRef<HTMLInputElement>(null)
+
+    const currentColor = editor?.getAttributes("textStyle").color || "#000000"
+
+    return (
+        <Button
+            data-style="ghost"
+            onClick={() => inputRef.current?.click()}
+            tooltip="Text color"
+        >
+            <div
+                style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: 3,
+                    background: currentColor,
+                    border: "1px solid rgba(0,0,0,0.15)",
+                }}
+            />
+            <input
+                ref={inputRef}
+                type="color"
+                value={currentColor}
+                onChange={(e) =>
+                    editor?.chain().focus().setColor(e.target.value).run()
+                }
+                style={{
+                    position: "absolute",
+                    width: 0,
+                    height: 0,
+                    opacity: 0,
+                    pointerEvents: "none",
+                }}
+            />
+        </Button>
+    )
+}
 
 const MainToolbarContent = ({
     onHighlighterClick,
@@ -107,6 +177,7 @@ const MainToolbarContent = ({
                 <MarkButton type="strike" />
                 <MarkButton type="code" />
                 <MarkButton type="underline" />
+                <TextColorButton />
                 {!isMobile ? (
                     <ColorHighlightPopover />
                 ) : (
@@ -131,6 +202,8 @@ const MainToolbarContent = ({
             </ToolbarGroup>
 
             <ToolbarSeparator />
+
+            <FontSizeSelect />
 
             <Spacer />
 
@@ -237,6 +310,9 @@ export function SimpleEditor({ value, onChange, className, setUploading }: any) 
             TableRow,
             TableHeader,
             TableCell,
+            TextStyle,
+            Color,
+            FontSize,
         ],
         content: value,
         onUpdate: ({ editor }) => {

@@ -2,12 +2,13 @@
 
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import Tooltip from "@mui/material/Tooltip";
-import { MessageCircle, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
+import { GridFadeIn } from "../base/Grid";
 
 export function FlyingContact({ phone }: { phone: string }) {
 	return (
-		<Box
+		<GridFadeIn
+			fadeInDirection="left"
 			sx={{
 				position: "fixed",
 				bottom: 28,
@@ -164,6 +165,6 @@ export function FlyingContact({ phone }: { phone: string }) {
 					{phone}
 				</Box>
 			</Box>
-		</Box>
+		</GridFadeIn>
 	);
 }

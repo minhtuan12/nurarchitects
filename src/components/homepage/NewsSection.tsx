@@ -33,7 +33,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 		<Box
 			component="section"
 			sx={{
-				bgcolor: "#1a2a5e",
+				bgcolor: "primary.main",
 				py: { xs: 6, md: 8 },
 				px: { xs: 0, md: 4 },
 			}}

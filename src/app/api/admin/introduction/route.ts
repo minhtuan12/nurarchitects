@@ -24,7 +24,14 @@ export const PATCH = async (request: NextRequest) => {
 	try {
 		await requireAdmin();
 		await connectDb();
-		const payload = introductionConfigSchema.parse(await request.json());
+		let payload = introductionConfigSchema.parse(await request.json());
+		const members = payload.members?.map((member) => ({
+			...member,
+			imageId: typeof member.imageId === 'string' ?
+				member.imageId :
+				(member.imageId?._id ? String(member.imageId._id) : undefined),
+		}));
+		payload.members = members;
 		const item = await IntroductionConfig.findOneAndUpdate(
 			{ _type: "introduction" },
 			{ ...payload, _type: "introduction" },

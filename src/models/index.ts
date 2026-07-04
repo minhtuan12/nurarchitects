@@ -91,6 +91,7 @@ const IntroductionConfigSchema = new Schema(
   {
     _type: { type: String, required: true, default: "introduction", immutable: true, unique: true },
     content: { type: String, default: "" },
+    bannerId: { type: objectId, ref: "Media" },
     history: { type: [introductionContentSchema], default: [] },
     vision: { type: [introductionContentSchema], default: [] },
     mission: { type: [introductionContentSchema], default: [] },
@@ -292,6 +293,22 @@ const AdminUserSchema = new Schema(
   { timestamps: true },
 );
 
+const SettingsConfigSchema = new Schema(
+  {
+    _type: { type: String, required: true, default: "settings", immutable: true, unique: true },
+
+    primaryColor: { type: String, default: "#1a2340" },     // màu chủ đạo (nút, link, accent)
+    // secondaryColor: { type: String, default: "#c9a86a" },   // màu phụ / nhấn
+    backgroundColor: { type: String },
+    backgroundImageId: { type: Schema.Types.ObjectId, ref: "Media", default: null },
+    textColor: { type: String, default: "#1c1c1c" },        // màu chữ mặc định
+    headerBackgroundColor: { type: String },
+    footerBackgroundColor: { type: String },
+    footerTextColor: { type: String, default: "#ffffff" },
+  },
+  { timestamps: true },
+);
+
 export const Media = model("Media", MediaSchema);
 export const HomepageConfig = model("HomepageConfig", HomepageConfigSchema);
 export const IntroductionConfig = model("IntroductionConfig", IntroductionConfigSchema);
@@ -307,6 +324,7 @@ export const Job = model("Job", JobSchema);
 export const Application = model("Application", ApplicationSchema);
 export const SeoSetting = model("SeoSetting", SeoSettingSchema);
 export const AdminUser = model("AdminUser", AdminUserSchema);
+export const SettingsConfig = model("SettingsConfig", SettingsConfigSchema);
 
 export const registry = {
   media: Media,
@@ -324,4 +342,5 @@ export const registry = {
   applications: Application,
   seoSettings: SeoSetting,
   adminUsers: AdminUser,
+  settings: SettingsConfig,
 };

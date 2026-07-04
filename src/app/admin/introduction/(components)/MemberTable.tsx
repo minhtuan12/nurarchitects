@@ -91,10 +91,10 @@ function resolveImageAlt(imageId: MemberItem["imageId"]): string | undefined {
 }
 
 function stripHtml(value: string) {
-	return value
+	return value ? value
 		.replace(/<[^>]*>/g, " ")
 		.replace(/\s+/g, " ")
-		.trim();
+		.trim() : '';
 }
 
 // ─── Drag-handle context ──────────────────────────────────────────────────────

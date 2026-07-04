@@ -203,18 +203,19 @@ export function RichContent({ html, className, ...props }: RichContentProps) {
   if (!html) {
     return null;
   }
+  const { sx, ...restProps } = props;
   return <Typography
     component="div"
     className={`max-w-none ${className ?? ""}`}
     sx={{
       textAlign: 'justify',
       // Headings
-      "& h1": { fontSize: "2rem", fontWeight: 700, mt: 3, mb: 1.5, lineHeight: 1.3 },
-      "& h2": { fontSize: "1.5rem", fontWeight: 700, mt: 3, mb: 1.5, lineHeight: 1.3 },
-      "& h3": { fontSize: "1.25rem", fontWeight: 600, mt: 2.5, mb: 1, lineHeight: 1.4 },
-      "& h4": { fontSize: "1.1rem", fontWeight: 600, mt: 2, mb: 1, lineHeight: 1.4 },
-      "& h5": { fontSize: "1rem", fontWeight: 600, mt: 2, mb: 1 },
-      "& h6": { fontSize: "0.9rem", fontWeight: 600, mt: 2, mb: 1 },
+      "& h1": { fontSize: "2rem", fontWeight: 700, mb: 1.5, lineHeight: 1.3 },
+      "& h2": { fontSize: "1.5rem", fontWeight: 700, mb: 1.5, lineHeight: 1.3 },
+      "& h3": { fontSize: "1.25rem", fontWeight: 600, mb: 1, lineHeight: 1.4 },
+      "& h4": { fontSize: "1.1rem", fontWeight: 600, mb: 1, lineHeight: 1.4 },
+      "& h5": { fontSize: "1rem", fontWeight: 600, mb: 1 },
+      "& h6": { fontSize: "0.9rem", fontWeight: 600, mb: 1 },
 
       // Paragraph
       "& p": { mb: 1.5, lineHeight: 1.8 },
@@ -263,7 +264,7 @@ export function RichContent({ html, className, ...props }: RichContentProps) {
 
       // Links
       "& a": {
-        color: "primary.main",
+        color: "black",
         textDecoration: "underline",
         "&:hover": { textDecoration: "none" },
       },
@@ -289,8 +290,9 @@ export function RichContent({ html, className, ...props }: RichContentProps) {
       "& sub": { verticalAlign: "sub", fontSize: "0.75em" },
       "& sup": { verticalAlign: "super", fontSize: "0.75em" },
       "& abbr": { cursor: "help", textDecoration: "underline dotted" },
+      ...(sx || {}),
     }}
     dangerouslySetInnerHTML={{ __html: html }}
-    {...props}
+    {...restProps}
   />;
 }

@@ -23,7 +23,7 @@ export const introductionContentSchema = z.object({
 });
 
 export const introductionMemberSchema = z.object({
-  imageId: objectIdSchema.optional(),
+  imageId: z.any().optional(),
   name: z.string().min(1).max(160),
   description: htmlSchema,
   experiences: z.array(introductionContentSchema).default([]),
@@ -76,6 +76,7 @@ export const homepageConfigSchema = z.object({
 
 export const introductionConfigSchema = z.object({
   content: htmlSchema,
+  bannerId: optionalObjectIdSchema,
   history: z.array(introductionContentSchema).default([]),
   vision: z.array(introductionContentSchema).default([]),
   mission: z.array(introductionContentSchema).default([]),
@@ -219,6 +220,28 @@ export const seoSettingSchema = z.object({
   ogImage: z.string().url().or(z.literal("")).default(""),
   canonicalUrl: z.string().url().or(z.literal("")).default(""),
   focusKeywords: z.array(z.string().min(1).max(80)).default([]),
+});
+
+const hexColorSchema = z
+  .string()
+  .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Màu phải ở định dạng hex, ví dụ #1a2340")
+  .or(z.literal(""));
+
+const mediaIdSchema = z
+  .string()
+  .regex(/^[0-9a-fA-F]{24}$/, "ID ảnh không hợp lệ")
+  .nullable()
+  .optional();
+
+export const settingsConfigSchema = z.object({
+  primaryColor: hexColorSchema.default("#1a2340"),
+  // secondaryColor: hexColorSchema.default("#c9a86a"),
+  backgroundColor: hexColorSchema.default("#ffffff"),
+  backgroundImageId: mediaIdSchema,
+  textColor: hexColorSchema.default("#1c1c1c"),
+  headerBackgroundColor: hexColorSchema.default(""),
+  footerBackgroundColor: hexColorSchema.default("#0e1a33"),
+  footerTextColor: hexColorSchema.default("#ffffff"),
 });
 
 export const partial = <T extends z.ZodRawShape>(schema: z.ZodObject<T>) => schema.partial();

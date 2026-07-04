@@ -10,7 +10,10 @@ import {
   NewsCategory,
   Project,
   SeoSetting,
+  SettingsConfig,
 } from "@/models";
+import { defaultSiteSettings, SiteSettings } from "@/types/shared";
+import { unstable_cache } from "next/cache";
 
 function hasDb() {
   return Boolean(process.env.MONGODB_URI);
@@ -56,7 +59,15 @@ export async function getHomepage() {
 
 export async function getIntroduction() {
   if (!(await tryConnectDb())) return null;
-  return serialize(await IntroductionConfig.findOne({ _type: "introduction" }).populate("imageIds").lean());
+  return serialize(
+    await IntroductionConfig.findOne({ _type: "introduction" })
+      .populate("bannerId")
+      .populate("imageIds")
+      .populate([
+        { path: "members.imageId", model: "Media" },
+      ])
+      .lean(),
+  );
 }
 
 export async function getContact() {
@@ -110,3 +121,31 @@ export async function getSeoBySlug(slug: string, entityType: SeoEntityType = "pa
   if (!(await tryConnectDb())) return null;
   return serialize(await SeoSetting.findOne({ slug, entityType }).lean());
 }
+
+async function fetchSettingsFromDB(): Promise<SiteSettings | null> {
+  if (!(await tryConnectDb())) return null;
+  const doc = await SettingsConfig.findOne({ _type: "settings" }).lean<Partial<SiteSettings>>();
+
+  if (!doc) return defaultSiteSettings;
+
+  return {
+    primaryColor: doc.primaryColor || defaultSiteSettings.primaryColor,
+    // secondaryColor: doc.secondaryColor || defaultSiteSettings.secondaryColor,
+    backgroundColor: doc.backgroundColor || defaultSiteSettings.backgroundColor,
+    textColor: doc.textColor || defaultSiteSettings.textColor,
+    headerBackgroundColor: doc.headerBackgroundColor ?? defaultSiteSettings.headerBackgroundColor,
+    footerBackgroundColor: doc.footerBackgroundColor || defaultSiteSettings.footerBackgroundColor,
+    footerTextColor: doc.footerTextColor || defaultSiteSettings.footerTextColor,
+  };
+}
+
+/**
+ * Cache theo tag "settings" — mỗi request trong RootLayout sẽ dùng lại kết quả
+ * này thay vì query DB mỗi lần render. Khi admin lưu Settings mới, route API
+ * sẽ gọi revalidateTag("settings") để cache này tự làm mới ở lần request kế tiếp.
+ */
+export const getSiteSettings = unstable_cache(
+  fetchSettingsFromDB,
+  ["site-settings"],
+  { tags: ["settings"] },
+);

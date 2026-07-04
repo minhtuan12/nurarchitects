@@ -13,7 +13,6 @@ import { AppImage } from "../AppImage";
 import Button from "../Button";
 import { HotlineBar } from "./HotlineBar";
 import Logo from "@/assets/images/logo.png";
-import ConcreteBg from "@/assets/images/concrete-bg.jpg";
 import { Box, useMediaQuery } from "@mui/material";
 import MobileMenu from "./MobileMenu";
 
@@ -54,7 +53,7 @@ function NavItem({
 					color: "inherit",
 					fontWeight: isActiveRoute ? 600 : 400,
 					"&:hover": {
-						color: isTransparent ? "rgba(255,255,255,0.7)" : "black",
+						opacity: 0.8,
 					},
 				}}
 			>
@@ -94,7 +93,7 @@ function NavItem({
 									fontSize: 14,
 									"&:hover": {
 										bgcolor: "#f5f5f5",
-										color: "primary.main",
+										color: "black",
 									},
 								}}
 							>
@@ -143,12 +142,11 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 					borderBlock: isTransparent
 						? "1px solid rgba(65, 65, 65, 0.08)"
 						: "1px solid rgba(29,28,24,.1)",
-					backgroundImage: isTransparent
-						? "none"
-						: `url(${ConcreteBg.src})`,
-					backgroundSize: "cover",
-					backgroundColor: isTransparent ? "transparent" : undefined,
-					color: isTransparent ? "#fff" : "#626160",
+					backgroundImage: "none",
+					backgroundColor: isTransparent
+						? "transparent"
+						: "var(--color-header-bg)",
+					color: isTransparent ? "#fff" : "var(--color-header-text)",
 					height: 80,
 					transition:
 						"background-image 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, color 0.3s ease",
@@ -198,7 +196,7 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 										}}
 										className="mr-2 hover:text-[black]"
 									/>
-									<Box sx={{ bgcolor: 'primary.main', p: 1.25, cursor: 'pointer' }}>
+									<Box sx={{ bgcolor: 'black', p: 1.25, cursor: 'pointer' }}>
 										<Menu size={22} color="white" onClick={() => setMobileMenuOpen(true)} />
 									</Box>
 								</Grid>

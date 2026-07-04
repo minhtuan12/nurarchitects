@@ -17,7 +17,7 @@ export default function Developing() {
 	const router = useRouter();
 
 	return (
-		<div className="h-full flex items-center justify-center bg-[#f7f5ef] px-4">
+		<div className="h-full flex items-center justify-center px-4">
 			<div className="text-center w-full max-w-md">
 
 				{/* Animated icon */}

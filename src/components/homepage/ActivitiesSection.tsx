@@ -41,8 +41,8 @@ export default function ActivitiesSection({
 		<Box
 			component="section"
 			sx={{
-				backgroundImage: `url(${ConcreteBg.src})`,
-				backgroundSize: "cover",
+				// backgroundImage: `url(${ConcreteBg.src})`,
+				// backgroundSize: "cover",
 				py: { xs: 6, md: 8 },
 				px: { xs: 2, md: 6 },
 			}}

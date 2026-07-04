@@ -188,7 +188,7 @@ export default function MobileMenu({
 															color: "#666666",
 															py: 1,
 															'&:hover': {
-																color: 'primary.main',
+																color: 'black',
 															}
 														}}
 													>

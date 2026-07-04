@@ -18,6 +18,7 @@ export interface IntroductionMemberRecord {
 
 export interface IntroductionSnapshot {
   content: string;
+  bannerId?: string;
   history: ContentItem[];
   vision: ContentItem[];
   mission: ContentItem[];
@@ -29,6 +30,7 @@ export interface IntroductionSnapshot {
 
 export interface IntroductionPayload {
   content: string;
+  bannerId?: string;
   history: ContentItem[];
   vision: ContentItem[];
   mission: ContentItem[];
@@ -64,15 +66,36 @@ export const normalizeMemberRecords = (items: unknown): IntroductionMemberRecord
   }));
 };
 
+export const normalizeMediaIdList = (items: unknown): string[] => {
+  if (!Array.isArray(items)) return [];
+  return items.map(idToString).filter((id): id is string => Boolean(id));
+};
+
 export const normalizeIntroductionSnapshot = (data: any): IntroductionSnapshot => ({
   content: data?.content ?? "",
+  bannerId: idToString(data?.bannerId),
   history: normalizeContentItems(data?.history),
   vision: normalizeContentItems(data?.vision),
   mission: normalizeContentItems(data?.mission),
   coreValues: normalizeContentItems(data?.coreValues),
   achievements: normalizeContentItems(data?.achievements),
-  imageIds: data?.imageIds,
+  imageIds: normalizeMediaIdList(data?.imageIds),
   members: normalizeMemberRecords(data?.members),
+});
+
+export const mergeIntroductionSnapshot = (
+  base: IntroductionSnapshot,
+  data: any,
+): IntroductionSnapshot => ({
+  content: data?.content ?? base.content,
+  bannerId: idToString(data?.bannerId) ?? base.bannerId,
+  history: normalizeContentItems(data?.history ?? base.history),
+  vision: normalizeContentItems(data?.vision ?? base.vision),
+  mission: normalizeContentItems(data?.mission ?? base.mission),
+  coreValues: normalizeContentItems(data?.coreValues ?? base.coreValues),
+  achievements: normalizeContentItems(data?.achievements ?? base.achievements),
+  imageIds: normalizeMediaIdList(data?.imageIds ?? base.imageIds),
+  members: normalizeMemberRecords(data?.members ?? base.members),
 });
 
 export async function loadIntroductionSnapshot(): Promise<IntroductionSnapshot> {
@@ -121,7 +144,7 @@ export async function serializeMemberItems(members: MemberItem[]): Promise<Intro
     members.map(async (member) => {
       const imageId = member.imageFile
         ? await uploadMediaFile(member.imageFile)
-        : (typeof member.imageId === 'string' ? member.imageId?.trim() : (member.imageId as any)._id) || undefined;
+        : idToString(member.imageId)?.trim();
 
       return {
         ...(imageId ? { imageId } : {}),
@@ -142,6 +165,7 @@ export function buildIntroductionPayload(
 ): IntroductionPayload {
   return {
     content: patch.content ?? base.content,
+    bannerId: patch.bannerId ?? base.bannerId,
     history: patch.history ?? base.history,
     vision: patch.vision ?? base.vision,
     mission: patch.mission ?? base.mission,
@@ -172,6 +196,7 @@ export async function saveIntroductionPayload(
 
 export const createEmptyIntroductionSnapshot = (): IntroductionSnapshot => ({
   content: "",
+  bannerId: undefined,
   history: [],
   vision: [],
   mission: [],

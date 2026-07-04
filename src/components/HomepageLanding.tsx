@@ -209,7 +209,7 @@ function ProjectCardView({
               size="small"
               sx={{
                 bgcolor: "rgba(255,255,255,.88)",
-                color: "primary.main",
+                color: "black",
                 fontWeight: 700,
                 backdropFilter: "blur(12px)",
               }}

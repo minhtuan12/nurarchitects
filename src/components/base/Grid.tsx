@@ -33,8 +33,8 @@ const directionMap = {
 export function GridFadeIn({
 	children,
 	fadeInDirection = "up",
-	delay = 0,
-	duration = 0.7,
+	delay = 0.5,
+	duration = 1,
 	distance,
 	once = true,
 	className,

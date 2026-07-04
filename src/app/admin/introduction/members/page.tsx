@@ -8,6 +8,7 @@ import type { MemberItem } from "../types";
 import {
   createEmptyIntroductionSnapshot,
   loadIntroductionSnapshot,
+  mergeIntroductionSnapshot,
   saveIntroductionPayload,
   serializeMemberItems,
   type IntroductionSnapshot,
@@ -62,32 +63,23 @@ export default function IntroductionMembersPage() {
     try {
       const memberRecords = await serializeMemberItems(nextMembers);
       const response = await saveIntroductionPayload(baseIntroduction, {
-        members: memberRecords,
+        members: memberRecords.map(m => ({
+          ...m,
+          experiences: m.experiences.filter(e => e.name)
+        })),
       });
 
       if (response?.item) {
-        const updatedSnapshot = {
-          content: response.item.content ?? baseIntroduction.content,
-          history: response.item.history ?? baseIntroduction.history,
-          vision: response.item.vision ?? baseIntroduction.vision,
-          mission: response.item.mission ?? baseIntroduction.mission,
-          coreValues: response.item.coreValues ?? baseIntroduction.coreValues,
-          achievements: response.item.achievements ?? baseIntroduction.achievements,
-          imageIds: (response.item.imageIds ?? baseIntroduction.imageIds)
-            .map((value: any) => String(value?._id ?? value))
-            .filter(Boolean),
-          members: response.item.members ?? memberRecords,
-        };
-
+        const updatedSnapshot = mergeIntroductionSnapshot(baseIntroduction, response.item);
         setBaseIntroduction(updatedSnapshot);
-        // ← Thêm dòng này: sync members từ server (đã có populated imageId object)
-        const updatedMembers: MemberItem[] = updatedSnapshot.members.map((member: any) => ({
-          imageId: member.imageId,   // server trả về populated object { _id, url, ... }
-          name: member.name,
-          description: member.description,
-          experiences: member.experiences,
-        }));
-        setMembers(updatedMembers);
+        setMembers(
+          updatedSnapshot.members.map((member) => ({
+            imageId: member.imageId,
+            name: member.name,
+            description: member.description,
+            experiences: member.experiences,
+          })),
+        );
       }
 
       messageApi.success("Cập nhật thành công");

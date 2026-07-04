@@ -71,6 +71,8 @@ export default function FeaturedProjectsSection({
 			.finally(() => setSaving(false));
 	};
 
+	console.log(projects)
+
 	return (
 		<div className="flex flex-col h-full">
 			<div className="flex items-center justify-between mb-4">
@@ -108,9 +110,9 @@ export default function FeaturedProjectsSection({
 										disabled={isDisabled}
 										onChange={(e) => toggleSelect(id, e.target.checked)}
 									/>
-									{project.thumbnailId?.secureUrl || project.thumbnailId?.url && (
+									{project.thumbnailId?.secureUrl && (
 										<img
-											src={(project.thumbnailId?.secureUrl || project.thumbnailId?.url) as string}
+											src={(project.thumbnailId.secureUrl) as string}
 											alt={project.name}
 											className="w-10 h-10 rounded object-cover shrink-0"
 										/>

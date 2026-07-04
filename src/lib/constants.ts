@@ -16,6 +16,7 @@ import {
     Newspaper,
     NotebookTabs,
     ScanSearch,
+    Settings,
     UserSearch,
 } from "lucide-react";
 
@@ -143,6 +144,7 @@ export const ADMIN_ROUTES = [
             },
         ],
     },
+    { key: "global-settings", label: "Cài đặt chung", href: "/admin/settings", icon: Settings },
     // { key: "seo", label: "Quản lý SEO", href: "/admin/seo", icon: ScanSearch },
 ];
 

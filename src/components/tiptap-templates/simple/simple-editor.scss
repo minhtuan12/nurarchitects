@@ -74,3 +74,13 @@ body,
         padding: 1rem 1.5rem;
     }
 }
+
+.tiptap-font-size-select {
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: var(--tt-radius-sm, 4px);
+    border: 1px solid var(--tt-border-color, #e0e0e0);
+    background: transparent;
+    font-size: 0.8125rem;
+    cursor: pointer;
+}

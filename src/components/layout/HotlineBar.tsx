@@ -3,7 +3,6 @@
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import ConcreteBg from "@/assets/images/concrete-bg.jpg";
 
 export function HotlineBar({
 	isTransparent,
@@ -17,11 +16,9 @@ export function HotlineBar({
 			sx={{
 				borderBottom: "1px solid rgba(255,255,255,0.08)",
 				py: 1,
-				backgroundImage: isTransparent
-					? "none"
-					: `url(${ConcreteBg.src})`,
-				backgroundSize: 'cover',
-				backgroundColor: isTransparent ? "transparent" : undefined,
+				backgroundColor: isTransparent
+					? "transparent"
+					: "var(--color-header-bg)",
 				zIndex: 9999,
 				position: "relative",
 			}}
@@ -37,7 +34,9 @@ export function HotlineBar({
 						variant="body2"
 						sx={{
 							fontWeight: 600,
-							color: isTransparent ? "white" : "primary.main",
+							color: isTransparent
+								? "white"
+								: "var(--color-header-text)",
 							fontSize: 13,
 							letterSpacing: "0.02em",
 						}}
@@ -48,7 +47,9 @@ export function HotlineBar({
 							href={`tel:${phone}`}
 							variant="body2"
 							sx={{
-								color: isTransparent ? "white" : "primary.main",
+								color: isTransparent
+									? "white"
+									: "var(--color-header-text)",
 								fontWeight: 600,
 								fontSize: 13,
 								textDecoration: "none",

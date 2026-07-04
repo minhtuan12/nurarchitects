@@ -11,7 +11,6 @@ import TiktokIcon from "../icons/Tiktok";
 import YoutubeIcon from "../icons/Youtube";
 import InstagramIcon from "../icons/Instagram";
 import { MapPin, PhoneIcon, SendIcon } from "lucide-react";
-import ConcreteBg from "@/assets/images/concrete-bg.jpg";
 import Logo from "@/assets/images/logo.png";
 import { AppImage } from "../AppImage";
 import { fetchApi } from "@/helpers";
@@ -30,30 +29,28 @@ const NAV_LINKS = [
 
 export const SOCIAL_LINKS = [
 	{
-		icon: <FacebookIcon width={14} color="white" />,
+		icon: <FacebookIcon width={14} color="currentColor" />,
 		href: "#",
 		label: "Facebook",
 	},
 	{
-		icon: <TiktokIcon width={14} color="white" />,
+		icon: <TiktokIcon width={14} color="currentColor" />,
 		href: "#",
 		label: "TikTok",
 	},
 	{
-		icon: <YoutubeIcon width={14} color="white" fill="white" />,
+		icon: <YoutubeIcon width={14} color="currentColor" fill="currentColor" />,
 		href: "#",
 		label: "YouTube",
 	},
 	{
-		icon: <InstagramIcon width={14} color="white" fill="white" />,
+		icon: <InstagramIcon width={14} color="currentColor" fill="currentColor" />,
 		href: "#",
 		label: "Instagram",
 	},
 ];
 
 // Texture nền đá xám — dùng CSS noise filter để gần giống ảnh
-const FOOTER_BG = "#cdc9c0";
-
 export default async function SiteFooter() {
 	const [contactRes] = await Promise.all([
 		fetchApi<IContactConfig>("/api/contact"),
@@ -64,10 +61,9 @@ export default async function SiteFooter() {
 		<Box
 			component="footer"
 			sx={{
-				backgroundColor: FOOTER_BG,
-				backgroundImage: `url(${ConcreteBg.src})`,
-				backgroundSize: "cover",
-				borderTop: "1px solid rgba(0,0,0,0.15)",
+				backgroundColor: "var(--color-footer-bg)",
+				color: "var(--color-footer-text)",
+				borderTop: "1px solid rgba(255,255,255,0.12)",
 				pt: 0,
 			}}
 		>
@@ -90,7 +86,7 @@ export default async function SiteFooter() {
 					<AppImage src={Logo} alt="Logo" style={{ width: 300 }} />
 				</Box>
 
-				<Divider sx={{ borderColor: "rgba(0,0,0,0.15)" }} />
+				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
 
 				{/* ── Nav links ────────────────────────────────────────────────────── */}
 				<Container maxWidth="lg">
@@ -110,12 +106,12 @@ export default async function SiteFooter() {
 									href={link.href}
 									underline="none"
 									sx={{
-										color: "#474747",
+										color: "inherit",
 										fontSize: 14,
 										fontWeight: 400,
 										px: { xs: 1, md: 2 },
 										transition: "color 0.2s",
-										"&:hover": { color: "#555" },
+										"&:hover": { opacity: 0.8 },
 									}}
 								>
 									{link.label}
@@ -125,19 +121,19 @@ export default async function SiteFooter() {
 					</Stack>
 				</Container>
 
-				<Divider sx={{ borderColor: "rgba(0,0,0,0.15)" }} />
+				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
 
 				{/* ── Company name + socials ───────────────────────────────────────── */}
 				<Container maxWidth="md">
 					<Box sx={{ py: 4, textAlign: "center" }}>
 						<Typography
-							sx={{
-								fontSize: { xs: "1.25rem", md: "1.5rem" },
-								fontWeight: 700,
-								color: "#1a1a1a",
-								lineHeight: 1.5,
-								mb: 2.5,
-							}}
+								sx={{
+									fontSize: { xs: "1.25rem", md: "1.5rem" },
+									fontWeight: 700,
+									color: "inherit",
+									lineHeight: 1.5,
+									mb: 2.5,
+								}}
 						>
 							Công ty TNHH Kiến trúc và Nội thất
 							<br />
@@ -156,12 +152,12 @@ export default async function SiteFooter() {
 									sx={{
 										width: 30,
 										height: 30,
-										backgroundColor: "#63666f",
-										color: "#fff",
+										backgroundColor: "rgba(255,255,255,0.14)",
+										color: "inherit",
 										borderRadius: "50%",
 										transition: "background-color 0.2s",
 										"&:hover": {
-											backgroundColor: "#111",
+											backgroundColor: "rgba(255,255,255,0.22)",
 										},
 									}}
 								>
@@ -172,14 +168,14 @@ export default async function SiteFooter() {
 					</Box>
 				</Container>
 
-				<Divider sx={{ borderColor: "rgba(0,0,0,0.15)" }} />
+				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
 
 				{/* ── Contact bar ──────────────────────────────────────────────────── */}
 				<Container maxWidth="lg" disableGutters>
 					<Grid
 						container
 						sx={{
-							borderBottom: "1px solid rgba(0,0,0,0.15)",
+							borderBottom: "1px solid rgba(255,255,255,0.12)",
 						}}
 					>
 						{/* Phone */}
@@ -187,10 +183,10 @@ export default async function SiteFooter() {
 							size={{ xs: 12, md: 3 }}
 							sx={{
 								borderRight: {
-									md: "1px solid rgba(0,0,0,0.15)",
+									md: "1px solid rgba(255,255,255,0.12)",
 								},
 								borderBottom: {
-									xs: "1px solid rgba(0,0,0,0.15)",
+									xs: "1px solid rgba(255,255,255,0.12)",
 									md: "none",
 								},
 							}}
@@ -201,11 +197,11 @@ export default async function SiteFooter() {
 								gap={1.5}
 								sx={{ py: 4, px: 3 }}
 							>
-								<PhoneIcon size={20} color="#3d3d3d" />
+								<PhoneIcon size={20} color="currentColor" />
 								<Typography
 									sx={{
 										fontSize: 14,
-										color: "#3d3d3d",
+										color: "inherit",
 										fontWeight: 400,
 										mt: 3.5,
 									}}
@@ -220,10 +216,10 @@ export default async function SiteFooter() {
 							size={{ xs: 12, md: 6 }}
 							sx={{
 								borderRight: {
-									md: "1px solid rgba(0,0,0,0.15)",
+									md: "1px solid rgba(255,255,255,0.12)",
 								},
 								borderBottom: {
-									xs: "1px solid rgba(0,0,0,0.15)",
+									xs: "1px solid rgba(255,255,255,0.12)",
 									md: "none",
 								},
 							}}
@@ -234,7 +230,7 @@ export default async function SiteFooter() {
 								gap={1.5}
 								sx={{ py: 4, px: 3 }}
 							>
-								<MapPin size={26} color="#3d3d3d" />
+								<MapPin size={26} color="currentColor" />
 								{contact?.locations?.length === 0 ? (
 									"Đang cập nhật"
 								) : (
@@ -244,7 +240,7 @@ export default async function SiteFooter() {
 												key={index}
 												sx={{
 													fontSize: 14,
-													color: "#3d3d3d",
+													color: "inherit",
 													lineHeight: 1.7,
 												}}
 											>
@@ -265,11 +261,11 @@ export default async function SiteFooter() {
 								sx={{ py: 4, px: 3 }}
 							>
 								{/* Send/Paper plane icon — xoay 15° giống ảnh */}
-								<SendIcon size={20} color="#3d3d3d" />
+								<SendIcon size={20} color="currentColor" />
 								<Typography
 									sx={{
 										fontSize: 14,
-										color: "#3d3d3d",
+										color: "inherit",
 										fontWeight: 400,
 										mt: 3.5,
 									}}
@@ -290,7 +286,7 @@ export default async function SiteFooter() {
 						justifyContent="center"
 						sx={{ py: 3.75 }}
 					>
-						<Typography sx={{ fontSize: 14, color: "#3a3a3a" }}>
+						<Typography sx={{ fontSize: 14, color: "inherit" }}>
 							Copyright © 2026{" "}
 							<Box component="strong" sx={{ fontWeight: 700 }}>
 								Nurarchitects Vietnam
