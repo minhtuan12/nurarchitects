@@ -54,3 +54,18 @@ export function capitalizeFirstEachWord(str: string) {
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
 		.join(" ");
 }
+
+export function buildQueryString(
+	params: Record<string, string | undefined>,
+): string | undefined {
+	const searchParams = new URLSearchParams();
+	Object.entries(params).forEach(([key, value]) => {
+		if (value) searchParams.set(key, value);
+	});
+	const qs = searchParams.toString();
+	return qs || undefined;
+}
+
+export function withQueryString(path: string, queryString?: string) {
+	return queryString ? `${path}?${queryString}` : path;
+}

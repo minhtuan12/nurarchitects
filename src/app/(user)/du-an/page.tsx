@@ -42,7 +42,7 @@ export default async function ProjectsPage() {
             pageTitle="Dự án tiêu biểu"
           />
         </Box>
-        <Box sx={{ py: { xs: 4, md: 8 } }}>
+        <Box sx={{ py: { xs: 4, md: 6 }, bgcolor: 'white' }}>
           <ProjectsSection projects={projects} />
           <Box mt={8}>
             <ContactCTASection />

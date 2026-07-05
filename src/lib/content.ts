@@ -12,6 +12,7 @@ import {
   SeoSetting,
   SettingsConfig,
 } from "@/models";
+import { INewsPopulated } from "@/types/news";
 import { defaultSiteSettings, SiteSettings } from "@/types/shared";
 import { unstable_cache } from "next/cache";
 
@@ -90,11 +91,6 @@ export async function getProjectBySlug(slug: string) {
   return serialize(await Project.findOne({ slug, status: "published" }).populate("thumbnailId galleryMediaIds").lean());
 }
 
-export async function getPublishedNews(limit = 24) {
-  if (!(await tryConnectDb())) return [];
-  return serialize(await News.find({ status: "published" }).sort({ createdAt: -1 }).limit(limit).populate("thumbnailId").lean());
-}
-
 export async function getNewsCategories() {
   if (!(await tryConnectDb())) return [];
   return serialize(await NewsCategory.find().sort({ createdAt: -1 }).lean());
@@ -103,6 +99,11 @@ export async function getNewsCategories() {
 export async function getNewsBySlug(slug: string) {
   if (!(await tryConnectDb())) return null;
   return serialize(await News.findOne({ slug, status: "published" }).populate("thumbnailId relatedNewsIds").lean());
+}
+
+export async function getNewsCategoryBySlug(slug: string) {
+  if (!(await tryConnectDb())) return null;
+  return serialize(await NewsCategory.findOne({ slug }).lean());
 }
 
 export async function getRecruitingJobs(limit = 24) {
@@ -136,6 +137,82 @@ async function fetchSettingsFromDB(): Promise<SiteSettings | null> {
     headerBackgroundColor: doc.headerBackgroundColor ?? defaultSiteSettings.headerBackgroundColor,
     footerBackgroundColor: doc.footerBackgroundColor || defaultSiteSettings.footerBackgroundColor,
     footerTextColor: doc.footerTextColor || defaultSiteSettings.footerTextColor,
+  };
+}
+
+export interface GetPublishedNewsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+}
+
+export interface PaginatedNews {
+  items: INewsPopulated[];
+  total: number;
+  page: number;
+  limit: number;
+  pageCount: number;
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export async function getPublishedNews(
+  params: GetPublishedNewsParams = {},
+): Promise<PaginatedNews> {
+  const { page, limit, search, category } = params;
+
+  if (!(await tryConnectDb())) {
+    return { items: [], total: 0, page: 1, limit: limit ?? 0, pageCount: 1 };
+  }
+
+  const filter: any = { status: "published" };
+  if (category) {
+    const cat = await getNewsCategoryBySlug(category);
+    if (cat?._id) filter.categoryId = String(cat._id);
+  }
+  if (search) {
+    const regex = new RegExp(escapeRegex(search), "i");
+    filter.$or = [{ title: regex }, { excerpt: regex }];
+  }
+
+  // Không truyền page/limit/search/category -> lấy toàn bộ, sắp xếp mới nhất
+  const hasParams = Boolean(page) || Boolean(limit) || Boolean(search) || Boolean(category);
+  if (!hasParams) {
+    const items = await News.find(filter)
+      .sort({ createdAt: -1 })
+      .populate("thumbnailId")
+      .lean();
+    return {
+      items: serialize(items),
+      total: items.length,
+      page: 1,
+      limit: items.length,
+      pageCount: 1,
+    };
+  }
+
+  const pageSize = limit && limit > 0 ? limit : 12;
+  const currentPage = page && page > 0 ? page : 1;
+
+  const [items, total] = await Promise.all([
+    News.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * pageSize)
+      .limit(pageSize)
+      .populate("thumbnailId")
+      .lean(),
+    News.countDocuments(filter),
+  ]);
+
+  return {
+    items: serialize(items),
+    total,
+    page: currentPage,
+    limit: pageSize,
+    pageCount: Math.max(1, Math.ceil(total / pageSize)),
   };
 }
 
