@@ -1,24 +1,54 @@
-import Developing from "@/components/admin/Developing";
-import { ListingGrid, PageIntro } from "@/components/PageSections";
-import { getPublishedProjects } from "@/lib/content";
+import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
+import MediaRenderer from "@/components/MediaRenderer";
+import { getPublishedProjects, getSeoBySlug } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
+import { IMedia } from "@/types/media";
 import { Box } from "@mui/material";
+import ProjectsSection from "./(components)/ProjectsSection";
+import ContactCTASection from "@/components/ContactCTASection";
 
-export const metadata = buildMetadata({
-  title: "Dự án",
-  slug: "du-an",
-  description: "Danh mục dự án kiến trúc và nội thất đã xuất bản của NUR Architects.",
-});
+export async function generateMetadata() {
+  const seo = await getSeoBySlug("du-an", "page");
+  return buildMetadata({
+    title: seo?.title || "Dự án",
+    slug: seo?.slug || "du-an",
+    description: seo?.description || "Danh mục dự án kiến trúc và nội thất đã xuất bản của NUR Architects.",
+    canonicalUrl: seo?.canonicalUrl,
+    ogImage: seo?.ogImage,
+    focusKeywords: seo?.focusKeywords,
+  });
+}
 
 export default async function ProjectsPage() {
   const projects = await getPublishedProjects();
   return (
     <>
-      <Box sx={{ py: 20 }}>
-        <Developing />
+      <Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
+        <Box
+          position="relative"
+          sx={{ height: { xs: "400px", md: "750px" } }}
+        >
+          <MediaRenderer
+            media={projects?.[0]?.thumbnailId as IMedia}
+            autoPlay
+            controls={false}
+            loop
+            className="h-full"
+            fill
+            title="Các dự án tiêu biểu của Nurarchitects"
+          />
+          <BannerBreadcrumb
+            breadcrumbString="Trang chủ / Dự án"
+            pageTitle="Dự án tiêu biểu"
+          />
+        </Box>
+        <Box sx={{ py: { xs: 4, md: 8 } }}>
+          <ProjectsSection projects={projects} />
+          <Box mt={8}>
+            <ContactCTASection />
+          </Box>
+        </Box>
       </Box>
-      {/* <PageIntro label="Dự án" title="Không gian được thiết kế từ nhu cầu thật." />
-      <ListingGrid items={projects} basePath="/du-an" empty="Chưa có dự án được xuất bản." /> */}
     </>
   );
 }

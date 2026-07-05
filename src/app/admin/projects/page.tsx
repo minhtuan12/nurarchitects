@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
     Button,
+    Flex,
+    Image,
     Input,
     Modal,
     Space,
@@ -19,23 +21,18 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Block from "@/components/Block";
 import { adminFetch } from "@/components/admin/AdminShell";
 import { useMessage } from "@/contexts/AdminMessageContext";
-import { EBuildPlan, type BuildPlan, type IProject } from "@/types/project";
+import { EBuildPlan, IProjectPopulated, type BuildPlan, type IProject } from "@/types/project";
 import NoData from "@/components/NoData";
 import { SquarePen, Trash } from "lucide-react";
 import { SortOrder, VisibleStatus } from "@/types/shared";
 import { SorterResult } from "antd/es/table/interface";
 import { BUILD_PLAN_OPTIONS, DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS, STATUS_OPTIONS } from "@/lib/constants";
+import { IMedia } from "@/types/media";
 
 const { Text } = Typography;
 
-type ProjectRow = Omit<IProject, "createdAt" | "updatedAt"> & {
-    _id: string;
-    createdAt?: string;
-    updatedAt?: string;
-};
-
 interface ProjectsResponse {
-    items: ProjectRow[];
+    items: IProjectPopulated[];
     page: number;
     limit: number;
     total: number;
@@ -181,21 +178,21 @@ export default function ProjectsAdminPage() {
     }, [projects, filters.implementationYear]);
 
     const confirmDelete = useCallback(
-        (record: ProjectRow) => {
+        (record: IProjectPopulated) => {
             Modal.confirm({
                 title: "Xóa dự án?",
                 content: `Bạn có chắc chắn muốn xóa ${record.name}?`,
                 okText: "Xóa",
                 okButtonProps: {
                     danger: true,
-                    loading: deletingId === record._id,
+                    loading: deletingId === String(record._id),
                 },
                 cancelText: "Hủy",
                 onOk: async () => {
-                    setDeletingId(record._id);
+                    setDeletingId(String(record._id));
                     try {
                         const response = await adminFetch(
-                            `/api/admin/projects/${record._id}`,
+                            `/api/admin/projects/${String(record._id)}`,
                             {
                                 method: "DELETE",
                             },
@@ -235,8 +232,8 @@ export default function ProjectsAdminPage() {
 
     const [togglingId, setTogglingId] = useState<string | null>(null);
     const handleToggleFeatured = useCallback(
-        async (record: ProjectRow, checked: boolean) => {
-            setTogglingId(record._id);
+        async (record: IProjectPopulated, checked: boolean) => {
+            setTogglingId(String(record._id));
 
             // optimistic update: cập nhật cache ngay, rollback nếu lỗi
             const previousData = queryClient.getQueryData<ProjectsResponse>(queryKey);
@@ -248,7 +245,7 @@ export default function ProjectsAdminPage() {
                         ? {
                             ...current,
                             items: current.items.map((item) =>
-                                item._id === record._id
+                                item._id === String(record._id)
                                     ? { ...item, isFeatured: checked }
                                     : item,
                             ),
@@ -258,7 +255,7 @@ export default function ProjectsAdminPage() {
 
             try {
                 const response = await adminFetch(
-                    `/api/admin/projects/${record._id}`,
+                    `/api/admin/projects/${String(record._id)}`,
                     {
                         method: "PATCH",
                         headers: { "content-type": "application/json" },
@@ -290,8 +287,8 @@ export default function ProjectsAdminPage() {
 
     const [recordStatusId, setRecordStatusId] = useState<string | null>(null);
     const handleToggleStatus = useCallback(
-        async (record: ProjectRow, checked: boolean) => {
-            setRecordStatusId(record._id);
+        async (record: IProjectPopulated, checked: boolean) => {
+            setRecordStatusId(String(record._id));
 
             // optimistic update: cập nhật cache ngay, rollback nếu lỗi
             const previousData = queryClient.getQueryData<ProjectsResponse>(queryKey);
@@ -303,7 +300,7 @@ export default function ProjectsAdminPage() {
                         ? {
                             ...current,
                             items: current.items.map((item) =>
-                                item._id === record._id
+                                item._id === String(record._id)
                                     ? { ...item, status: checked ? 'published' : 'draft' }
                                     : item,
                             ),
@@ -313,7 +310,7 @@ export default function ProjectsAdminPage() {
 
             try {
                 const response = await adminFetch(
-                    `/api/admin/projects/${record._id}`,
+                    `/api/admin/projects/${String(record._id)}`,
                     {
                         method: "PATCH",
                         headers: { "content-type": "application/json" },
@@ -341,7 +338,7 @@ export default function ProjectsAdminPage() {
         [currentPage, messageApi, pageSize, queryClient],
     );
 
-    const columns = useMemo<ColumnsType<ProjectRow>>(
+    const columns = useMemo<ColumnsType<IProjectPopulated>>(
         () => [
             {
                 title: "Tên công trình/dự án",
@@ -351,12 +348,15 @@ export default function ProjectsAdminPage() {
                 minWidth: 220,
                 fixed: "left",
                 render: (value: string, record) => (
-                    <div className="flex flex-col gap-1">
-                        <Text strong>{value}</Text>
-                        <Text type="secondary" className="text-xs">
-                            {record.slug}
-                        </Text>
-                    </div>
+                    <Flex align="center" gap={10}>
+                        <Image width={30} src={(record?.thumbnailId as IMedia)?.secureUrl} />
+                        <div className="flex flex-col gap-1">
+                            <Text strong>{value}</Text>
+                            <Text type="secondary" className="text-xs">
+                                {record.slug}
+                            </Text>
+                        </div>
+                    </Flex>
                 ),
             },
             {
@@ -415,7 +415,7 @@ export default function ProjectsAdminPage() {
                 render: (value: VisibleStatus, record) => (
                     <Switch
                         checked={value === 'published'}
-                        loading={recordStatusId === record._id}
+                        loading={recordStatusId === String(record._id)}
                         onChange={(checked) =>
                             handleToggleStatus(record, checked)
                         }
@@ -444,12 +444,12 @@ export default function ProjectsAdminPage() {
                 filteredValue: filters.category ? [filters.category] : null,
                 render: (value: BuildPlan) => (
                     <Tag
-                        color={EBuildPlan[value].color}
+                        color={EBuildPlan[value]?.color || 'gray'}
                         variant="outlined"
                         className="!whitespace-normal !break-words !leading-snug text-center"
                         style={{ maxWidth: "100%" }}
                     >
-                        {EBuildPlan[value].label}
+                        {EBuildPlan[value]?.label || 'Khác'}
                     </Tag>
                 ),
             },
@@ -472,7 +472,7 @@ export default function ProjectsAdminPage() {
                 render: (value: boolean, record) => (
                     <Switch
                         checked={value}
-                        loading={togglingId === record._id}
+                        loading={togglingId === String(record._id)}
                         onChange={(checked) =>
                             handleToggleFeatured(record, checked)
                         }
@@ -489,7 +489,7 @@ export default function ProjectsAdminPage() {
                     <Space className="gap-4">
                         <SquarePen
                             onClick={() =>
-                                router.push(`/admin/projects/${record._id}`)
+                                router.push(`/admin/projects/${String(record._id)}`)
                             }
                             className="cursor-pointer"
                             color="#2b7fff"
@@ -521,7 +521,7 @@ export default function ProjectsAdminPage() {
     const handleTableChange = (
         nextPagination: TablePaginationConfig,
         tableFilters: Record<string, (string | number | boolean)[] | null>,
-        sorter: SorterResult<ProjectRow> | SorterResult<ProjectRow>[],
+        sorter: SorterResult<IProjectPopulated> | SorterResult<IProjectPopulated>[],
     ) => {
         setPagination({
             current: nextPagination.current ?? 1,

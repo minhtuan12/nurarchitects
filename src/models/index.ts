@@ -123,7 +123,7 @@ const ProjectSchema = new Schema(
     address: { type: String, default: "" },
     area: { type: Number },
     implementationYear: { type: Number },
-    category: { enum: Object.values(EBuildPlan).map(p => p.value) },
+    category: { type: String, enum: Object.values(EBuildPlan).map(p => p.value) },
     status: { type: String, enum: visibleStatuses, default: "draft", index: true },
     isFeatured: { type: Boolean, default: false, index: true },
   },

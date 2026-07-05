@@ -7,19 +7,21 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import ConcreteBg from "@/assets/images/concrete-bg.jpg";
 import { capitalize } from "@/helpers";
-import { IconButton, Typography } from "@mui/material";
+import { getContrastRatio, IconButton, Typography, useTheme } from "@mui/material";
 import FadeIn from "../FadeIn";
 import { GridFadeIn } from "../base/Grid";
 import { EBuildPlan, IProjectPopulated } from "@/types/project";
 import { TypographyFadeIn } from "../base/Typography";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import ProjectCard from "../ProjectCard";
 
 export default function ({ projects }: { projects: IProjectPopulated[] }) {
 	const hasProjects = projects?.length > 0;
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [canScrollLeft, setCanScrollLeft] = useState(false);
 	const [canScrollRight, setCanScrollRight] = useState(false);
+	const theme = useTheme();
 
 	const updateScrollState = () => {
 		const el = scrollRef.current;
@@ -56,8 +58,9 @@ export default function ({ projects }: { projects: IProjectPopulated[] }) {
 		<Box
 			component="section"
 			sx={{
-				backgroundImage: `url(${ConcreteBg.src})`,
-				backgroundSize: "cover",
+				bgcolor: 'primary.main',
+				// backgroundImage: `url(${ConcreteBg.src})`,
+				// backgroundSize: "cover",
 				py: { xs: 6, md: 8 },
 				px: { xs: 4, md: 4 },
 			}}
@@ -81,7 +84,7 @@ export default function ({ projects }: { projects: IProjectPopulated[] }) {
 					</TypographyFadeIn>
 					<TypographyFadeIn
 						sx={{
-							color: "#1c1c1c",
+							color: theme.palette.getContrastText(theme.palette.primary.main),
 							fontSize: 23,
 							fontWeight: 600,
 							lineHeight: "1.5",
@@ -168,123 +171,7 @@ export default function ({ projects }: { projects: IProjectPopulated[] }) {
 										}}
 									>
 										<Link href={`/du-an/${p.slug}`}>
-											<Box
-												sx={{
-													position: "relative",
-													aspectRatio: "5/6",
-													width: "100%",
-													overflow: "hidden",
-													cursor: "pointer",
-													// Desktop: chỉ hiện khi hover
-													"@media (hover: hover)": {
-														"&:hover .project-overlay": { opacity: 1 },
-														"&:hover .project-img": {
-															transform: "scale(1.03)",
-														},
-														"&:hover .project-info": {
-															opacity: 1,
-															transform: "translateY(0)",
-														},
-														"&:hover .project-plus": {
-															opacity: 1,
-															transform: "translate(-50%, -50%) scale(1)",
-														},
-													},
-												}}
-											>
-												{/* Ảnh */}
-												<Box
-													className="project-img"
-													sx={{
-														position: "absolute",
-														inset: 0,
-														transition: "transform 0.5s ease",
-													}}
-												>
-													<Image
-														src={p?.thumbnailId?.secureUrl || p?.thumbnailId?.url || ""}
-														alt={p?.name || ""}
-														fill
-														style={{ objectFit: "cover" }}
-													/>
-												</Box>
-
-												{/* Overlay đen — mobile: luôn hiện, desktop: hover mới hiện */}
-												<Box
-													className="project-overlay"
-													sx={{
-														position: "absolute",
-														inset: 0,
-														background: "rgb(0 0 0 / 56%)",
-														opacity: { xs: 1, sm: 0 },
-														transition: "opacity 0.35s ease",
-														zIndex: 1,
-													}}
-												/>
-
-												{/* Dấu + ở giữa — chỉ desktop mới có (mobile ẩn hẳn) */}
-												<Box
-													className="project-plus"
-													sx={{
-														display: { xs: "none", sm: "block" },
-														position: "absolute",
-														top: "50%",
-														left: "50%",
-														transform: "translate(-50%, -50%) scale(0.7)",
-														zIndex: 2,
-														opacity: { xs: 1, sm: 0 },
-														transition:
-															"opacity 0.35s ease, transform 0.35s ease",
-														color: "#fff",
-														userSelect: "none",
-														pointerEvents: "none",
-													}}
-												>
-													<Plus size={120} className="stroke-[0.3px] opacity-30" />
-												</Box>
-
-												{/* Text info — mobile: luôn hiện, desktop: hover mới hiện */}
-												<Box
-													className="project-info"
-													sx={{
-														position: "absolute",
-														bottom: { xs: 24, sm: 40 },
-														zIndex: 2,
-														color: "#fff",
-														opacity: { xs: 1, sm: 0 },
-														transform: { xs: "translateY(0)", sm: "translateY(8px)" },
-														transition:
-															"opacity 0.35s ease, transform 0.35s ease",
-														width: "100%",
-													}}
-												>
-													<Typography
-														sx={{
-															fontSize: { xs: 16, md: 22 },
-															fontWeight: 700,
-															lineHeight: 1.3,
-															mb: 1.6,
-															textAlign: "center",
-															width: "100%",
-														}}
-													>
-														{capitalize(p?.name || "")}
-													</Typography>
-													{p?.category && (
-														<Typography
-															sx={{
-																color: "#ffffff8c",
-																fontSize: 14,
-																opacity: 0.85,
-																textAlign: "center",
-																width: "100%",
-															}}
-														>
-															Mô hình: {EBuildPlan[p.category].label}
-														</Typography>
-													)}
-												</Box>
-											</Box>
+											<ProjectCard p={p} />
 										</Link>
 									</GridFadeIn>
 								))}
