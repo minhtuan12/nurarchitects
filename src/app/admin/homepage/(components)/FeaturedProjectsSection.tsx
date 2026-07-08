@@ -71,8 +71,6 @@ export default function FeaturedProjectsSection({
 			.finally(() => setSaving(false));
 	};
 
-	console.log(projects)
-
 	return (
 		<div className="flex flex-col h-full">
 			<div className="flex items-center justify-between mb-4">

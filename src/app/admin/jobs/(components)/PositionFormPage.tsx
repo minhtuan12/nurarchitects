@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
 	Button,
@@ -10,15 +10,26 @@ import {
 	Input,
 	Row,
 	Select,
+	Space,
 	Tabs,
 	Typography,
+	Upload,
 } from "antd";
+import type { UploadProps } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import Block from "@/components/Block";
 import { adminFetch } from "@/components/admin/AdminShell";
+import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
+import {
+	mediaToUploadFile,
+	type AdminMediaItem,
+	type MediaUploadFile,
+} from "@/components/admin/media/media-upload-file";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { useMessage } from "@/contexts/AdminMessageContext";
 import { toSlug } from "@/helpers";
+import { IJobPopulated } from "@/types/job";
 
 const { Title } = Typography;
 
@@ -63,25 +74,8 @@ interface JobFormValues {
 	status: JobStatus;
 }
 
-interface JobResponse {
-	_id: string;
-	title: string;
-	slug: string;
-	departmentId?: string | { _id?: string };
-	description?: string;
-	requirements?: string;
-	benefits?: string;
-	workingTime?: string;
-	workingType: WorkingType;
-	workingAddress?: string;
-	contacts?: string;
-	salary?: string;
-	deadline?: string;
-	status: JobStatus;
-}
-
 interface JobDetailResponse {
-	item?: JobResponse;
+	item?: IJobPopulated;
 	error?: string;
 }
 
@@ -89,6 +83,8 @@ interface DepartmentOption {
 	_id: string;
 	name: string;
 }
+
+type JobUploadFile = MediaUploadFile;
 
 const defaultValues: JobFormValues = {
 	title: "",
@@ -115,7 +111,7 @@ const idToString = (value: unknown) => {
 	return String(value);
 };
 
-function toJobFormValues(job: JobResponse) {
+function toJobFormValues(job: IJobPopulated) {
 	return {
 		...defaultValues,
 		title: job.title ?? "",
@@ -125,7 +121,7 @@ function toJobFormValues(job: JobResponse) {
 		requirements: job.requirements ?? "",
 		benefits: job.benefits ?? "",
 		workingTime: job.workingTime ?? "",
-		workingType: job.workingType ?? "full-time",
+		workingType: (job.workingType ?? "full-time") as any,
 		workingAddress: job.workingAddress ?? "",
 		contacts: job.contacts ?? "",
 		salary: job.salary ?? "",
@@ -146,7 +142,40 @@ export default function PositionFormPage({
 	const [loading, setLoading] = useState(mode === "edit");
 	const [saving, setSaving] = useState(false);
 	const [departments, setDepartments] = useState<DepartmentOption[]>([]);
+	const [thumbnailFiles, setThumbnailFiles] = useState<JobUploadFile[]>([]);
+	const [mediaPickerTarget, setMediaPickerTarget] = useState<
+		"thumbnail" | null
+	>(null);
 	const jobId = params?.id;
+
+	const mediaIdToUploadFile = useCallback(
+		async (mediaId: string): Promise<JobUploadFile> => {
+			try {
+				const response = await adminFetch(
+					`/api/admin/media/${mediaId}`,
+					{ cache: "no-store" },
+				);
+				const data = await response.json();
+				const item = data.item;
+				return item
+					? mediaToUploadFile({ ...item, _id: mediaId })
+					: {
+						uid: mediaId,
+						name: mediaId,
+						status: "done",
+						mediaId,
+					};
+			} catch {
+				return {
+					uid: mediaId,
+					name: mediaId,
+					status: "done",
+					mediaId,
+				};
+			}
+		},
+		[],
+	);
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -183,12 +212,20 @@ export default function PositionFormPage({
 		setLoading(true);
 		adminFetch(`/api/admin/jobs/${jobId}`, { cache: "no-store" })
 			.then((response) => response.json())
-			.then((data: JobDetailResponse) => {
+			.then(async (data: JobDetailResponse) => {
 				if (cancelled) return;
 				if (data.error || !data.item) {
 					throw new Error(data.error ?? "Cannot load job");
 				}
+
+				const thumbnailId = (data.item as any).thumbnailId;
+				const thumbnailFile = thumbnailId
+					? await mediaIdToUploadFile(String(thumbnailId))
+					: null;
+				if (cancelled) return;
+
 				form.setFieldsValue(toJobFormValues(data.item));
+				setThumbnailFiles(thumbnailFile ? [thumbnailFile] : []);
 			})
 			.catch(() =>
 				messageApi.error("Không thể lấy thông tin vị trí tuyển dụng"),
@@ -198,7 +235,7 @@ export default function PositionFormPage({
 		return () => {
 			cancelled = true;
 		};
-	}, [form, jobId, messageApi, mode]);
+	}, [form, jobId, mediaIdToUploadFile, messageApi, mode]);
 
 	const handleValuesChange = useCallback(
 		(changedValues: Partial<JobFormValues>) => {
@@ -209,13 +246,72 @@ export default function PositionFormPage({
 		[form],
 	);
 
+	const uploadButton = (
+		<button type="button" className="border-0 bg-transparent">
+			<PlusOutlined />
+			<div className="mt-2">Tải lên mới</div>
+		</button>
+	);
+
+	const beforeImageUpload: UploadProps["beforeUpload"] = (file) => {
+		if (!file.type?.startsWith("image/")) {
+			messageApi.error("Chỉ hỗ trợ upload ảnh");
+			return Upload.LIST_IGNORE;
+		}
+		return false;
+	};
+
+	const uploadMediaFile = async (file: JobUploadFile) => {
+		if (file.mediaId) {
+			return file.mediaId;
+		}
+		if (!file.originFileObj) {
+			throw new Error("Missing upload file");
+		}
+
+		const formData = new FormData();
+		formData.append("file", file.originFileObj);
+		formData.append("resourceType", "image");
+
+		const response = await adminFetch("/api/admin/media", {
+			method: "POST",
+			body: formData,
+		});
+		const data = await response.json();
+		if (!response.ok || data.error || !data.item?._id) {
+			throw new Error(data.error ?? "Cannot upload image");
+		}
+		return String(data.item._id);
+	};
+
+	const selectedMediaIds = useMemo(() => {
+		return thumbnailFiles
+			.map((file) => file.mediaId)
+			.filter((mediaId): mediaId is string => Boolean(mediaId));
+	}, [thumbnailFiles]);
+
+	const handleSelectExistingMedia = (items: AdminMediaItem[]) => {
+		if (mediaPickerTarget === "thumbnail") {
+			setThumbnailFiles(items[0] ? [mediaToUploadFile(items[0])] : []);
+		}
+		setMediaPickerTarget(null);
+	};
+
 	const handleSubmit = async (values: JobFormValues) => {
+		if (thumbnailFiles.length === 0) {
+			messageApi.error("Vui lòng chọn ảnh đại diện");
+			return;
+		}
+
 		setSaving(true);
 		try {
+			const thumbnailId = await uploadMediaFile(thumbnailFiles[0]);
+
 			const payload = {
 				title: values.title,
 				slug: toSlug(values.title),
 				departmentId: values.departmentId || null,
+				thumbnailId,
 				description: values.description ?? "",
 				requirements: values.requirements ?? "",
 				benefits: values.benefits ?? "",
@@ -264,6 +360,39 @@ export default function PositionFormPage({
 			label: "Thông tin cơ bản",
 			children: (
 				<Block>
+					<Row>
+						<Form.Item label="Ảnh" required>
+							<Space
+								orientation="vertical"
+								className="w-full"
+								size={12}
+							>
+								<Button
+									onClick={() =>
+										setMediaPickerTarget("thumbnail")
+									}
+								>
+									Chọn ảnh đã tải lên
+								</Button>
+								<Upload
+									listType="picture-card"
+									accept="image/*"
+									maxCount={1}
+									fileList={thumbnailFiles}
+									beforeUpload={beforeImageUpload}
+									onChange={({ fileList }) =>
+										setThumbnailFiles(
+											fileList as JobUploadFile[],
+										)
+									}
+								>
+									{thumbnailFiles.length >= 1
+										? null
+										: uploadButton}
+								</Upload>
+							</Space>
+						</Form.Item>
+					</Row>
 					<Row gutter={70}>
 						<Col xs={24} lg={12}>
 							<Form.Item
@@ -430,6 +559,18 @@ export default function PositionFormPage({
 					className="[&_.ant-tabs-content-holder]:pt-4 custom-tabs"
 				/>
 			</Form>
+
+			{mediaPickerTarget ? (
+				<MediaPickerModal
+					open
+					title="Chọn ảnh"
+					multiple={false}
+					resourceType="image"
+					selectedIds={selectedMediaIds}
+					onCancel={() => setMediaPickerTarget(null)}
+					onConfirm={handleSelectExistingMedia}
+				/>
+			) : null}
 		</div>
 	);
 }

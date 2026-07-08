@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [projects, news, jobs] = await Promise.all([
     getPublishedProjects(100),
     getPublishedNews({ limit: 100 }),
-    getRecruitingJobs(100),
+    getRecruitingJobs({ limit: 100 }),
   ]);
 
   return [
@@ -14,5 +14,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map((path) => ({ url: siteUrl(`/${path}`) }))
     .concat(projects.map((item) => ({ url: siteUrl(`/du-an/${item.slug}`), lastModified: item.updatedAt })))
     .concat(news.items.map((item) => ({ url: siteUrl(`/tin-tuc/${item.slug}`), lastModified: item.updatedAt })))
-    .concat(jobs.map((item) => ({ url: siteUrl(`/tuyen-dung/${item.slug}`), lastModified: item.updatedAt })));
+    .concat(jobs.items.map((item) => ({ url: siteUrl(`/tuyen-dung/${item.slug}`), lastModified: item.updatedAt })));
 }

@@ -12,6 +12,7 @@ import {
   SeoSetting,
   SettingsConfig,
 } from "@/models";
+import { IJobPopulated } from "@/types/job";
 import { INewsPopulated } from "@/types/news";
 import { defaultSiteSettings, SiteSettings } from "@/types/shared";
 import { unstable_cache } from "next/cache";
@@ -104,11 +105,6 @@ export async function getNewsBySlug(slug: string) {
 export async function getNewsCategoryBySlug(slug: string) {
   if (!(await tryConnectDb())) return null;
   return serialize(await NewsCategory.findOne({ slug }).lean());
-}
-
-export async function getRecruitingJobs(limit = 24) {
-  if (!(await tryConnectDb())) return [];
-  return serialize(await Job.find({ status: "recruiting" }).sort({ createdAt: -1 }).limit(limit).populate("departmentId").lean());
 }
 
 export async function getJobBySlug(slug: string) {
@@ -205,6 +201,77 @@ export async function getPublishedNews(
       .populate("thumbnailId")
       .lean(),
     News.countDocuments(filter),
+  ]);
+
+  return {
+    items: serialize(items),
+    total,
+    page: currentPage,
+    limit: pageSize,
+    pageCount: Math.max(1, Math.ceil(total / pageSize)),
+  };
+}
+
+export interface GetRecruitingJobsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  department?: string;
+}
+
+export interface PaginatedJobs {
+  items: IJobPopulated[];
+  total: number;
+  page: number;
+  limit: number;
+  pageCount: number;
+}
+
+export async function getRecruitingJobs(
+  params: GetRecruitingJobsParams = {},
+): Promise<PaginatedJobs> {
+  const { page, limit, search, department } = params;
+
+  if (!(await tryConnectDb())) {
+    return { items: [], total: 0, page: 1, limit: limit ?? 0, pageCount: 1 };
+  }
+
+  const filter: any = { status: "recruiting" };
+  if (department) {
+    filter.departmentId = department;
+  }
+  if (search) {
+    const regex = new RegExp(escapeRegex(search), "i");
+    filter.$or = [{ title: regex }, { workingAddress: regex }];
+  }
+
+  // Không truyền page/limit/search/department -> lấy toàn bộ, sắp xếp mới nhất
+  const hasParams = Boolean(page) || Boolean(limit) || Boolean(search) || Boolean(department);
+  if (!hasParams) {
+    const items = await Job.find(filter)
+      .sort({ createdAt: -1 })
+      .populate("departmentId thumbnailId")
+      .lean();
+    return {
+      items: serialize(items),
+      total: items.length,
+      page: 1,
+      limit: items.length,
+      pageCount: 1,
+    };
+  }
+
+  const pageSize = limit && limit > 0 ? limit : 12;
+  const currentPage = page && page > 0 ? page : 1;
+
+  const [items, total] = await Promise.all([
+    Job.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * pageSize)
+      .limit(pageSize)
+      .populate("departmentId thumbnailId")
+      .lean(),
+    Job.countDocuments(filter),
   ]);
 
   return {

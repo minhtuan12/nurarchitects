@@ -69,3 +69,12 @@ export function buildQueryString(
 export function withQueryString(path: string, queryString?: string) {
 	return queryString ? `${path}?${queryString}` : path;
 }
+
+export function buildDownloadUrl(url: string, filename?: string) {
+	const separator = url.includes("?") ? "&" : "?";
+	const flag = filename
+		? `fl_attachment=${filename}`
+		: `fl_attachment=true`;
+
+	return `${url}${separator}${flag}`;
+}

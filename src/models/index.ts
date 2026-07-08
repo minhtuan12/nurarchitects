@@ -266,6 +266,7 @@ const DepartmentSchema = new Schema(
 const JobSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
+    thumbnailId: { type: objectId, ref: "Media" },
     slug: { type: String, required: true, trim: true, unique: true },
     departmentId: { type: objectId, ref: "Department" },
     description: { type: String, default: "" },

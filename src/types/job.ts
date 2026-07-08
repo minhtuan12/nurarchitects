@@ -11,6 +11,7 @@ export interface IDepartment {
 
 export interface IJob {
 	_id: Types.ObjectId;
+	thumbnailId: string;
 	title: string;
 	slug: string;
 	departmentId?: Types.ObjectId;
@@ -26,6 +27,13 @@ export interface IJob {
 	status: JobStatus;
 	createdAt: Date;
 	updatedAt: Date;
+}
+export interface IJobPopulated extends Omit<
+	IJob,
+	"thumbnailId" | "departmentId"
+> {
+	thumbnailId?: IMedia;
+	departmentId?: IDepartment;
 }
 
 export interface IApplication {

@@ -40,7 +40,7 @@ const STATUS_COLORS: Record<(typeof jobStatuses)[number], string> = {
 	expired: "red",
 };
 
-const WORKING_TYPE_LABELS: Record<(typeof workingTypes)[number], string> = {
+export const WORKING_TYPE_LABELS: Record<(typeof workingTypes)[number], string> = {
 	"part-time": "Bán thời gian",
 	"full-time": "Toàn thời gian",
 	remote: "Remote",

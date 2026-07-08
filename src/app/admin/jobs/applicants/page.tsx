@@ -32,6 +32,7 @@ import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS } from "@/lib/constants";
 import type { SortOrder } from "@/types/shared";
 import { ChevronDown } from "lucide-react";
 import Developing from "@/components/admin/Developing";
+import { buildDownloadUrl } from "@/helpers";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -313,6 +314,18 @@ export default function ApplicationListAdminPage() {
 		[buildStatusMenu, updatingId],
 	);
 
+	const handleDownloadResume = useCallback((record: ApplicationRow) => {
+		const resumeUrl = record.resumeId?.secureUrl ?? record.resumeId?.url ?? null;
+		if (!resumeUrl) return;
+
+		const link = document.createElement("a");
+		link.href = buildDownloadUrl(resumeUrl, `CV.pdf`);
+		link.rel = "noopener noreferrer";
+		document.body.appendChild(link);
+		link.click();
+		link.remove();
+	}, []);
+
 	// ── Columns ────────────────────────────────────────────────────────────────
 
 	const columns = useMemo<ColumnsType<ApplicationRow>>(
@@ -368,6 +381,15 @@ export default function ApplicationListAdminPage() {
 					renderStatusDropdown(record),
 			},
 			{
+				title: "Ghi chú của bạn",
+				dataIndex: "adminNote",
+				key: "adminNote",
+				width: 165,
+				minWidth: 165,
+				align: 'center',
+				render: (text: string, record) => <div>{text || '-'}</div>,
+			},
+			{
 				title: "Thao tác",
 				key: "actions",
 				width: 110,
@@ -391,9 +413,7 @@ export default function ApplicationListAdminPage() {
 							{/* Tải CV */}
 							<Tooltip title={resumeUrl ? "Xem CV" : "Chưa có CV"}>
 								<DownloadOutlined
-									onClick={() => {
-										if (resumeUrl) window.open(resumeUrl, "_blank", "noopener,noreferrer");
-									}}
+									onClick={() => resumeUrl && handleDownloadResume(record)}
 									className={`text-base ${resumeUrl ? "cursor-pointer" : "cursor-not-allowed opacity-30"}`}
 									style={{ color: resumeUrl ? "#52c41a" : undefined }}
 								/>
@@ -436,181 +456,178 @@ export default function ApplicationListAdminPage() {
 	// ── Render ─────────────────────────────────────────────────────────────────
 
 	return (
-		// <div className="flex flex-col gap-5">
-		// 	{/* Toolbar */}
-		// 	<div className="flex flex-wrap items-center gap-3 px-1">
-		// 		<Input
-		// 			placeholder="Tìm kiếm theo họ tên, email, số điện thoại"
-		// 			prefix={<SearchOutlined className="mr-1 text-gray-400" />}
-		// 			allowClear
-		// 			value={searchInput}
-		// 			onChange={(e) => setSearchInput(e.target.value)}
-		// 			className="h-10 max-w-xs [&_.ant-input]:h-full"
-		// 		/>
+		<div className="flex flex-col gap-5">
+			{/* Toolbar */}
+			<div className="flex flex-wrap items-center gap-3 px-1">
+				<Input
+					placeholder="Tìm kiếm theo họ tên, email, số điện thoại"
+					prefix={<SearchOutlined className="mr-1 text-gray-400" />}
+					allowClear
+					value={searchInput}
+					onChange={(e) => setSearchInput(e.target.value)}
+					className="h-10 max-w-xs [&_.ant-input]:h-full"
+				/>
 
-		// 		{/* Filter vị trí ứng tuyển */}
-		// 		<Select
-		// 			allowClear
-		// 			placeholder="Lọc theo vị trí"
-		// 			style={{ width: 220, height: 40 }}
-		// 			value={filters.jobId ?? undefined}
-		// 			onChange={(val) => {
-		// 				setFilters((prev) => ({ ...prev, jobId: val }));
-		// 				setPagination((prev) => ({ ...prev, current: 1 }));
-		// 			}}
-		// 			options={jobOptions.map((j) => ({ label: j.title, value: j._id }))}
-		// 			showSearch
-		// 			filterOption={(input, option) =>
-		// 				(option?.label as string)
-		// 					?.toLowerCase()
-		// 					.includes(input.toLowerCase())
-		// 			}
-		// 		/>
-		// 	</div>
+				{/* Filter vị trí ứng tuyển */}
+				<Select
+					allowClear
+					placeholder="Lọc theo vị trí"
+					style={{ width: 300, height: 40 }}
+					value={filters.jobId ?? undefined}
+					onChange={(val) => {
+						setFilters((prev) => ({ ...prev, jobId: val }));
+						setPagination((prev) => ({ ...prev, current: 1 }));
+					}}
+					options={jobOptions.map((j) => ({ label: j.title, value: j._id }))}
+					showSearch
+					filterOption={(input, option) =>
+						(option?.label as string)
+							?.toLowerCase()
+							.includes(input.toLowerCase())
+					}
+				/>
+			</div>
 
-		// 	{/* Table */}
-		// 	<Block>
-		// 		<Table
-		// 			rowKey="_id"
-		// 			columns={columns}
-		// 			dataSource={items}
-		// 			loading={isFetching}
-		// 			pagination={{
-		// 				current: currentPage,
-		// 				pageSize,
-		// 				total,
-		// 				showSizeChanger: false,
-		// 				showTotal: (t) => `${t} ứng viên`,
-		// 			}}
-		// 			locale={{
-		// 				emptyText: <NoData description="Chưa có ứng viên nào" />,
-		// 			}}
-		// 			onChange={handleTableChange as any}
-		// 			className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6"
-		// 		/>
-		// 	</Block>
+			{/* Table */}
+			<Block>
+				<Table
+					rowKey="_id"
+					columns={columns}
+					dataSource={items}
+					loading={isFetching}
+					pagination={{
+						current: currentPage,
+						pageSize,
+						total,
+						showSizeChanger: false,
+						showTotal: (t) => `${t} ứng viên`,
+					}}
+					locale={{
+						emptyText: <NoData description="Chưa có ứng viên nào" />,
+					}}
+					onChange={handleTableChange as any}
+					className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6"
+				/>
+			</Block>
 
-		// 	{/* ── Modal: Chi tiết ứng viên ── */}
-		// 	<Modal
-		// 		title="Chi tiết ứng viên"
-		// 		open={!!detailRecord}
-		// 		onCancel={() => setDetailRecord(null)}
-		// 		footer={
-		// 			<div className="flex justify-between">
-		// 				<Button
-		// 					icon={<EditOutlined />}
-		// 					onClick={() => {
-		// 						if (detailRecord) openNoteModal(detailRecord);
-		// 					}}
-		// 				>
-		// 					Ghi chú
-		// 				</Button>
-		// 				<Button onClick={() => setDetailRecord(null)}>Đóng</Button>
-		// 			</div>
-		// 		}
-		// 		width={640}
-		// 	>
-		// 		{detailRecord && (
-		// 			<div className="flex flex-col gap-4">
-		// 				<Descriptions
-		// 					bordered
-		// 					column={1}
-		// 					size="small"
-		// 					labelStyle={{ width: 160 }}
-		// 				>
-		// 					<Descriptions.Item label="Họ tên">
-		// 						{detailRecord.fullName}
-		// 					</Descriptions.Item>
-		// 					<Descriptions.Item label="Email">
-		// 						{detailRecord.email}
-		// 					</Descriptions.Item>
-		// 					<Descriptions.Item label="Số điện thoại">
-		// 						{detailRecord.phone}
-		// 					</Descriptions.Item>
-		// 					<Descriptions.Item label="Vị trí ứng tuyển">
-		// 						{getJobTitle(detailRecord.jobId)}
-		// 					</Descriptions.Item>
-		// 					<Descriptions.Item label="CV">
-		// 						{(() => {
-		// 							const url =
-		// 								detailRecord.resumeId?.secureUrl ??
-		// 								detailRecord.resumeId?.url ??
-		// 								null;
-		// 							return url ? (
-		// 								<a
-		// 									href={url}
-		// 									target="_blank"
-		// 									rel="noopener noreferrer"
-		// 									className="flex items-center gap-1 text-blue-500"
-		// 								>
-		// 									<DownloadOutlined />
-		// 									Xem / Tải CV
-		// 								</a>
-		// 							) : (
-		// 								<Text type="secondary">Chưa có CV</Text>
-		// 							);
-		// 						})()}
-		// 					</Descriptions.Item>
-		// 					<Descriptions.Item label="Ngày nộp">
-		// 						{formatDate(detailRecord.createdAt)}
-		// 					</Descriptions.Item>
-		// 					<Descriptions.Item label="Ghi chú admin">
-		// 						{detailRecord.adminNote ? (
-		// 							<Text className="whitespace-pre-wrap">
-		// 								{detailRecord.adminNote}
-		// 							</Text>
-		// 						) : (
-		// 							<Text type="secondary">Chưa có ghi chú</Text>
-		// 						)}
-		// 					</Descriptions.Item>
-		// 				</Descriptions>
+			{/* ── Modal: Chi tiết ứng viên ── */}
+			<Modal
+				title="Chi tiết ứng viên"
+				open={!!detailRecord}
+				onCancel={() => setDetailRecord(null)}
+				footer={
+					<div className="flex justify-between gap-3">
+						<Button
+							icon={<EditOutlined />}
+							onClick={() => {
+								if (detailRecord) openNoteModal(detailRecord);
+							}}
+						>
+							Ghi chú
+						</Button>
+						<Button type="primary" onClick={() => setDetailRecord(null)}>Đóng</Button>
+					</div>
+				}
+				width={640}
+			>
+				{detailRecord && (
+					<div className="flex flex-col gap-4">
+						<Descriptions
+							bordered
+							column={1}
+							size="small"
+							labelStyle={{ width: 160 }}
+						>
+							<Descriptions.Item label="Họ tên">
+								{detailRecord.fullName}
+							</Descriptions.Item>
+							<Descriptions.Item label="Email">
+								{detailRecord.email}
+							</Descriptions.Item>
+							<Descriptions.Item label="Số điện thoại">
+								{detailRecord.phone}
+							</Descriptions.Item>
+							<Descriptions.Item label="Vị trí ứng tuyển">
+								{getJobTitle(detailRecord.jobId)}
+							</Descriptions.Item>
+							<Descriptions.Item label="CV">
+								{(() => {
+									const url = detailRecord.resumeId?.secureUrl ?? detailRecord.resumeId?.url ?? null;
+									return url ? (
+										<div
+											className="flex items-center gap-1 text-blue-500 cursor-pointer"
+											onClick={(e) => {
+												e.preventDefault();
+												handleDownloadResume(detailRecord);
+											}}
+										>
+											<DownloadOutlined />
+											Tải CV
+										</div>
+									) : (
+										<Text type="secondary">Chưa có CV</Text>
+									);
+								})()}
+							</Descriptions.Item>
+							<Descriptions.Item label="Ngày nộp">
+								{formatDate(detailRecord.createdAt)}
+							</Descriptions.Item>
+							<Descriptions.Item label="Ghi chú của bạn">
+								{detailRecord.adminNote ? (
+									<Text className="whitespace-pre-wrap">
+										{detailRecord.adminNote}
+									</Text>
+								) : (
+									<Text type="secondary">Chưa có ghi chú</Text>
+								)}
+							</Descriptions.Item>
+						</Descriptions>
 
-		// 				{/* Cập nhật trạng thái */}
-		// 				<div className="flex items-center gap-3">
-		// 					<Text strong>Trạng thái:</Text>
-		// 					{renderStatusDropdown(detailRecord)}
-		// 				</div>
-		// 			</div>
-		// 		)}
-		// 	</Modal>
+						{/* Cập nhật trạng thái */}
+						<div className="flex items-center gap-3">
+							<Text strong>Trạng thái:</Text>
+							{renderStatusDropdown(detailRecord)}
+						</div>
+					</div>
+				)}
+			</Modal>
 
-		// 	{/* ── Modal: Ghi chú admin ── */}
-		// 	<Modal
-		// 		title="Ghi chú ứng viên"
-		// 		open={!!noteRecord}
-		// 		onCancel={() => setNoteRecord(null)}
-		// 		footer={
-		// 			<div className="flex justify-end gap-2">
-		// 				<Button onClick={() => setNoteRecord(null)}>Huỷ</Button>
-		// 				<Button
-		// 					type="primary"
-		// 					loading={savingNote}
-		// 					onClick={handleSaveNote}
-		// 				>
-		// 					Lưu ghi chú
-		// 				</Button>
-		// 			</div>
-		// 		}
-		// 		width={480}
-		// 		destroyOnClose
-		// 	>
-		// 		{noteRecord && (
-		// 			<div className="flex flex-col gap-3 pt-1">
-		// 				<Text type="secondary">
-		// 					Ứng viên: <Text strong>{noteRecord.fullName}</Text>
-		// 				</Text>
-		// 				<TextArea
-		// 					rows={5}
-		// 					placeholder="Nhập ghi chú cho ứng viên này..."
-		// 					value={noteInput}
-		// 					onChange={(e) => setNoteInput(e.target.value)}
-		// 					maxLength={1000}
-		// 					showCount
-		// 				/>
-		// 			</div>
-		// 		)}
-		// 	</Modal>
-		// </div>
-		<Developing />
+			{/* ── Modal: Ghi chú admin ── */}
+			<Modal
+				title="Ghi chú ứng viên"
+				open={!!noteRecord}
+				onCancel={() => setNoteRecord(null)}
+				footer={
+					<div className="flex justify-end gap-2 mt-6">
+						<Button onClick={() => setNoteRecord(null)}>Huỷ</Button>
+						<Button
+							type="primary"
+							loading={savingNote}
+							onClick={handleSaveNote}
+						>
+							Lưu ghi chú
+						</Button>
+					</div>
+				}
+				width={480}
+				destroyOnHidden
+			>
+				{noteRecord && (
+					<div className="flex flex-col gap-3 pt-1">
+						<Text type="secondary">
+							Ứng viên: <Text strong>{noteRecord.fullName}</Text>
+						</Text>
+						<TextArea
+							rows={5}
+							placeholder="Nhập ghi chú cho ứng viên này..."
+							value={noteInput}
+							onChange={(e) => setNoteInput(e.target.value)}
+							maxLength={1000}
+							showCount
+						/>
+					</div>
+				)}
+			</Modal>
+		</div>
 	);
 }

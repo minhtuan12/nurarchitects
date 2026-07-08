@@ -222,6 +222,7 @@ export const jobSchema = z.object({
   title: z.string().min(1).max(180),
   slug: slugSchema,
   departmentId: optionalObjectIdSchema,
+  thumbnailId: optionalObjectIdSchema,
   description: htmlSchema,
   requirements: htmlSchema,
   benefits: htmlSchema,
