@@ -22,6 +22,7 @@ export interface AdminMediaItem {
 }
 
 export type MediaUploadFile = UploadFile & {
+  _id?: string;
   mediaId?: string;
 };
 

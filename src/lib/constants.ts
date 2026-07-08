@@ -1,4 +1,5 @@
 import { EArea, EContactFormStatus } from "@/types/contact";
+import { ECooperationFormStatus, ECooperationService } from "@/types/cooperation";
 import { EBuildPlan } from "@/types/project";
 import {
     Blocks,
@@ -117,6 +118,20 @@ export const ADMIN_ROUTES = [
         label: "Quản lý Hợp tác",
         href: "/admin/cooperations",
         icon: Handshake,
+        children: [
+            {
+                key: "cooperation-content",
+                label: "Nội dung",
+                href: "/admin/cooperations/content",
+                icon: Info,
+            },
+            {
+                key: "partners",
+                label: "Danh sách đăng ký hợp tác",
+                href: "/admin/cooperations/partners",
+                icon: ListOrdered,
+            },
+        ],
     },
     {
         key: "jobs",
@@ -170,3 +185,11 @@ export const CONTACT_FORM_STATUS_OPTIONS = Object.entries(EContactFormStatus).ma
     value,
     label: meta.label,
 }));
+
+export const COOPERATION_FORM_STATUS_OPTIONS = Object.values(ECooperationFormStatus).map(
+    ({ value, label }) => ({ value, label }),
+);
+
+export const COOPERATION_SERVICE_OPTIONS = Object.values(ECooperationService).map(
+    ({ value, label }) => ({ value, label }),
+);

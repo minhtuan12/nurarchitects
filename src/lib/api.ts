@@ -1,4 +1,4 @@
-import type { Model, Schema, Document } from "mongoose";
+import type { Model, Schema, Document, PopulateOptions } from "mongoose";
 import { NextResponse, type NextRequest } from "next/server";
 import { z, ZodError } from "zod";
 import { connectDb } from "@/lib/db";
@@ -191,13 +191,21 @@ export function createSingletonHandlers(
   Model: ApiModel,
   schema: ApiSchema,
   type: string,
+  populate?: PopulateOptions | (string | PopulateOptions)[],
 ) {
   return {
     async get() {
       try {
         await requireAdmin();
         await connectDb();
-        const item = await Model.findOne({ _type: type }).lean();
+        let query = Model.findOne({ _type: type });
+
+        if (populate) {
+          query = query.populate(populate);
+        }
+
+        const item = await query.lean();
+
         return NextResponse.json({ item });
       } catch (error) {
         return apiError(error);

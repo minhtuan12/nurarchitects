@@ -218,7 +218,7 @@ export function RichContent({ html, className, ...props }: RichContentProps) {
       "& h6": { fontSize: "0.9rem", fontWeight: 600, mb: 1 },
 
       // Paragraph
-      "& p": { mb: 1.5, lineHeight: 1.8 },
+      "& p": { mb: 1.5, lineHeight: 1.5 },
 
       // Lists
       "& ul": { listStyle: "disc", pl: 3, mb: 1.5 },

@@ -16,54 +16,72 @@ import type { TablePaginationConfig } from "antd/es/table";
 import type { ColumnsType } from "antd/es/table";
 import type { SorterResult } from "antd/es/table/interface";
 import type { MenuProps } from "antd";
-import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
+import { SearchOutlined, EyeOutlined, LinkOutlined } from "@ant-design/icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Block from "@/components/Block";
 import { adminFetch } from "@/components/admin/AdminShell";
 import NoData from "@/components/NoData";
 import { useMessage } from "@/contexts/AdminMessageContext";
-import { BUILD_AREA_OPTIONS, BUILD_PLAN_OPTIONS, CONTACT_FORM_STATUS_OPTIONS, DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS } from "@/lib/constants";
-import type { ContactFormStatus } from "@/types/shared";
+import {
+	COOPERATION_FORM_STATUS_OPTIONS,
+	COOPERATION_SERVICE_OPTIONS,
+	DEFAULT_PAGE_SIZE,
+	SEARCH_DEBOUNCE_MS,
+} from "@/lib/constants";
 import type { SortOrder } from "@/types/shared";
-import { BuildArea, BuildPlan, EBuildPlan } from "@/types/project";
-import { EArea, EContactFormStatus } from "@/types/contact";
-import { EBuildArea } from "@/lib/enums";
 import { ChevronDown } from "lucide-react";
+import {
+	CooperationFormStatus,
+	CooperationService,
+	ECooperationFormStatus,
+	ECooperationService,
+} from "@/types/cooperation";
 
-const { Text } = Typography;
+const { Text, Link } = Typography;
 
-interface ContactFormRow {
+interface CooperationFormRow {
 	_id: string;
-	fullName: string;
+	companyName: string;
+	contactName: string;
+	position: string;
 	phone: string;
-	planningToBuild?: string;
-	buildPlan: BuildPlan;
-	area?: EBuildArea;
-	floors?: number;
-	address?: string;
-	specialRequirement?: string;
-	status: ContactFormStatus;
+	email: string;
+	mainService?: CooperationService;
+	otherService?: string;
+	capacityProfileUrl?: string;
+	catalogueUrl?: string;
+	productSegmentUrl?: string;
+	policyUrl?: string;
+	status: CooperationFormStatus;
 	createdAt?: string;
 	updatedAt?: string;
 }
 
-interface ContactFormResponse {
-	items: ContactFormRow[];
+interface CooperationFormResponse {
+	items: CooperationFormRow[];
 	page: number;
 	limit: number;
 	total: number;
 }
 
-interface ContactFormFilters {
+interface CooperationFormFilters {
 	status?: string;
-	buildPlan?: BuildPlan;
-	area?: BuildArea;
+	mainService?: CooperationService;
 }
 
-const STATUS_FILTER_OPTIONS = CONTACT_FORM_STATUS_OPTIONS.map(({ label, value }) => ({
-	text: label,
-	value,
-}));
+const STATUS_FILTER_OPTIONS = COOPERATION_FORM_STATUS_OPTIONS.map(
+	({ label, value }) => ({
+		text: label,
+		value,
+	}),
+);
+
+const SERVICE_FILTER_OPTIONS = COOPERATION_SERVICE_OPTIONS.map(
+	({ label, value }) => ({
+		text: label,
+		value,
+	}),
+);
 
 const formatDate = (value?: string) =>
 	value
@@ -76,7 +94,16 @@ const formatDate = (value?: string) =>
 		}).format(new Date(value))
 		: "-";
 
-export default function ContactFormListAdminPage() {
+const renderLink = (url?: string) =>
+	url ? (
+		<Link href={url} target="_blank" rel="noopener noreferrer">
+			<LinkOutlined /> Xem
+		</Link>
+	) : (
+		"-"
+	);
+
+export default function CooperationFormListAdminPage() {
 	const queryClient = useQueryClient();
 	const messageApi = useMessage();
 
@@ -85,7 +112,7 @@ export default function ContactFormListAdminPage() {
 		pageSize: DEFAULT_PAGE_SIZE,
 	});
 
-	// --- Search (debounced), giống pattern ProjectsAdminPage ---
+	// --- Search (debounced) ---
 	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
 
@@ -99,16 +126,16 @@ export default function ContactFormListAdminPage() {
 	}, [searchInput]);
 
 	// --- Filters ---
-	const [filters, setFilters] = useState<ContactFormFilters>({});
+	const [filters, setFilters] = useState<CooperationFormFilters>({});
 
-	// --- Sort: hỗ trợ cả area và createdAt (đúng theo sortFields của API) ---
+	// --- Sort ---
 	const [sortState, setSortState] = useState<{
 		sortBy?: string;
 		sortOrder?: SortOrder;
 	}>({});
 
 	const [updatingId, setUpdatingId] = useState<string | null>(null);
-	const [detailRecord, setDetailRecord] = useState<ContactFormRow | null>(
+	const [detailRecord, setDetailRecord] = useState<CooperationFormRow | null>(
 		null,
 	);
 
@@ -116,13 +143,20 @@ export default function ContactFormListAdminPage() {
 	const pageSize = pagination.pageSize;
 
 	const queryKey = useMemo(
-		() => ["admin-contact-forms", currentPage, pageSize, search, filters, sortState],
+		() => [
+			"admin-cooperation-forms",
+			currentPage,
+			pageSize,
+			search,
+			filters,
+			sortState,
+		],
 		[currentPage, pageSize, search, filters, sortState],
 	);
 
 	const { data, isFetching } = useQuery({
 		queryKey,
-		queryFn: async (): Promise<ContactFormResponse> => {
+		queryFn: async (): Promise<CooperationFormResponse> => {
 			const params = new URLSearchParams({
 				page: String(currentPage),
 				limit: String(pageSize),
@@ -130,8 +164,8 @@ export default function ContactFormListAdminPage() {
 
 			if (search) params.set("search", search);
 			if (filters.status) params.set("status", filters.status);
-			if (filters.buildPlan) params.set("buildPlan", filters.buildPlan);
-			if (filters.area) params.set("area", filters.area);
+			if (filters.mainService)
+				params.set("mainService", filters.mainService);
 			if (sortState.sortBy && sortState.sortOrder) {
 				params.set("sortBy", sortState.sortBy);
 				params.set(
@@ -141,12 +175,14 @@ export default function ContactFormListAdminPage() {
 			}
 
 			const response = await adminFetch(
-				`/api/admin/contact-forms?${params.toString()}`,
+				`/api/admin/cooperation-forms?${params.toString()}`,
 				{ cache: "no-store" },
 			);
 			const payload = await response.json();
 			if (!response.ok || payload.error) {
-				throw new Error(payload.error ?? "Cannot load contact forms");
+				throw new Error(
+					payload.error ?? "Cannot load cooperation forms",
+				);
 			}
 			return {
 				items: payload.items ?? [],
@@ -161,13 +197,16 @@ export default function ContactFormListAdminPage() {
 	const total = data?.total ?? 0;
 
 	const updateStatus = useCallback(
-		async (record: ContactFormRow, nextStatus: ContactFormStatus) => {
+		async (
+			record: CooperationFormRow,
+			nextStatus: CooperationFormStatus,
+		) => {
 			if (record.status === nextStatus) return;
 
 			setUpdatingId(record._id);
 			try {
 				const response = await adminFetch(
-					`/api/admin/contact-forms/${record._id}`,
+					`/api/admin/cooperation-forms/${record._id}`,
 					{
 						method: "PATCH",
 						headers: { "content-type": "application/json" },
@@ -186,7 +225,7 @@ export default function ContactFormListAdminPage() {
 						: current,
 				);
 				await queryClient.invalidateQueries({
-					queryKey: ["admin-contact-forms"],
+					queryKey: ["admin-cooperation-forms"],
 				});
 			} catch {
 				messageApi.error("Không thể cập nhật trạng thái");
@@ -198,84 +237,76 @@ export default function ContactFormListAdminPage() {
 	);
 
 	const buildStatusMenu = useCallback(
-		(record: ContactFormRow): MenuProps => ({
-			items: CONTACT_FORM_STATUS_OPTIONS.map(
-				({ label, value }) => ({
-					key: value,
-					label: label,
-					disabled: value === record.status,
-				}),
-			),
-			onClick: ({ key }) => updateStatus(record, key as ContactFormStatus),
+		(record: CooperationFormRow): MenuProps => ({
+			items: COOPERATION_FORM_STATUS_OPTIONS.map(({ label, value }) => ({
+				key: value,
+				label: label,
+				disabled: value === record.status,
+			})),
+			onClick: ({ key }) =>
+				updateStatus(record, key as CooperationFormStatus),
 		}),
 		[updateStatus],
 	);
 
-	const columns = useMemo<ColumnsType<ContactFormRow>>(
+	const columns = useMemo<ColumnsType<CooperationFormRow>>(
 		() => [
 			{
-				title: "Họ tên",
-				dataIndex: "fullName",
-				key: "fullName",
-				width: 200,
-				minWidth: 200,
+				title: "Đơn vị / Người liên hệ",
+				dataIndex: "companyName",
+				key: "companyName",
+				width: 220,
+				minWidth: 220,
 				fixed: "left",
 				render: (value: string, record) => (
 					<div className="flex flex-col gap-1">
 						<Text strong>{value}</Text>
 						<Text type="secondary" className="text-xs">
-							{record.phone}
+							{record.contactName} · {record.position}
 						</Text>
 					</div>
 				),
 			},
 			{
-				title: "Loại công trình",
-				dataIndex: "buildPlan",
-				key: "buildPlan",
-				width: 160,
-				minWidth: 160,
-				align: "center",
-				filterMultiple: false,
-				filters: BUILD_PLAN_OPTIONS.map((option) => ({
-					text: option.label,
-					value: option.value,
-				})),
-				filteredValue: filters.buildPlan ? [filters.buildPlan] : null,
-				render: (value: BuildPlan) => (
-					<Tag
-						color={EBuildPlan[value].color}
-						variant="outlined"
-						className="!whitespace-normal !break-words !leading-snug text-center"
-						style={{ maxWidth: "100%" }}
-					>
-						{EBuildPlan[value].label}
-					</Tag>
+				title: "Thông tin liên hệ",
+				dataIndex: "email",
+				key: "email",
+				width: 180,
+				minWidth: 180,
+				fixed: "left",
+				render: (value: string, record) => (
+					<div className="flex flex-col gap-1">
+						<Link href={`tel:${record.phone}`}>{record.phone}</Link>
+						<Link href={`mailto:${record.email}`} className="!text-underline text-blue-400">{record.email}</Link>
+					</div>
 				),
 			},
 			{
-				title: "Diện tích",
-				dataIndex: "area",
-				key: "area",
-				width: 120,
-				minWidth: 120,
+				title: "Dịch vụ chính",
+				dataIndex: "mainService",
+				key: "mainService",
+				width: 150,
+				minWidth: 150,
 				align: "center",
 				filterMultiple: false,
-				filters: BUILD_AREA_OPTIONS.map((option) => ({
-					text: option.label,
-					value: option.value,
-				})),
-				filteredValue: filters.area ? [filters.area] : null,
-				render: (value: EBuildArea) => (
-					<Tag
-						color={EArea[value].color}
-						variant="outlined"
-						className="!whitespace-normal !break-words !leading-snug text-center"
-						style={{ maxWidth: "100%" }}
-					>
-						{EArea[value].label}
-					</Tag>
-				),
+				filters: SERVICE_FILTER_OPTIONS,
+				filteredValue: filters.mainService
+					? [filters.mainService]
+					: null,
+				render: (value: CooperationService | undefined, record) =>
+					value ? (
+						<Tag
+							variant="outlined"
+							className="!whitespace-normal !break-words !leading-snug text-center"
+							style={{ maxWidth: "100%", fontSize: 14 }}
+						>
+							{ECooperationService[value]?.label ?? value}
+						</Tag>
+					) : (
+						<Text type="secondary">
+							{record.otherService || "-"}
+						</Text>
+					),
 			},
 			{
 				title: "Ngày gửi",
@@ -286,20 +317,22 @@ export default function ContactFormListAdminPage() {
 				align: "center",
 				sorter: true,
 				sortOrder:
-					sortState.sortBy === "createdAt" ? sortState.sortOrder : undefined,
+					sortState.sortBy === "createdAt"
+						? sortState.sortOrder
+						: undefined,
 				render: (value?: string) => formatDate(value),
 			},
 			{
 				title: "Trạng thái",
 				dataIndex: "status",
 				key: "status",
-				width: 150,
-				minWidth: 150,
+				width: 120,
+				minWidth: 120,
 				align: "center",
 				filterMultiple: false,
 				filters: STATUS_FILTER_OPTIONS,
 				filteredValue: filters.status ? [filters.status] : null,
-				render: (value: ContactFormStatus, record) => (
+				render: (value: CooperationFormStatus, record) => (
 					<div className="flex justify-center">
 						<Dropdown
 							menu={buildStatusMenu(record)}
@@ -307,10 +340,13 @@ export default function ContactFormListAdminPage() {
 							disabled={updatingId === record._id}
 						>
 							<Tag
-								color={EContactFormStatus[value]?.color ?? "default"}
+								color={
+									ECooperationFormStatus[value]?.color ??
+									"default"
+								}
 								className="cursor-pointer select-none !m-0 flex w-fit items-center justify-center gap-1"
 							>
-								{EContactFormStatus[value]?.label ?? value}
+								{ECooperationFormStatus[value]?.label ?? value}
 								<ChevronDown size={13.5} />
 							</Tag>
 						</Dropdown>
@@ -338,12 +374,12 @@ export default function ContactFormListAdminPage() {
 		[buildStatusMenu, filters, sortState, updatingId],
 	);
 
-	// Lưu ý: chỉ cho phép sort 1 cột tại một thời điểm (giống pattern ProjectsAdminPage),
-	// vì sortFields ở backend chỉ nhận 1 sortBy duy nhất qua query string.
 	const handleTableChange = (
 		nextPagination: TablePaginationConfig,
 		tableFilters: Record<string, (string | number | boolean)[] | null>,
-		sorter: SorterResult<ContactFormRow> | SorterResult<ContactFormRow>[],
+		sorter:
+			| SorterResult<CooperationFormRow>
+			| SorterResult<CooperationFormRow>[],
 	) => {
 		setPagination({
 			current: nextPagination.current ?? 1,
@@ -351,27 +387,18 @@ export default function ContactFormListAdminPage() {
 		});
 
 		const statusValue = tableFilters.status?.[0];
-		const buildPlanValue = tableFilters.buildPlan?.[0];
-		const buildAreaValue = tableFilters.area?.[0];
+		const mainServiceValue = tableFilters.mainService?.[0];
 
 		setFilters({
 			status: statusValue !== undefined ? String(statusValue) : undefined,
-			buildPlan:
-				buildPlanValue !== undefined
-					? (String(buildPlanValue) as BuildPlan)
-					: undefined,
-			area:
-				buildAreaValue !== undefined
-					? (String(buildAreaValue) as EBuildArea)
+			mainService:
+				mainServiceValue !== undefined
+					? (String(mainServiceValue) as CooperationService)
 					: undefined,
 		});
 
 		const activeSorter = Array.isArray(sorter) ? sorter[0] : sorter;
-		if (
-			(activeSorter?.field === "area" ||
-				activeSorter?.field === "createdAt") &&
-			activeSorter.order
-		) {
+		if (activeSorter?.field === "createdAt" && activeSorter.order) {
 			setSortState({
 				sortBy: activeSorter.field as string,
 				sortOrder: activeSorter.order,
@@ -385,7 +412,7 @@ export default function ContactFormListAdminPage() {
 		<div className="flex flex-col gap-5">
 			<div className="flex items-center justify-between gap-3 px-1">
 				<Input
-					placeholder="Tìm kiếm theo họ tên, số điện thoại hoặc địa chỉ"
+					placeholder="Tìm kiếm theo tên đơn vị, người liên hệ, SĐT hoặc email"
 					prefix={<SearchOutlined className="text-gray-400 mr-1" />}
 					allowClear
 					value={searchInput}
@@ -408,7 +435,9 @@ export default function ContactFormListAdminPage() {
 						showTotal: (total) => `${total} yêu cầu`,
 					}}
 					locale={{
-						emptyText: <NoData description="Chưa có yêu cầu tư vấn nào" />,
+						emptyText: (
+							<NoData description="Chưa có yêu cầu hợp tác nào" />
+						),
 					}}
 					onChange={handleTableChange as any}
 					className="[&_.ant-pagination]:mb-0 [&_.ant-pagination]:mt-6"
@@ -416,7 +445,8 @@ export default function ContactFormListAdminPage() {
 			</Block>
 
 			<Modal
-				title="Chi tiết yêu cầu tư vấn"
+				title="Chi tiết yêu cầu hợp tác"
+				centered
 				open={!!detailRecord}
 				onCancel={() => setDetailRecord(null)}
 				footer={
@@ -431,33 +461,45 @@ export default function ContactFormListAdminPage() {
 							column={1}
 							size="small"
 							styles={{
-								label: { width: 160 }
+								label: { width: 200 }
 							}}
 						>
-							<Descriptions.Item label="Họ tên">
-								{detailRecord.fullName}
+							<Descriptions.Item label="Tên đơn vị">
+								{detailRecord.companyName}
+							</Descriptions.Item>
+							<Descriptions.Item label="Người liên hệ">
+								{detailRecord.contactName}
+							</Descriptions.Item>
+							<Descriptions.Item label="Chức vụ">
+								{detailRecord.position}
 							</Descriptions.Item>
 							<Descriptions.Item label="Số điện thoại">
 								{detailRecord.phone}
 							</Descriptions.Item>
-							<Descriptions.Item label="Dự định xây dựng">
-								{detailRecord.planningToBuild || "-"}
+							<Descriptions.Item label="Email">
+								{detailRecord.email}
 							</Descriptions.Item>
-							<Descriptions.Item label="Loại công trình">
-								{EBuildPlan[detailRecord.buildPlan]?.label ??
-									detailRecord.buildPlan}
+							<Descriptions.Item label="Sản phẩm/dịch vụ chính">
+								{detailRecord.mainService
+									? ECooperationService[
+										detailRecord.mainService
+									]?.label
+									: "-"}
 							</Descriptions.Item>
-							<Descriptions.Item label="Diện tích">
-								{EArea[detailRecord.area as BuildArea].label || "-"}
+							<Descriptions.Item label="Sản phẩm/dịch vụ khác">
+								{detailRecord.otherService || "-"}
 							</Descriptions.Item>
-							<Descriptions.Item label="Số tầng">
-								{detailRecord.floors ?? "-"}
+							<Descriptions.Item label="Hồ sơ năng lực">
+								{renderLink(detailRecord.capacityProfileUrl)}
 							</Descriptions.Item>
-							<Descriptions.Item label="Địa chỉ">
-								{detailRecord.address || "-"}
+							<Descriptions.Item label="Catalogue">
+								{renderLink(detailRecord.catalogueUrl)}
 							</Descriptions.Item>
-							<Descriptions.Item label="Yêu cầu đặc biệt">
-								{detailRecord.specialRequirement || "-"}
+							<Descriptions.Item label="Bảng phân khúc sản phẩm">
+								{renderLink(detailRecord.productSegmentUrl)}
+							</Descriptions.Item>
+							<Descriptions.Item label="Chính sách hợp tác">
+								{renderLink(detailRecord.policyUrl)}
 							</Descriptions.Item>
 							<Descriptions.Item label="Ngày gửi">
 								{formatDate(detailRecord.createdAt)}
@@ -472,11 +514,15 @@ export default function ContactFormListAdminPage() {
 								disabled={updatingId === detailRecord._id}
 							>
 								<Tag
-									color={EContactFormStatus[detailRecord.status]?.color ?? "default"}
+									color={
+										ECooperationFormStatus[
+											detailRecord.status
+										]?.color ?? "default"
+									}
 									className="cursor-pointer select-none text-sm py-1 px-3 flex items-center justify-center gap-1"
 								>
-									{EContactFormStatus[detailRecord.status]?.label ??
-										detailRecord.status}
+									{ECooperationFormStatus[detailRecord.status]
+										?.label ?? detailRecord.status}
 									<ChevronDown size={13.5} />
 								</Tag>
 							</Dropdown>

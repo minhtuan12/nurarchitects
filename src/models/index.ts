@@ -10,6 +10,7 @@ import {
   workingTypes,
 } from "@/lib/enums";
 import { EBuildPlan } from "@/types/project";
+import { cooperationFormStatuses } from "@/lib/validation";
 
 const objectId = Schema.Types.ObjectId;
 
@@ -199,6 +200,29 @@ const ContactConfigSchema = new Schema(
   { timestamps: true },
 );
 
+const CooperationFormSchema = new Schema(
+  {
+    companyName: { type: String, required: true, trim: true },
+    contactName: { type: String, required: true, trim: true },
+    position: { type: String, required: true, trim: true },
+    phone: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true },
+    mainService: { type: String, defaut: "" },
+    otherService: { type: String, default: "" },
+    capacityProfileUrl: { type: String, default: "" },
+    catalogueUrl: { type: String, default: "" },
+    productSegmentUrl: { type: String, default: "" },
+    policyUrl: { type: String, default: "" },
+    status: {
+      type: String,
+      enum: cooperationFormStatuses,
+      default: "new",
+      index: true,
+    },
+  },
+  { timestamps: true },
+);
+
 const cooperationStepSchema = new Schema(
   {
     order: { type: Number, required: true, default: 0 },
@@ -325,6 +349,7 @@ export const Application = model("Application", ApplicationSchema);
 export const SeoSetting = model("SeoSetting", SeoSettingSchema);
 export const AdminUser = model("AdminUser", AdminUserSchema);
 export const SettingsConfig = model("SettingsConfig", SettingsConfigSchema);
+export const CooperationForm = model("CooperationForm", CooperationFormSchema);
 
 export const registry = {
   media: Media,

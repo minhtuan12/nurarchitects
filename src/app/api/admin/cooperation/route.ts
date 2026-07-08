@@ -4,7 +4,17 @@ import { CooperationConfig } from "@/models";
 
 export const runtime = "nodejs";
 
-const handlers = createSingletonHandlers(CooperationConfig, cooperationConfigSchema, "cooperation");
+const handlers = createSingletonHandlers(CooperationConfig, cooperationConfigSchema, "cooperation", [
+	{
+		path: "bannerId",
+	},
+	{
+		path: "imageIds",
+	},
+	{
+		path: "neededFields.imageId",
+	},
+]);
 
 export const GET = handlers.get;
 export const PUT = handlers.upsert;

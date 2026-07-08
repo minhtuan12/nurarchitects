@@ -61,7 +61,7 @@ const inputSx = {
 };
 
 async function submitContactForm(payload: IContactForm) {
-	const res = await fetch("/api/contact", {
+	const res = await fetch("/api/cooperation", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
@@ -228,8 +228,9 @@ export default function ContactCTASection() {
 						left: "50%",
 						transform: "translate(-50%, -50%)",
 						width: { xs: "92%", sm: 640, md: 800 },
-						backgroundImage: `url(${ConcreteBg.src})`,
-						backgroundSize: "contain",
+						// backgroundImage: `url(${ConcreteBg.src})`,
+						// backgroundSize: "contain",
+						bgcolor: 'background.default',
 						opacity: 40,
 						py: { xs: 3, md: '50px' },
 						px: { xs: 3, md: '30px' },

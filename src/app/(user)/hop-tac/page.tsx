@@ -7,13 +7,20 @@ import { getCooperation, getSeoBySlug } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 import Developing from "@/components/admin/Developing";
 import { Box } from "@mui/material";
+import MediaRenderer from "@/components/MediaRenderer";
+import { IMedia } from "@/types/media";
+import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
+import NeededFields from "./(components)/NeededFields";
+import Steps from "./(components)/Steps";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("hop-tac", "page");
   return buildMetadata({
     title: seo?.title ?? "Hợp tác",
     slug: "hop-tac",
-    description: seo?.description ?? "Quy trình hợp tác thiết kế và thi công cùng NUR Architects.",
+    description:
+      seo?.description ??
+      "Quy trình hợp tác thiết kế và thi công cùng NUR Architects.",
     canonicalUrl: seo?.canonicalUrl,
     ogImage: seo?.ogImage,
     focusKeywords: seo?.focusKeywords,
@@ -22,27 +29,46 @@ export async function generateMetadata() {
 
 export default async function CooperationPage() {
   const data = await getCooperation();
+
   return (
     <>
-      <Box sx={{ py: 20 }}>
-        <Developing />
-      </Box>
-      {/* <PageIntro label="Hợp tác" title="Quy trình rõ ràng cho từng giai đoạn dự án." />
-      <Container maxWidth="xl" sx={{ pb: 10 }}>
-        <Stack gap={5}>
-          <RichContent html={data?.introduction || "Chúng tôi làm việc theo từng bước có mục tiêu, đầu ra và trách nhiệm rõ ràng."} />
-          <AppImage alt="Hợp tác với NUR Architects" media={data?.imageIds?.[0]} fill aspectRatio="16 / 7" />
-          {(data?.steps ?? []).map((step: { order: number; name: string; description: string }) => (
-            <Stack key={`${step.order}-${step.name}`} direction={{ xs: "column", md: "row" }} gap={4}>
-              <Typography variant="h3" color="secondary">{String(step.order).padStart(2, "0")}</Typography>
-              <Stack>
-                <Typography variant="h4">{step.name}</Typography>
-                <RichContent html={step.description} />
-              </Stack>
-            </Stack>
-          ))}
-        </Stack>
-      </Container> */}
+      <Developing />
+      {/* <Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
+        <Box
+          position="relative"
+          sx={{ height: { xs: "60vh", md: "100vh" } }}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              background: "rgb(0 0 0 / 30%)",
+              transition: "opacity 0.35s ease",
+              zIndex: 10,
+            }}
+          />
+          <MediaRenderer
+            media={data.bannerId as IMedia}
+            autoPlay
+            controls={false}
+            loop
+            className="h-full"
+            fill
+            title="Các dự án tiêu biểu của Nurarchitects"
+          />
+          <BannerBreadcrumb
+            breadcrumbString="Trang chủ / Liên hệ hợp tác"
+            pageTitle="Trở thành đối tác của NUR Architects"
+            pageSubTitle="Chúng tôi tin rằng thành công của một công ty xây dựng đến từ sự đồng hành của những đối tác chất lượng"
+          />
+        </Box>
+        <NeededFields
+          introductionContent={data.introduction}
+          fields={data.neededFields}
+          ctaContent={data.firstCtaBtn}
+        />
+        <Steps/>
+      </Box> */}
     </>
   );
 }

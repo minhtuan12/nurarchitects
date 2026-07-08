@@ -164,6 +164,7 @@ export default function MediaPickerModal({
       open={open}
       onCancel={onCancel}
       width={920}
+      centered
       footer={[
         <Button key="cancel" onClick={onCancel}>
           Hủy
@@ -195,7 +196,7 @@ export default function MediaPickerModal({
               className="py-10"
             />
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 max-h-[70vh] overflow-y-auto">
               {items.map((item) => {
                 const selected = selectedSet.has(item._id);
                 const label = mediaLabel(item);

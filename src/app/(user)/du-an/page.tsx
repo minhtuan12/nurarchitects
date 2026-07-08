@@ -28,6 +28,15 @@ export default async function ProjectsPage() {
           position="relative"
           sx={{ height: { xs: "400px", md: "750px" } }}
         >
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              background: "rgb(0 0 0 / 30%)",
+              transition: "opacity 0.35s ease",
+              zIndex: 10,
+            }}
+          />
           <MediaRenderer
             media={projects?.[0]?.thumbnailId as IMedia}
             autoPlay

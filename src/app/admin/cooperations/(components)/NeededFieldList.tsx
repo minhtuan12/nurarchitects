@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
 	Button,
-	Col,
+	Form,
 	Input,
-	Row,
+	Modal,
 	Space,
-	Upload,
-	Card,
+	Table,
 	Typography,
-	Flex,
+	Upload,
 } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import type { UploadProps } from "antd";
-import {
-	PlusOutlined,
-	DeleteOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
+import { SquarePen, Trash, ImageOff } from "lucide-react";
+import Block from "@/components/Block";
+import NoData from "@/components/NoData";
 import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 import {
 	mediaToUploadFile,
@@ -24,59 +24,107 @@ import {
 	type AdminMediaItem,
 } from "@/components/admin/media/media-upload-file";
 import { NeededFieldItemState, NeededFieldListProps } from "@/types/cooperation";
-import Block from "@/components/Block";
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
-export default function NeededFieldList({ fields, onChange, disabled }: NeededFieldListProps) {
-	const [pickerOpenIndex, setPickerOpenIndex] = useState<number | null>(null);
+interface NeededFieldFormValues {
+	name: string;
+	description?: string;
+}
 
-	const handleAdd = () => {
-		onChange([...fields, { name: "", description: "" }]);
-	};
+export default function NeededFieldList({
+	fields,
+	onChange,
+	disabled,
+}: NeededFieldListProps) {
+	const [form] = Form.useForm<NeededFieldFormValues>();
+	const [modalOpen, setModalOpen] = useState(false);
+	const [editingIndex, setEditingIndex] = useState<number | null>(null);
+	const [modalImageFile, setModalImageFile] = useState<
+		MediaUploadFile | undefined
+	>(undefined);
+	const [pickerOpen, setPickerOpen] = useState(false);
 
-	const handleRemove = (index: number) => {
-		onChange(fields.filter((_, i) => i !== index));
-	};
+	const isEdit = editingIndex !== null;
 
-	const handleChange = (
-		index: number,
-		field: keyof NeededFieldItemState,
-		value: string,
-	) => {
-		onChange(
-			fields.map((f, i) => (i === index ? { ...f, [field]: value } : f)),
-		);
-	};
+	// --- Modal add/edit ---
 
-	const handleImageChange = (
-		index: number,
-		fileList: MediaUploadFile[],
-	) => {
-		onChange(
-			fields.map((f, i) =>
-				i === index
-					? { ...f, imageFile: fileList[0] ?? undefined, imageId: fileList[0]?.mediaId ?? undefined }
-					: f,
-			),
-		);
-	};
+	const openAddModal = useCallback(() => {
+		setEditingIndex(null);
+		form.resetFields();
+		setModalImageFile(undefined);
+		setModalOpen(true);
+	}, [form]);
 
-	const handleSelectMedia = (index: number, items: AdminMediaItem[]) => {
-		const item = items[0];
-		if (!item) {
-			setPickerOpenIndex(null);
-			return;
+	const openEditModal = useCallback(
+		(index: number) => {
+			const field = fields[index];
+			setEditingIndex(index);
+			form.setFieldsValue({
+				name: field.name,
+				description: field.description ?? "",
+			});
+			setModalImageFile(field.imageFile);
+			setModalOpen(true);
+		},
+		[fields, form],
+	);
+
+	const closeModal = useCallback(() => {
+		setModalOpen(false);
+		form.resetFields();
+		setEditingIndex(null);
+		setModalImageFile(undefined);
+	}, [form]);
+
+	const handleSubmit = useCallback(async () => {
+		let values: NeededFieldFormValues;
+		try {
+			values = await form.validateFields();
+		} catch {
+			return; // lỗi validate form, không cần xử lý thêm
 		}
-		const uploadFile = mediaToUploadFile(item);
-		onChange(
-			fields.map((f, i) =>
-				i === index
-					? { ...f, imageFile: uploadFile, imageId: item._id }
-					: f,
-			),
-		);
-		setPickerOpenIndex(null);
+
+		const nextField: NeededFieldItemState = {
+			name: values.name,
+			description: values.description ?? "",
+			imageFile: modalImageFile,
+			imageId: modalImageFile?.mediaId,
+		};
+
+		if (isEdit && editingIndex !== null) {
+			onChange(fields.map((f, i) => (i === editingIndex ? nextField : f)));
+		} else {
+			onChange([...fields, nextField]);
+		}
+
+		closeModal();
+	}, [closeModal, editingIndex, fields, form, isEdit, modalImageFile, onChange]);
+
+	// --- Xoá ---
+
+	const handleRemove = useCallback(
+		(index: number) => {
+			Modal.confirm({
+				title: "Xóa lĩnh vực?",
+				content: `Bạn có chắc chắn muốn xóa "${fields[index].name}"?`,
+				okText: "Xóa",
+				okButtonProps: { danger: true },
+				cancelText: "Hủy",
+				onOk: () => {
+					onChange(fields.filter((_, i) => i !== index));
+				},
+			});
+		},
+		[fields, onChange],
+	);
+
+	// --- Ảnh trong modal ---
+
+	const handleSelectMedia = (items: AdminMediaItem[]) => {
+		const item = items[0];
+		if (item) setModalImageFile(mediaToUploadFile(item));
+		setPickerOpen(false);
 	};
 
 	const beforeImageUpload: UploadProps["beforeUpload"] = (file) => {
@@ -84,115 +132,168 @@ export default function NeededFieldList({ fields, onChange, disabled }: NeededFi
 		return false;
 	};
 
+	// --- Cột bảng ---
+
+	const columns = useMemo<ColumnsType<NeededFieldItemState>>(
+		() => [
+			{
+				title: "Ảnh",
+				key: "image",
+				align: 'center',
+				width: 72,
+				render: (_, record) =>
+					(record.imageFile?.url || record.imageFile?.thumbUrl) ? (
+						<img
+							src={record.imageFile.url || record.imageFile.thumbUrl}
+							alt={record.name}
+							className="w-10 h-10 object-cover rounded"
+						/>
+					) : (
+						<div className="w-10 h-10 flex items-center justify-center rounded bg-gray-100 text-gray-400">
+							<ImageOff width={16} />
+						</div>
+					),
+			},
+			{
+				title: "Tên lĩnh vực",
+				dataIndex: "name",
+				key: "name",
+				render: (value: string, record) => (
+					<div className="flex flex-col gap-1">
+						<Text strong>{value}</Text>
+						{record.description ? (
+							<Text
+								type="secondary"
+								className="text-xs line-clamp-1"
+							>
+								{record.description}
+							</Text>
+						) : null}
+					</div>
+				),
+			},
+			{
+				title: "Thao tác",
+				key: "actions",
+				width: 100,
+				align: "center",
+				render: (_, record, index) => (
+					<Space className="gap-4">
+						<SquarePen
+							onClick={() => !disabled && openEditModal(index)}
+							className="cursor-pointer"
+							color="#2b7fff"
+							width={18}
+						/>
+						<Trash
+							onClick={() => !disabled && handleRemove(index)}
+							className="cursor-pointer"
+							color="red"
+							width={18}
+						/>
+					</Space>
+				),
+			},
+		],
+		[disabled, handleRemove, openEditModal],
+	);
+
 	return (
 		<Block>
-			<Flex justify="space-between" align="center" className="mb-4">
-				<Title level={5} className="!mb-0">
+			<div className="flex items-center justify-between mb-4">
+				<Text strong className="text-base">
 					Lĩnh vực cần tìm kiếm ở đối tác
-				</Title>
+				</Text>
 				<Button
-					type="dashed"
+					type="primary"
 					icon={<PlusOutlined />}
-					onClick={handleAdd}
+					onClick={openAddModal}
 					disabled={disabled}
 				>
 					Thêm lĩnh vực
 				</Button>
-			</Flex>
-			<div className="flex flex-col gap-3">
-				{fields.map((field, index) => (
-					<Card
-						key={index}
-						size="small"
-						className="border border-gray-200"
-						styles={{ body: { padding: "16px" } }}
-					>
-						<div className="flex items-start justify-between gap-2 mb-3">
-							<Text strong className="text-sm">
-								Điều kiện {index + 1}
-							</Text>
-							<Button
-								type="text"
-								size="small"
-								danger
-								icon={<DeleteOutlined />}
-								disabled={disabled}
-								onClick={() => handleRemove(index)}
-							/>
-						</div>
-
-						<Row gutter={[12, 0]}>
-							<Col xs={24} md={12}>
-								<div className="flex flex-col gap-2">
-									<Input
-										placeholder="Tên điều kiện"
-										value={field.name}
-										onChange={(e) =>
-											handleChange(index, "name", e.target.value)
-										}
-										disabled={disabled}
-									/>
-									<Input.TextArea
-										placeholder="Mô tả điều kiện"
-										value={field.description ?? ""}
-										onChange={(e) =>
-											handleChange(index, "description", e.target.value)
-										}
-										autoSize={{ minRows: 2, maxRows: 4 }}
-										disabled={disabled}
-									/>
-								</div>
-							</Col>
-							<Col xs={24} md={12}>
-								<Space orientation="vertical" size={8} className="w-full">
-									<Button
-										size="small"
-										onClick={() => setPickerOpenIndex(index)}
-										disabled={disabled}
-									>
-										Chọn ảnh đã tải lên
-									</Button>
-									<Upload
-										listType="picture-card"
-										accept="image/*"
-										maxCount={1}
-										fileList={field.imageFile ? [field.imageFile] : []}
-										beforeUpload={beforeImageUpload}
-										onChange={({ fileList }) =>
-											handleImageChange(
-												index,
-												fileList as MediaUploadFile[],
-											)
-										}
-										disabled={disabled}
-									>
-										{field.imageFile ? null : (
-											<button
-												type="button"
-												className="border-0 bg-transparent"
-											>
-												<PlusOutlined />
-												<div className="mt-2 text-xs">Tải ảnh</div>
-											</button>
-										)}
-									</Upload>
-								</Space>
-							</Col>
-						</Row>
-
-						{pickerOpenIndex === index && (
-							<MediaPickerModal
-								open
-								title="Chọn ảnh điều kiện"
-								resourceType="image"
-								selectedIds={field.imageId ? [field.imageId] : []}
-								onCancel={() => setPickerOpenIndex(null)}
-								onConfirm={(items) => handleSelectMedia(index, items)}
-							/>
-						)}
-					</Card>
-				))}
 			</div>
+
+			<Table<NeededFieldItemState>
+				rowKey={Math.random().toString()}
+				columns={columns}
+				dataSource={fields}
+				pagination={false}
+				locale={{
+					emptyText: <NoData description="Chưa có lĩnh vực nào" />,
+				}}
+			/>
+
+			<Modal
+				title={isEdit ? "Sửa lĩnh vực" : "Thêm lĩnh vực"}
+				open={modalOpen}
+				onOk={handleSubmit}
+				onCancel={closeModal}
+				okText={isEdit ? "Cập nhật" : "Thêm"}
+				cancelText="Hủy"
+				destroyOnHidden
+			>
+				<Form form={form} layout="vertical" className="mt-4">
+					<Form.Item
+						name="name"
+						label="Tên lĩnh vực"
+						rules={[
+							{ required: true, message: "Vui lòng nhập tên lĩnh vực" },
+						]}
+					>
+						<Input placeholder="VD: Thiết kế kiến trúc" autoFocus />
+					</Form.Item>
+					<Form.Item name="description" label="Mô tả">
+						<Input.TextArea
+							placeholder="Mô tả lĩnh vực"
+							autoSize={{ minRows: 2, maxRows: 4 }}
+						/>
+					</Form.Item>
+					<Form.Item label="Ảnh minh hoạ">
+						<div className="flex flex-col gap-3">
+							<Button onClick={() => setPickerOpen(true)}>
+								Chọn ảnh đã tải lên
+							</Button>
+							<Upload
+								className="w-full [&_.ant-upload-list]:h-full [&_.ant-upload]:w-full flex-1"
+								listType="picture-card"
+								accept="image/*"
+								maxCount={1}
+								fileList={modalImageFile ? [modalImageFile] : []}
+								beforeUpload={beforeImageUpload}
+								onChange={({ fileList }) =>
+									setModalImageFile(
+										(fileList[0] as MediaUploadFile) ?? undefined,
+									)
+								}
+							>
+								{modalImageFile ? null : (
+									<button
+										type="button"
+										className="border-0 bg-transparent"
+									>
+										<PlusOutlined />
+										<div className="mt-2 text-xs">Tải ảnh</div>
+									</button>
+								)}
+							</Upload>
+						</div>
+					</Form.Item>
+				</Form>
+			</Modal>
+
+			{pickerOpen && (
+				<MediaPickerModal
+					open
+					title="Chọn ảnh lĩnh vực"
+					resourceType="image"
+					selectedIds={
+						modalImageFile?.mediaId ? [modalImageFile.mediaId] : []
+					}
+					onCancel={() => setPickerOpen(false)}
+					onConfirm={handleSelectMedia}
+				/>
+			)}
 		</Block>
 	);
 }

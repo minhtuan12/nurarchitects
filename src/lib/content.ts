@@ -78,7 +78,7 @@ export async function getContact() {
 
 export async function getCooperation() {
   if (!(await tryConnectDb())) return null;
-  return serialize(await CooperationConfig.findOne({ _type: "cooperation" }).populate("imageIds").lean());
+  return serialize(await CooperationConfig.findOne({ _type: "cooperation" }).populate("imageIds bannerId neededFields.imageId").lean());
 }
 
 export async function getPublishedProjects(limit = 24) {

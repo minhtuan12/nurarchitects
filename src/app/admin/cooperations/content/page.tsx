@@ -24,9 +24,10 @@ import {
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { useMessage } from "@/contexts/AdminMessageContext";
 import { CooperationStep, NeededFieldItemState } from "@/types/cooperation";
-import NeededFieldList from "./(components)/NeededFieldList";
-import StepList from "./(components)/StepList";
-import SeoSection, { SeoFormValue } from "./(components)/SeoSection";
+import NeededFieldList from "../(components)/NeededFieldList";
+import StepList from "../(components)/StepList";
+import SeoSection, { SeoFormValue } from "../(components)/SeoSection";
+import { Info } from "lucide-react";
 
 const { Title } = Typography;
 
@@ -156,21 +157,11 @@ export default function CooperationPage() {
 					setSteps(rawSteps);
 
 					// Needed fields
-					const fieldPromises = (data.neededFields ?? []).map(
-						async (f: any): Promise<NeededFieldItemState> => {
-							const imageId = idToString(f.imageId);
-							const imageFile = imageId
-								? await mediaIdToUploadFile(imageId)
-								: undefined;
-							return {
-								name: f.name ?? "",
-								description: f.description ?? "",
-								imageId,
-								imageFile,
-							};
-						},
-					);
-					setNeededFields(await Promise.all(fieldPromises));
+					setNeededFields(data.neededFields.map((i: any) => ({
+						...i,
+						imageId: String(i?.imageId?._id),
+						imageFile: i?.imageId,
+					})));
 				}
 
 				// ── SEO data ──
@@ -193,7 +184,7 @@ export default function CooperationPage() {
 	// ── Upload helper ─────────────────────────────────────────────────────────
 
 	const uploadMediaFile = async (file: MediaUploadFile): Promise<string> => {
-		if (file.mediaId) return file.mediaId;
+		if (file.mediaId || file._id) return (file.mediaId || file._id) as string;
 		if (!file.originFileObj) throw new Error("Missing upload file");
 
 		const formData = new FormData();
@@ -453,6 +444,21 @@ export default function CooperationPage() {
 			),
 		},
 		{
+			key: "coop-fields",
+			label: "Lĩnh vực hợp tác",
+			children: (
+				<Row gutter={[16, 16]}>
+					<Col span={24}>
+						<NeededFieldList
+							fields={neededFields}
+							onChange={setNeededFields}
+							disabled={loading || saving}
+						/>
+					</Col>
+				</Row>
+			),
+		},
+		{
 			key: "content",
 			label: "Nội dung",
 			children: (
@@ -500,16 +506,23 @@ export default function CooperationPage() {
 
 	return (
 		<>
-			<Button
-				type="primary"
-				size="large"
-				loading={saving}
-				disabled={loading}
-				onClick={handleSave}
-				className="fixed bottom-5 left-1/2 z-9999"
-			>
-				Cập nhật
-			</Button>
+			<Row className="flex items-center justify-between gap-4 mb-5 px-1">
+				<Flex align="center" gap={6}>
+					<Info size={18} color="#e69b08" />
+					<Typography.Text type="secondary" className="text-sm text-[#e69b08]">
+						Nhấn Cập nhật sau khi thêm các nội dung
+					</Typography.Text>
+				</Flex>
+				<Button
+					type="primary"
+					size="large"
+					loading={saving}
+					disabled={loading}
+					onClick={handleSave}
+				>
+					Cập nhật
+				</Button>
+			</Row>
 
 			<Form
 				form={form}

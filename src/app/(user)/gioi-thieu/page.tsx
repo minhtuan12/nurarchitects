@@ -33,6 +33,15 @@ export default async function IntroductionPage() {
         position="relative"
         sx={{ height: { xs: "60vh", md: "100vh" } }}
       >
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background: "rgb(0 0 0 / 30%)",
+            transition: "opacity 0.35s ease",
+            zIndex: 10,
+          }}
+        />
         <MediaRenderer
           media={data?.bannerId as IMedia}
           autoPlay

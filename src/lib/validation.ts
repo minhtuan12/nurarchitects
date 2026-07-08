@@ -40,6 +40,12 @@ export const cooperationStepSchema = z.object({
   description: htmlSchema,
 });
 
+export const cooperationFieldSchema = z.object({
+  name: z.string().min(1).max(160),
+  description: htmlSchema,
+  imageId: optionalObjectIdSchema,
+});
+
 export const socialSchema = z.object({
   name: z.string().min(1).max(80),
   url: z.string().url(),
@@ -173,13 +179,40 @@ export const contactConfigSchema = z.object({
 });
 
 export const cooperationConfigSchema = z.object({
+  bannerId: optionalObjectIdSchema,
   introduction: htmlSchema,
   steps: z.array(cooperationStepSchema).default([]),
+  neededFields: z.array(cooperationFieldSchema).default([]),
   imageIds: z.array(objectIdSchema).default([]),
   firstCtaBtn: z.string().max(120).default(""),
   secondCtaBtn: z.string().max(120).default(""),
   thirdCtaBtn: z.string().max(120).default(""),
 });
+
+export const cooperationFormStatuses = [
+  "new",
+  "contacted",
+  "in_review",
+  "approved",
+  "rejected",
+] as const;
+
+export const cooperationFormSchema = z.object({
+  companyName: z.string().min(1).max(200),
+  contactName: z.string().min(1).max(120),
+  position: z.string().min(1).max(120),
+  phone: z.string().min(7).max(32),
+  email: z.email().max(150),
+  mainService: z.string().optional(),
+  otherService: z.string().max(200).default(""),
+  capacityProfileUrl: z.string().max(500).default(""),
+  catalogueUrl: z.string().max(500).default(""),
+  productSegmentUrl: z.string().max(500).default(""),
+  policyUrl: z.string().max(500).default(""),
+  status: z.enum(cooperationFormStatuses).default("new"),
+});
+
+export type CooperationFormInput = z.infer<typeof cooperationFormSchema>;
 
 export const departmentSchema = z.object({
   name: z.string().min(1).max(160),
