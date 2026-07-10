@@ -13,7 +13,7 @@ import { AppImage } from "../AppImage";
 import Button from "../Button";
 import { HotlineBar } from "./HotlineBar";
 import Logo from "@/assets/images/logo.png";
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import MobileMenu from "./MobileMenu";
 
 export interface INavItem {
@@ -112,8 +112,13 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 	const isHomepage = pathname === "/";
 	const isMobile = useMediaQuery("(max-width:900px)");
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+	const theme = useTheme();
 	const [scrolled, setScrolled] = useState(false);
+
+	function isRouteActive(pathname: string, href: string): boolean {
+		if (href === "/") return pathname === "/";
+		return pathname === href || pathname.startsWith(`${href}/`);
+	}
 
 	useEffect(() => {
 		const onScroll = () => setScrolled(window.scrollY > 10);
@@ -220,7 +225,9 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 								>
 									{nav.map((item: INavItem, index: number) => {
 										const hasChildren = !!item.children?.length;
-										const isActiveRoute = item?.href && pathname.includes(item.href) || item?.children?.some((i) => pathname.includes(i.href));
+										const isActiveRoute =
+											isRouteActive(pathname, item.href) ||
+											item.children?.some((child) => isRouteActive(pathname, child.href));
 										return (
 											<NavItem
 												key={index}
@@ -253,6 +260,10 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 										fontSize: 12.5,
 										color: "inherit",
 										borderColor: "currentColor",
+										'&:hover': {
+											bgcolor: 'primary.main',
+											color: theme.palette.getContrastText(theme.palette.primary.main)
+										},
 									}}
 									fillHovered
 								>

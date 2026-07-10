@@ -54,6 +54,7 @@ export default async function HomePage({
               background: "rgb(0 0 0 / 30%)",
               transition: "opacity 0.35s ease",
               zIndex: 10,
+              height: { xs: '60.5vh', md: "100vh" }
             }}
           />
           <MediaRenderer

@@ -66,7 +66,7 @@ export default function NewsSection({
 			{/* Bài viết nổi bật */}
 			<Box
 				component={Link}
-				href={withQueryString(`${basePath}/${featured.slug}`, queryString)}
+				href={withQueryString(`/tin-tuc/chi-tiet/${featured.slug}`, queryString)}
 				sx={{
 					display: "flex",
 					flexDirection: { xs: "column", md: "row" },
@@ -134,7 +134,7 @@ export default function NewsSection({
 					<Grid size={{ xs: 12, sm: 6, md: 3 }} key={String(post._id)} mb={{ xs: 0, md: 3 }}>
 						<Box
 							component={Link}
-							href={withQueryString(`${basePath}/${post.slug}`, queryString)}
+							href={withQueryString(`/tin-tuc/chi-tiet/${post.slug}`, queryString)}
 							sx={{
 								display: "block",
 								textDecoration: "none",

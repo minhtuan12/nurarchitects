@@ -223,7 +223,7 @@ export function createSingletonHandlers(
         const item = await Model.findOneAndUpdate(
           { _type: type },
           { ...payload, _type: type },
-          { new: true, upsert: true, runValidators: true },
+          { returnDocument: 'after', upsert: true, runValidators: true },
         ).lean();
         return NextResponse.json({ item });
       } catch (error) {

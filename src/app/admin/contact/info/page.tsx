@@ -1,9 +1,17 @@
 "use client";
 
 import Block from "@/components/Block";
-import { Button, Col, Input, Row, Typography } from "antd";
+import { Button, Col, Flex, Input, Row, Typography, Upload } from "antd";
+import type { UploadProps } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { adminFetch } from "@/components/admin/AdminShell";
+import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
+import {
+	mediaToUploadFile,
+	type AdminMediaItem,
+	type MediaUploadFile,
+} from "@/components/admin/media/media-upload-file";
 import { useMessage } from "@/contexts/AdminMessageContext";
 import LocationManager, { LocationItem } from "../(components)/LocationManager";
 import FacebookIcon from "@/components/icons/Facebook";
@@ -15,6 +23,7 @@ import { isValidUrl } from "@/helpers";
 const { Title, Text } = Typography;
 
 type SocialField = "facebookUrl" | "instagramUrl" | "youtubeUrl" | "tiktokUrl";
+type BannerUploadFile = MediaUploadFile;
 
 export default function ContactPage() {
 	const [phone, setPhone] = useState("");
@@ -24,6 +33,10 @@ export default function ContactPage() {
 	const [instagramUrl, setInstagramUrl] = useState("");
 	const [youtubeUrl, setYoutubeUrl] = useState("");
 	const [tiktokUrl, setTiktokUrl] = useState("");
+
+	// Banner state
+	const [bannerFiles, setBannerFiles] = useState<BannerUploadFile[]>([]);
+	const [bannerPickerOpen, setBannerPickerOpen] = useState(false);
 
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
@@ -54,6 +67,28 @@ export default function ContactPage() {
 					setInstagramUrl(contact.instagramUrl ?? "");
 					setYoutubeUrl(contact.youtubeUrl ?? "");
 					setTiktokUrl(contact.tiktokUrl ?? "");
+
+					// bannerId có thể được backend populate thành object media
+					// { _id, secureUrl/url, ... } hoặc đôi khi chỉ là string id thô
+					// (hoặc field riêng contact.banner) tuỳ API - xử lý cả 3 trường hợp
+					const bannerMedia = contact.bannerId ?? contact.banner;
+
+					if (bannerMedia && typeof bannerMedia === "object") {
+						setBannerFiles([mediaToUploadFile(bannerMedia as AdminMediaItem)]);
+					} else if (typeof bannerMedia === "string") {
+						// bannerId chỉ là id thô, chưa populate -> không có sẵn url để hiển thị preview
+						setBannerFiles([
+							{
+								uid: bannerMedia,
+								mediaId: bannerMedia,
+								name: "banner",
+								status: "done",
+								url: contact.bannerUrl ?? "",
+							} as BannerUploadFile,
+						]);
+					} else {
+						setBannerFiles([]);
+					}
 				}
 			})
 			.catch(() => messageApi.error("Không thể tải dữ liệu liên hệ"))
@@ -119,36 +154,84 @@ export default function ContactPage() {
 		return true;
 	};
 
-	const handleSave = () => {
+	// Upload banner file lên Cloudinary qua /api/admin/media (nếu là file mới),
+	// trả về mediaId cuối cùng; nếu đã có mediaId (chọn từ thư viện) thì dùng luôn
+	const uploadBannerFile = async (
+		file: BannerUploadFile,
+	): Promise<string | null> => {
+		if (!file) return null;
+		if (file.mediaId) return file.mediaId;
+		if (!file.originFileObj) return null;
+
+		const isVideo = file.originFileObj.type?.startsWith("video/");
+		const formData = new FormData();
+		formData.append("file", file.originFileObj);
+		formData.append("resourceType", isVideo ? "video" : "image");
+
+		const res = await adminFetch("/api/admin/media", {
+			method: "POST",
+			body: formData,
+		});
+		const data = await res.json();
+		if (!res.ok || data.error || !data.item?._id) {
+			throw new Error(data.error ?? "Không thể tải banner lên");
+		}
+
+		return String(data.item._id);
+	};
+
+	const beforeBannerUpload: UploadProps["beforeUpload"] = (file) => {
+		const isImageOrVideo =
+			file.type?.startsWith("image/") || file.type?.startsWith("video/");
+		if (!isImageOrVideo) {
+			messageApi.error("Chỉ hỗ trợ tải ảnh hoặc video lên");
+			return Upload.LIST_IGNORE;
+		}
+		return false;
+	};
+
+	const handleSelectBannerMedia = (items: AdminMediaItem[]) => {
+		setBannerFiles(items[0] ? [mediaToUploadFile(items[0])] : []);
+		setBannerPickerOpen(false);
+	};
+
+	const handleSave = async () => {
 		if (!validateSocials()) return;
 		if (!validateLocations()) return;
 
 		setSaving(true);
+		try {
+			const bannerId =
+				bannerFiles.length > 0 ? await uploadBannerFile(bannerFiles[0]) : null;
 
-		adminFetch("/api/admin/contact", {
-			method: "PATCH",
-			headers: { "content-type": "application/json" },
-			body: JSON.stringify({
-				phone,
-				email,
-				locations: locations.map(({ _id, ...rest }) => ({
-					...(_id ? { _id } : {}),
-					...rest,
-				})),
-				facebookUrl,
-				instagramUrl,
-				youtubeUrl,
-				tiktokUrl,
-			}),
-		})
-			.then((res) => res.json())
-			.then((data) => {
-				if (data.error) throw new Error(data.error);
-				messageApi.success("Lưu thành công");
-			})
-			.catch(() => messageApi.error("Đã có lỗi xảy ra"))
-			.finally(() => setSaving(false));
+			const res = await adminFetch("/api/admin/contact", {
+				method: "PATCH",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({
+					phone,
+					email,
+					locations: locations.map(({ _id, ...rest }) => ({
+						...(_id ? { _id } : {}),
+						...rest,
+					})),
+					facebookUrl,
+					instagramUrl,
+					youtubeUrl,
+					tiktokUrl,
+					...(bannerId !== null && { bannerId }),
+				}),
+			});
+			const data = await res.json();
+			if (data.error) throw new Error(data.error);
+			messageApi.success("Lưu thành công");
+		} catch (err) {
+			messageApi.error(err instanceof Error ? err.message : "Đã có lỗi xảy ra");
+		} finally {
+			setSaving(false);
+		}
 	};
+
+	const isDisabled = loading || saving;
 
 	return (
 		<>
@@ -168,6 +251,46 @@ export default function ContactPage() {
 			</Row>
 
 			<Row gutter={[16, 16]}>
+				<Col span={24}>
+					<Block>
+						<Flex vertical gap={12}>
+							<Title level={5} className="!mb-0 !text-black">
+								Banner
+							</Title>
+
+							<Button
+								className="self-start"
+								disabled={isDisabled}
+								onClick={() => setBannerPickerOpen(true)}
+							>
+								Chọn từ thư viện
+							</Button>
+
+							<Upload
+								listType="picture-card"
+								accept="image/*,video/*"
+								maxCount={1}
+								fileList={bannerFiles}
+								beforeUpload={beforeBannerUpload}
+								onChange={({ fileList }) =>
+									setBannerFiles(fileList as BannerUploadFile[])
+								}
+								disabled={isDisabled}
+								className="w-full [&_.ant-upload]:w-full [&_.ant-upload]:h-50"
+							>
+								{bannerFiles.length >= 1 ? null : (
+									<button type="button" className="border-0 bg-transparent">
+										<PlusOutlined />
+										<div className="mt-2">Tải ảnh/video mới</div>
+									</button>
+								)}
+							</Upload>
+						</Flex>
+					</Block>
+				</Col>
+			</Row>
+
+			<Row gutter={[16, 16]} className="mt-4">
 				<Col span={12}>
 					<Block className="h-full">
 						<Title level={5} className="!mb-3 !text-black">
@@ -277,6 +400,17 @@ export default function ContactPage() {
 					</Block>
 				</Col>
 			</Row>
+
+			{bannerPickerOpen && (
+				<MediaPickerModal
+					open
+					title="Chọn banner"
+					multiple={false}
+					selectedIds={bannerFiles[0]?.mediaId ? [bannerFiles[0].mediaId] : []}
+					onCancel={() => setBannerPickerOpen(false)}
+					onConfirm={handleSelectBannerMedia}
+				/>
+			)}
 		</>
 	);
 }

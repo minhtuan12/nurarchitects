@@ -4,7 +4,11 @@ import { ContactConfig } from "@/models";
 
 export const runtime = "nodejs";
 
-const handlers = createSingletonHandlers(ContactConfig, contactConfigSchema, "contact");
+const handlers = createSingletonHandlers(ContactConfig, contactConfigSchema, "contact", [
+	{
+		path: "bannerId",
+	},
+]);
 
 export const GET = handlers.get;
 export const PUT = handlers.upsert;

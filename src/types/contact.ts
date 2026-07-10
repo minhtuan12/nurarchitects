@@ -21,6 +21,7 @@ export interface IContactForm {
 export interface IContactLocation {
 	name: string;
 	address: string;
+	link: string;
 	lat: number;
 	lng: number;
 }

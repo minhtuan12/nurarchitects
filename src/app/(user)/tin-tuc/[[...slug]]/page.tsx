@@ -4,6 +4,7 @@ import {
 	getPublishedNews,
 	getNewsCategoryBySlug,
 	getSeoBySlug,
+	getNewsBySlug,
 } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 import NewsSection from "../(components)/NewsSection";
@@ -11,49 +12,57 @@ import { buildQueryString } from "@/helpers";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
 import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
+import NewsDetail from "../(components)/NewsDetail";
 
 export const runtime = "nodejs";
 
 const PAGE_SIZE = 12;
 
-interface ParsedNewsRoute {
-	category?: string;
-	page: number;
-}
+// ---- Kiểu dữ liệu sau khi parse slug ----
+type ParsedNewsRoute =
+	| { type: "list"; category?: string; page: number }
+	| { type: "detail"; newsSlug: string };
 
 /**
- * Phân tích slug thành { category?, page } cho 4 dạng URL:
- *  []                          -> { page: 1 }
- *  ["trang", "2"]              -> { page: 2 }
- *  ["noi-that"]                -> { category: "noi-that", page: 1 }
- *  ["noi-that", "trang", "2"]  -> { category: "noi-that", page: 2 }
+ * Phân tích slug thành route tương ứng cho 5 dạng URL:
+ *  []                              -> { type: "list", page: 1 }
+ *  ["trang", "2"]                  -> { type: "list", page: 2 }
+ *  ["noi-that"]                    -> { type: "list", category: "noi-that", page: 1 }
+ *  ["noi-that", "trang", "2"]      -> { type: "list", category: "noi-that", page: 2 }
+ *  ["chi-tiet", "bai-viet-abc"]    -> { type: "detail", newsSlug: "bai-viet-abc" }
  * Trả về null nếu slug không khớp bất kỳ dạng nào -> 404.
  *
- * Lưu ý: "trang" là từ khoá dành riêng cho phân trang, KHÔNG được đặt
- * slug category trùng "trang" khi tạo category ở admin.
+ * Lưu ý: "trang" và "chi-tiet" là từ khoá dành riêng, KHÔNG được đặt
+ * slug category trùng 2 từ này khi tạo category ở admin.
  */
 function parseNewsSlug(slug: string[] = []): ParsedNewsRoute | null {
 	if (slug.length === 0) {
-		return { page: 1 };
+		return { type: "list", page: 1 };
+	}
+
+	// /tin-tuc/chi-tiet/[newsSlug]
+	if (slug[0] === "chi-tiet") {
+		if (slug.length !== 2 || !slug[1]) return null;
+		return { type: "detail", newsSlug: slug[1] };
 	}
 
 	if (slug[0] === "trang") {
 		if (slug.length !== 2) return null;
 		const page = Number(slug[1]);
 		if (!Number.isInteger(page) || page < 1) return null;
-		return { page };
+		return { type: "list", page };
 	}
 
 	const category = slug[0];
 
 	if (slug.length === 1) {
-		return { category, page: 1 };
+		return { type: "list", category, page: 1 };
 	}
 
 	if (slug.length === 3 && slug[1] === "trang") {
 		const page = Number(slug[2]);
 		if (!Number.isInteger(page) || page < 1) return null;
-		return { category, page };
+		return { type: "list", category, page };
 	}
 
 	return null;
@@ -77,6 +86,20 @@ export async function generateMetadata({ params }: PageProps) {
 	const { slug } = await params;
 	const parsed = parseNewsSlug(slug);
 	if (!parsed) return {};
+
+	if (parsed.type === "detail") {
+		const news = await getNewsBySlug(parsed.newsSlug);
+		if (!news) return {};
+		return buildMetadata({
+			title: news.seo?.title || news.title,
+			slug: `tin-tuc/chi-tiet/${news.slug}`,
+			description: news.seo?.description || news.shortDescription,
+			canonicalUrl: news.seo?.canonicalUrl,
+			ogImage: news.seo?.ogImage || news.thumbnailId?.secureUrl,
+			focusKeywords: news.seo?.focusKeywords,
+			type: 'article',
+		});
+	}
 
 	if (parsed.category) {
 		const categoryInfo = await getNewsCategoryBySlug(parsed.category);
@@ -107,6 +130,14 @@ export default async function NewsPage({ params, searchParams }: PageProps) {
 	const parsed = parseNewsSlug(slug);
 	if (!parsed) notFound();
 
+	// ---- Nhánh: trang chi tiết bài viết ----
+	if (parsed.type === "detail") {
+		const news = await getNewsBySlug(parsed.newsSlug);
+		if (!news) notFound();
+		return <NewsDetail news={news} />;
+	}
+
+	// ---- Nhánh: trang danh sách (giữ nguyên logic cũ) ----
 	const { category, page } = parsed;
 	const basePath = category ? `/tin-tuc/${category}` : "/tin-tuc";
 	const queryString = buildQueryString({ search });
@@ -136,7 +167,7 @@ export default async function NewsPage({ params, searchParams }: PageProps) {
 			<Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
 				<Box
 					position="relative"
-					sx={{ height: { xs: "400px", md: "750px" } }}
+					sx={{ height: { xs: "400px", md: "630px" } }}
 				>
 					<Box
 						sx={{

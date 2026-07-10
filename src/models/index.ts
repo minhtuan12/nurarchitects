@@ -178,6 +178,7 @@ const LocationSchema = new Schema(
   {
     name: { type: String, required: true, default: "" }, // Tên địa điểm, ví dụ: "Văn phòng Hà Nội"
     address: { type: String, default: "" }, // Địa chỉ dạng text hiển thị
+    link: { type: String, default: "" }, // Link dạng text hiển thị
     lat: { type: Number, required: true }, // Vĩ độ
     lng: { type: Number, required: true }, // Kinh độ
   },

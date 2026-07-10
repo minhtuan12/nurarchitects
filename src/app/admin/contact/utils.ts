@@ -12,42 +12,6 @@
 
 export type LatLng = { lat: number; lng: number };
 
-const COORD_PATTERNS: RegExp[] = [
-	// @lat,lng,zoom  hoặc  @lat,lng
-	/@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
-	// ?q=lat,lng  hoặc  &q=lat,lng
-	/[?&]q=(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
-	// !3dlat!4dlng (định dạng nội bộ của Google Maps trong path data)
-	/!3d(-?\d{1,3}\.\d+)!4d(-?\d{1,3}\.\d+)/,
-	// /dir//lat,lng/ hoặc tương tự, lat,lng đứng độc lập trong path
-	/\/(-?\d{1,3}\.\d{3,}),(-?\d{1,3}\.\d{3,})(?:[/?]|$)/,
-];
-
-function tryExtractFromText(text: string): LatLng | null {
-	for (const pattern of COORD_PATTERNS) {
-		const match = text.match(pattern);
-		if (match) {
-			const lat = Number.parseFloat(match[1]);
-			const lng = Number.parseFloat(match[2]);
-			if (isValidLatLng(lat, lng)) {
-				return { lat, lng };
-			}
-		}
-	}
-	return null;
-}
-
-function isValidLatLng(lat: number, lng: number): boolean {
-	return (
-		Number.isFinite(lat) &&
-		Number.isFinite(lng) &&
-		lat >= -90 &&
-		lat <= 90 &&
-		lng >= -180 &&
-		lng <= 180
-	);
-}
-
 function isShortenedGoogleMapsUrl(url: string): boolean {
 	return /maps\.app\.goo\.gl|goo\.gl\/maps/.test(url);
 }
@@ -57,13 +21,27 @@ function isShortenedGoogleMapsUrl(url: string): boolean {
  * Dùng khi URL đã ở dạng đầy đủ www.google.com/maps/...
  */
 export function parseGoogleMapsUrl(url: string): LatLng | null {
-	if (!url) return null;
-	try {
-		const decoded = decodeURIComponent(url);
-		return tryExtractFromText(decoded) ?? tryExtractFromText(url);
-	} catch {
-		return tryExtractFromText(url);
+	// 1. Ưu tiên marker
+	let match = url.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);
+
+	if (match) {
+		return {
+			lat: Number(match[1]),
+			lng: Number(match[2]),
+		};
 	}
+
+	// 2. Fallback về camera
+	match = url.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+
+	if (match) {
+		return {
+			lat: Number(match[1]),
+			lng: Number(match[2]),
+		};
+	}
+
+	return null;
 }
 
 /**

@@ -74,7 +74,7 @@ export async function getIntroduction() {
 
 export async function getContact() {
   if (!(await tryConnectDb())) return null;
-  return serialize(await ContactConfig.findOne({ _type: "contact" }).lean());
+  return serialize(await ContactConfig.findOne({ _type: "contact" }).populate('bannerId').lean());
 }
 
 export async function getCooperation() {
@@ -99,7 +99,16 @@ export async function getNewsCategories() {
 
 export async function getNewsBySlug(slug: string) {
   if (!(await tryConnectDb())) return null;
-  return serialize(await News.findOne({ slug, status: "published" }).populate("thumbnailId relatedNewsIds").lean());
+  return serialize(
+    await News.findOne({ slug, status: "published" })
+      .populate("thumbnailId categoryId")
+      .populate({
+        path: "relatedNewsIds",
+        match: { status: "published" },
+        populate: { path: "thumbnailId", model: "Media" },
+      })
+      .lean(),
+  );
 }
 
 export async function getNewsCategoryBySlug(slug: string) {

@@ -163,6 +163,7 @@ export const locationSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(1, "Tên địa điểm là bắt buộc").max(200),
   address: z.string().max(2000).default(""),
+  link: z.string().max(2000).default(""),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
 });
@@ -176,6 +177,7 @@ export const contactConfigSchema = z.object({
   youtubeUrl: z.url().or(z.literal("")).default(""),
   tiktokUrl: z.url().or(z.literal("")).default(""),
   otherSocials: z.array(socialSchema).default([]),
+  bannerId: optionalObjectIdSchema,
 });
 
 export const cooperationConfigSchema = z.object({

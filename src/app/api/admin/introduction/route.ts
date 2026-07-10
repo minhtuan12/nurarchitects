@@ -35,7 +35,7 @@ export const PATCH = async (request: NextRequest) => {
 		const item = await IntroductionConfig.findOneAndUpdate(
 			{ _type: "introduction" },
 			{ ...payload, _type: "introduction" },
-			{ new: true, upsert: true, runValidators: true },
+			{ returnDocument: 'after', upsert: true, runValidators: true },
 		).lean();
 
 		const populated = await populateMediaFields(IntroductionConfig, item);

@@ -9,6 +9,7 @@ export interface SeoInput {
   canonicalUrl?: string;
   ogImage?: string;
   focusKeywords?: string[];
+  type?: "website" | "article" | "book" | "profile" | "music.song" | "music.album" | "music.playlist" | "music.radio_station" | "video.movie" | "video.episode" | "video.tv_show" | "video.other" | undefined;
 }
 
 export function siteUrl(path = "") {
@@ -21,7 +22,7 @@ export function buildMetadata(input: SeoInput = {}): Metadata {
   const description =
     input.description || "NUR Architects creates considered architecture, interiors, and built environments.";
   const canonical = input.canonicalUrl || siteUrl(input.slug ? `/${input.slug}` : "/");
-  const images = input.ogImage ? [{ url: input.ogImage }] : [];
+  const images = input.ogImage ? [{ url: input.ogImage, width: 1200, height: 630 }] : [];
 
   return {
     title,
@@ -34,7 +35,8 @@ export function buildMetadata(input: SeoInput = {}): Metadata {
       url: canonical,
       siteName,
       images,
-      type: "website",
+      locale: "vi_VN",
+      type: input.type || "website",
     },
     twitter: {
       card: "summary_large_image",
