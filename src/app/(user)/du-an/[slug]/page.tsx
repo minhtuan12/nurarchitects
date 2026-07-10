@@ -9,7 +9,11 @@ import { PageIntro, RichContent } from "@/components/PageSections";
 import { getProjectBySlug } from "@/lib/content";
 import { buildMetadata, projectJsonLd } from "@/lib/seo";
 import Developing from "@/components/admin/Developing";
-import { Box } from "@mui/material";
+import { Box, Divider } from "@mui/material";
+import MediaRenderer from "@/components/MediaRenderer";
+import { IMedia } from "@/types/media";
+import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
+import { EBuildPlan } from "@/types/project";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -22,33 +26,111 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 }
 
+function InfoCell({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <Stack spacing={0.5} alignItems="center" sx={{ textAlign: "center", px: 3, py: 4 }}>
+      <Typography variant="body2" color="text.secondary" fontSize={14}>
+        {label}:
+      </Typography>
+      <Typography variant="subtitle1" fontWeight={700} fontSize={14}>
+        {value || "Đang cập nhật"}
+      </Typography>
+    </Stack>
+  );
+}
+
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
   return (
-    <>
-      <Box sx={{ py: 20 }}>
-        <Developing />
+    <Box bgcolor='white'>
+      <JsonLd data={projectJsonLd(project)} />
+
+      <Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
+        <Box position="relative" sx={{ height: { xs: "60vh", md: "98vh" } }}>
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              background: "rgb(0 0 0 / 30%)",
+              transition: "opacity 0.35s ease",
+              zIndex: 10,
+            }}
+          />
+          <MediaRenderer
+            media={project.thumbnailId as IMedia}
+            autoPlay
+            controls={false}
+            loop
+            className="h-full"
+            fill
+            title="Các dự án tiêu biểu của Nurarchitects"
+          />
+
+          {/* Nội dung text canh giữa Box */}
+          <Stack
+            sx={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "end",
+              textAlign: "center",
+              px: { xs: 2, md: 4 },
+              gap: 3,
+              pb: 10,
+            }}
+          >
+            <Typography
+              sx={{ textTransform: "uppercase" }}
+              color="#ffffffbe"
+              fontSize={12}
+              fontWeight={700}
+            >
+              Trang chủ / Dự án tiêu biểu
+            </Typography>
+            <Typography
+              variant="h1"
+              sx={{ textTransform: "uppercase" }}
+              fontSize={{ xs: 27, md: 40 }}
+              color="white"
+            >
+              {project.name}
+            </Typography>
+          </Stack>
+        </Box>
       </Box>
-      {/* <JsonLd data={projectJsonLd(project)} />
-      <PageIntro label="Dự án" title={project.name} body={project.shortDescription} />
-      <Container maxWidth="xl" sx={{ pb: 10 }}>
-        <Grid container spacing={6}>
-          <Grid size={{ xs: 12, md: 7 }}>
-            <AppImage alt={project.name} media={project.thumbnailId} fill aspectRatio="16 / 10" priority />
+      <Container maxWidth="lg" sx={{ pb: { xs: 6, md: 8 } }}>
+        {/* Hàng info-table: Chủ đầu tư / Mô hình / Địa điểm */}
+        <Grid container>
+          <Grid size={{ xs: 12, sm: 4 }} sx={{
+            borderBottom: { xs: "1px solid rgba(0, 0, 0, 0.12)", sm: 'none' },
+          }}>
+            <InfoCell label="Tổng diện tích" value={`${project.area} m²`} />
           </Grid>
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Stack gap={2}>
-              <Typography color="text.secondary">Địa điểm: {project.address || "Đang cập nhật"}</Typography>
-              <Typography color="text.secondary">Diện tích: {project.area ? `${project.area} m²` : "Đang cập nhật"}</Typography>
-              <Typography color="text.secondary">Năm: {project.implementationYear || "Đang cập nhật"}</Typography>
-              <RichContent html={project.description} />
-            </Stack>
+          <Grid
+            size={{ xs: 12, sm: 4 }}
+            sx={{
+              borderLeft: { sm: "1px solid rgba(0, 0, 0, 0.12)" },
+              borderRight: { sm: "1px solid rgba(0, 0, 0, 0.12)" },
+              borderBottom: { xs: "1px solid rgba(0, 0, 0, 0.12)", sm: 'none' },
+            }}
+          >
+            <InfoCell label="Mô hình" value={EBuildPlan[project?.category as keyof typeof EBuildPlan]?.label} />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <InfoCell label="Địa điểm" value={project.address} />
           </Grid>
         </Grid>
-      </Container> */}
-    </>
+
+        <Divider sx={{ mb: 4 }} />
+
+        {/* Mô tả chi tiết */}
+        <RichContent html={project.description} className="text-[rgb(61,61,61)] text-[14px]" />
+      </Container>
+    </Box>
   );
 }
