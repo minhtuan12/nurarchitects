@@ -336,7 +336,7 @@ export default function ActivityFormPage({
 					? "Cập nhật thành công"
 					: "Tạo lĩnh vực thành công",
 			);
-			router.push("/admin/activities");
+			router.push("/admin/activities/list");
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : "Đã có lỗi xảy ra";
@@ -355,7 +355,7 @@ export default function ActivityFormPage({
 						: "Tạo lĩnh vực mới"}
 				</Title>
 				<div className="flex justify-end gap-3">
-					<Button onClick={() => router.push("/admin/activities")}>
+					<Button onClick={() => router.push("/admin/activities/list")}>
 						Quay lại
 					</Button>
 					<Button

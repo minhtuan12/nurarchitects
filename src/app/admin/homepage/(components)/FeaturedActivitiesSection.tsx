@@ -98,7 +98,7 @@ export default function FeaturedActivitiesSection({
 				) : activities.length === 0 ? (
 					<NoData description="Chưa có lĩnh vực hoạt động nào">
 						<Button
-							onClick={() => router.replace("/admin/activities")}
+							onClick={() => router.replace("/admin/activities/list")}
 						>
 							Thêm lĩnh vực hoạt động
 						</Button>

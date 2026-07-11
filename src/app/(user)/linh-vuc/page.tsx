@@ -1,15 +1,20 @@
-import { getContact, getSeoBySlug } from "@/lib/content";
+import { getActivities, getActivityConfig, getContact, getSeoBySlug } from "@/lib/content";
 import { buildMetadata, organizationJsonLd } from "@/lib/seo";
 import Developing from "@/components/admin/Developing";
 import { Box } from "@mui/material";
+import MediaRenderer from "@/components/MediaRenderer";
+import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
+import ActivitiesSection from "./(components)/ActivitiesSection";
+import { IActivityPopulated } from "@/types/activity";
+import ContactCTASection from "@/components/ContactCTASection";
+import ProcessSection from "./(components)/ProcessSection";
+import AdvantagesSection from "./(components)/AdvantagesSection";
 
 export async function generateMetadata() {
-  const seo = await getSeoBySlug("activities", "page");
+  const seo = await getSeoBySlug("activity", "page");
   return buildMetadata({
-    title: seo?.title ?? "Trang chủ",
-    description:
-      seo?.description ??
-      "NUR Architects creates calm, precise architecture and interiors for contemporary living.",
+    title: seo?.title ?? "Lĩnh vực",
+    description: seo?.description ?? "Lĩnh vực hoạt động ở NUR Architects",
     canonicalUrl: seo?.canonicalUrl,
     ogImage: seo?.ogImage,
     focusKeywords: seo?.focusKeywords,
@@ -17,14 +22,48 @@ export async function generateMetadata() {
 }
 
 export default async function () {
-  const contact = await getContact();
-  const primaryLocation = contact?.locations?.[0];
+  const [activities, config] = await Promise.all([
+    getActivities(),
+    getActivityConfig()
+  ]);
 
   return (
     <>
-      <Box sx={{ py: 20 }}>
-        <Developing />
+      <Box sx={{ mt: { xs: "-78px", md: "-115px" }, bgcolor: "white" }}>
+        <Box
+          position="relative"
+          sx={{ height: { xs: "400px", md: "650px" } }}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              background: "rgb(0 0 0 / 30%)",
+              transition: "opacity 0.35s ease",
+              zIndex: 10,
+            }}
+          />
+          <MediaRenderer
+            media={null}
+            autoPlay
+            controls={false}
+            loop
+            className="h-full"
+            fill
+            title="Lĩnh vực hoạt động ở Nurarchitects"
+          />
+          <BannerBreadcrumb
+            breadcrumbString="Trang chủ / Lĩnh vực hoạt động"
+            pageTitle="Lĩnh vực hoạt động"
+          />
+        </Box>
       </Box>
+
+      <ActivitiesSection activities={activities} />
+      <ContactCTASection />
+      <AdvantagesSection advantages={config?.advantages || []} />
+      <ProcessSection process={config?.process || []} />
+      <ContactCTASection />
     </>
   );
 }

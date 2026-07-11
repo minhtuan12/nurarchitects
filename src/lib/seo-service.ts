@@ -46,6 +46,6 @@ export async function upsertProjectSeoSetting(projectId: Types.ObjectId | string
 			canonicalUrl: payload.canonicalUrl ?? "",
 			focusKeywords: payload.focusKeywords ?? [],
 		},
-		{ returnDocument: 'after', upsert: true, runValidators: true },
+		{ new: true, upsert: true, runValidators: true },
 	).lean();
 }

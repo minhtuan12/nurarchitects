@@ -24,7 +24,7 @@ import { adminFetch } from "@/components/admin/AdminShell";
 import NoData from "@/components/NoData";
 import { useMessage } from "@/contexts/AdminMessageContext";
 import type { SortOrder } from "@/types/shared";
-import type { ActivityResponse } from "./(components)/activity-form-utils";
+import type { ActivityResponse } from "../(components)/activity-form-utils";
 import { DEFAULT_PAGE_SIZE, SEARCH_DEBOUNCE_MS, STATUS_OPTIONS } from "@/lib/constants";
 import { IActivityPopulated } from "@/types/activity";
 

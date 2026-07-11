@@ -9,7 +9,7 @@ async function main() {
   await AdminUser.findOneAndUpdate(
     { username: "admin" },
     { username: "admin", passwordHash },
-    { upsert: true, returnDocument: 'after', runValidators: true },
+    { upsert: true, new: true, runValidators: true },
   );
   console.log("Seeded admin account: admin/admin123");
 }

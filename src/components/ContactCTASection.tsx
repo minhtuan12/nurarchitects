@@ -128,6 +128,7 @@ export default function ContactCTASection() {
 							display: "flex",
 							flexDirection: { xs: "column", md: "row" },
 							bgcolor: "primary.main",
+							alignItems: { xs: 'center', md: 'unset' },
 							position: "relative",
 							overflow: "hidden",
 							height: 350,
@@ -144,12 +145,13 @@ export default function ContactCTASection() {
 							fadeInDirection="left"
 							sx={{
 								flex: 1,
-								pl: { xs: 4, md: 10 },
+								pl: { xs: 0, md: 10 },
 								position: "relative",
 								zIndex: 1,
 								display: 'flex',
 								flexDirection: 'column',
 								justifyContent: 'center',
+								alignItems: { xs: 'center', md: 'unset' },
 							}}
 						>
 							<Typography
@@ -160,6 +162,7 @@ export default function ContactCTASection() {
 									letterSpacing: "0.05em",
 									textTransform: "uppercase",
 									mb: 0.75,
+									textAlign: { xs: 'center', md: 'unset' },
 								}}
 							>
 								Liên hệ ngay với chúng tôi
@@ -167,10 +170,11 @@ export default function ContactCTASection() {
 							<Typography
 								sx={{
 									color: "#fff",
-									fontSize: { xs: 22, md: '1.6em' },
+									fontSize: { xs: 18, sm: '1.6em' },
 									fontWeight: 700,
 									lineHeight: 1.5,
 									mb: 3.625,
+									textAlign: { xs: 'center', md: 'unset' },
 								}}
 							>
 								Liên hệ với Nurarchitects

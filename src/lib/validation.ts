@@ -136,6 +136,32 @@ export const activitySchema = z.object({
 // Dùng khi update (PATCH) — không default, giữ nguyên field nào không gửi
 export const activityUpdateSchema = z.object(activityShape).partial();
 
+export const activityConfigAdvantageSchema = z.object({
+  name: z.string().min(1).max(160),
+  thumbnailId: optionalObjectIdSchema,
+  description: z.string().max(1000).default(""),
+});
+
+export const activityConfigProcessSchema = z.object({
+  order: z.coerce.number().int().min(0).default(0),
+  name: z.string().min(1).max(160),
+  details: z.array(z.string().min(1).max(500)).default([]),
+});
+
+// Dùng khi tạo mới / PUT toàn bộ config
+export const activityConfigSchema = z.object({
+  bannerId: optionalObjectIdSchema,
+  advantages: z.array(activityConfigAdvantageSchema).default([]),
+  process: z.array(activityConfigProcessSchema).default([]),
+});
+
+// Dùng khi PATCH — cho phép gửi từng phần, không default đè lên field không gửi
+export const activityConfigUpdateSchema = z.object({
+  bannerId: optionalObjectIdSchema,
+  advantages: z.array(activityConfigAdvantageSchema).optional(),
+  process: z.array(activityConfigProcessSchema).optional(),
+});
+
 export const newsSchema = z.object({
   title: z.string().min(1).max(220),
   slug: slugSchema,

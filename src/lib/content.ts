@@ -1,6 +1,8 @@
 import { connectDb } from "@/lib/db";
 import { serialize } from "@/lib/serialize";
 import {
+  Activity,
+  ActivityConfig,
   ContactConfig,
   CooperationConfig,
   HomepageConfig,
@@ -70,6 +72,31 @@ export async function getIntroduction() {
       ])
       .lean(),
   );
+}
+
+export async function getActivities() {
+  if (!(await tryConnectDb())) return [];
+  return serialize(
+    await Activity.find({ status: 'published' })
+      .populate("thumbnailId galleryMediaIds")
+      .lean(),
+  );
+}
+
+export async function getActivityConfig() {
+  if (!(await tryConnectDb())) return [];
+
+  const config = await ActivityConfig.findOne()
+    .populate("bannerId advantages.thumbnailId")
+    .lean();
+
+  if (config?.process?.length) {
+    config.process = [...config.process].sort(
+      (a, b) => (a.order ?? 0) - (b.order ?? 0),
+    );
+  }
+
+  return serialize(config);
 }
 
 export async function getContact() {

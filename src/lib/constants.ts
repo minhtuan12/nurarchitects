@@ -37,9 +37,23 @@ export const ADMIN_ROUTES = [
     },
     {
         key: "activities",
-        label: "Quản lý Lĩnh vực hoạt động",
+        label: "Lĩnh vực hoạt động",
         href: "/admin/activities",
         icon: Layers,
+        children: [
+            {
+                key: "activity-content",
+                label: "Nội dung",
+                href: "/admin/activities/content",
+                icon: Info,
+            },
+            {
+                key: "activity-list",
+                label: "Danh sách Lĩnh vực",
+                href: "/admin/activities/list",
+                icon: ListOrdered,
+            },
+        ],
     },
     {
         key: "introduction",

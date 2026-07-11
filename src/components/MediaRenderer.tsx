@@ -1,5 +1,6 @@
 import { IMedia } from "@/types/media";
 import Image from "next/image";
+import DefaultBanner from '@/assets/images/default-banner.webp';
 
 interface MediaRendererProps {
 	media?: IMedia | null;
@@ -33,7 +34,20 @@ export default function MediaRenderer({
 	title,
 	decorative = false,
 }: MediaRendererProps) {
-	if (!media) return null;
+	if (!media) return <Image
+		src={DefaultBanner.src}
+		alt={'Banner'}
+		fill
+		sizes={sizes ?? "100vw"}
+		priority={priority}
+		className={className}
+		style={{ objectFit: "cover" }}
+		/**
+		 * fetchPriority="high" kết hợp priority giúp browser
+		 * fetch ảnh LCP sớm nhất có thể
+		 */
+		fetchPriority={priority ? "high" : "auto"}
+	/>;
 
 	const src = media.secureUrl || media.url;
 

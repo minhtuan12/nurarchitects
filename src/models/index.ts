@@ -131,6 +131,34 @@ const ProjectSchema = new Schema(
   { timestamps: true },
 );
 
+const activityAdvantageSchema = new Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    thumbnailId: { type: objectId, ref: "Media" },
+    description: { type: String, default: "" },
+  },
+  { _id: false },
+);
+
+const activityProcessSchema = new Schema(
+  {
+    order: { type: Number, default: 0, index: true },
+    name: { type: String, required: true, trim: true },
+    details: { type: [String], default: [] },
+  },
+  { _id: false },
+);
+
+const ActivityConfigSchema = new Schema(
+  {
+    _type: { type: String, required: true, default: "activity", immutable: true, unique: true },
+    bannerId: { type: objectId, ref: "Media" },
+    advantages: { type: [activityAdvantageSchema], default: [] },
+    process: { type: [activityProcessSchema], default: [] },
+  },
+  { timestamps: true },
+);
+
 const ActivitySchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -340,6 +368,7 @@ export const HomepageConfig = model("HomepageConfig", HomepageConfigSchema);
 export const IntroductionConfig = model("IntroductionConfig", IntroductionConfigSchema);
 export const Project = model("Project", ProjectSchema);
 export const Activity = model("Activity", ActivitySchema);
+export const ActivityConfig = model("ActivityConfig", ActivityConfigSchema);
 export const NewsCategory = model("NewsCategory", CategorySchema.clone());
 export const News = model("News", NewsSchema);
 export const ContactForm = model("ContactForm", ContactFormSchema);
@@ -359,6 +388,7 @@ export const registry = {
   introduction: IntroductionConfig,
   projects: Project,
   activities: Activity,
+  activityConfig: ActivityConfig,
   newsCategories: NewsCategory,
   news: News,
   contactForms: ContactForm,

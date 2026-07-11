@@ -23,3 +23,33 @@ export interface IActivityPopulated extends Omit<
 	thumbnailId?: IMedia;
 	galleryMediaIds: IMedia[];
 }
+
+export interface IActivityAdvantage {
+	name: String;
+	thumbnailId: String;
+	description?: String;
+}
+
+export interface IActivityAdvantagePopulated extends Omit<IActivityAdvantage, 'thumbnailId'> {
+	thumbnailId?: IMedia | null | string;
+}
+
+export interface IActivityProcess {
+	order: Number;
+	name: String;
+	details?: String[];
+}
+
+export interface IActivityConfig {
+	bannerId?: String;
+	advantages?: IActivityAdvantage[];
+	process?: IActivityProcess[];
+}
+
+export interface IActivityConfigPopulated extends Omit<
+	IActivityConfig,
+	"bannerId" | 'advantages'
+> {
+	bannerId?: IMedia;
+	advantages?: IActivityAdvantagePopulated[];
+}
