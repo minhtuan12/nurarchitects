@@ -51,8 +51,7 @@ export default function MobileMenu({
 					sx: {
 						width: "100%",
 						height: '100vh',
-						backgroundImage: `url(${ConcreteBg.src})`,
-						backgroundSize: "cover",
+						bgcolor: 'background.default',
 					},
 				}
 			}}

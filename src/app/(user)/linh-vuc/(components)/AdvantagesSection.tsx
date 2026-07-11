@@ -152,9 +152,10 @@ export default function AdvantagesSection({ advantages }: Props) {
 									{/* Description - mobile luôn hiện sẵn, desktop fade in khi hover */}
 									{hasDescription && (
 										<Typography
-											className="adv-desc"
+											className="adv-desc lg:line-clamp-none line-clamp-3 sm:line-clamp-5"
 											sx={{
-												mt: "calc(100% - 250px)",
+												// display: { xs: 'none', lg: 'unset' },
+												mt: { xs: "calc(100% - 150px)", md: 'calc(100% - 200px)', lg: "calc(100% - 250px)" },
 												mx: "auto",
 												maxWidth: 360,
 												color: "rgba(255,255,255,0.8)",

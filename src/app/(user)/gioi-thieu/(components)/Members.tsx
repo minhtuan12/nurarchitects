@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Box, Container, Grid, IconButton, Tooltip } from "@mui/material";
+import { Box, Container, Grid, IconButton, Tooltip, useTheme } from "@mui/material";
 import Image from "next/image";
 import { RichContent } from "@/components/PageSections";
 import { IntroductionMember } from "@/types/introduction";
@@ -17,6 +17,10 @@ const ITEMS_PER_PAGE = 3;
 const DRAG_THRESHOLD = 60; // px kéo tối thiểu để tính là 1 lần chuyển trang
 
 export default function Members({ members }: DirectorSpotlightProps) {
+	const theme = useTheme();
+	const primaryColor = theme.palette.primary.main;
+	const constrastBgColor = theme.palette.getContrastText(primaryColor);
+
 	const firstMember = members[0];
 
 	// ---- Dữ liệu đội ngũ: tính từ item thứ 2 trở đi ----
@@ -238,6 +242,7 @@ export default function Members({ members }: DirectorSpotlightProps) {
 			<Box
 				sx={{
 					borderTop: "1px solid #4d5a7a",
+					bgcolor: primaryColor,
 				}}
 			>
 				<Container

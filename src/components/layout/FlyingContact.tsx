@@ -1,11 +1,13 @@
 "use client";
 
-import { Typography } from "@mui/material";
+import { Typography, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import { Phone } from "lucide-react";
 import { GridFadeIn } from "../base/Grid";
 
 export function FlyingContact({ phone }: { phone: string }) {
+	const isMobile = useMediaQuery('(max-width:600px)');
+
 	return (
 		<GridFadeIn
 			fadeInDirection="left"
@@ -18,7 +20,7 @@ export function FlyingContact({ phone }: { phone: string }) {
 				justifyContent: "center",
 				alignItems: "flex-start",
 				gap: 1.5,
-				zIndex: 1300,
+				zIndex: 100,
 			}}
 		>
 			{/* Messenger */}
@@ -28,7 +30,7 @@ export function FlyingContact({ phone }: { phone: string }) {
 				rel="noopener noreferrer"
 				sx={{
 					paddingLeft: 1,
-					paddingRight: 2,
+					paddingRight: isMobile ? 1 : 2,
 					width: "auto",
 					height: 40,
 					borderRadius: "999px",
@@ -66,7 +68,7 @@ export function FlyingContact({ phone }: { phone: string }) {
 						<path d="M128,24A104.02809,104.02809,0,0,0,36.811,178.041l-8.54737,29.915a16.00023,16.00023,0,0,0,19.77979,19.78027l29.916-8.54639A104.00746,104.00746,0,1,0,128,24Zm53.65674,93.65674-32,32a7.99945,7.99945,0,0,1-11.31348,0L112,123.3135,85.65674,149.65676a7.99984,7.99984,0,1,1-11.31348-11.31348l32-32a8,8,0,0,1,11.31348,0L144,132.68654l26.34326-26.34326a7.99984,7.99984,0,0,1,11.31348,11.31348Z"></path>{" "}
 					</g>
 				</svg>
-				<Typography fontSize={12} fontWeight={600} ml={1}>ĐĂNG KÝ TƯ VẤN</Typography>
+				{!isMobile && <Typography fontSize={12} fontWeight={600} ml={1}>ĐĂNG KÝ TƯ VẤN</Typography>}
 			</Box>
 
 			{/* Phone with pulse */}
@@ -131,39 +133,41 @@ export function FlyingContact({ phone }: { phone: string }) {
 				>
 					<Phone size={22} fill="white" strokeWidth={0} />
 				</Box>
-				<Box
-					sx={{
-						py: "5px",
-						height: 33,
-						borderRadius: "99px",
-						textAlign: "center",
-						background: "#ba3434",
-						padding: "5px 0 5px 0",
-						width: 'auto',
-						px: 2,
-						position: "absolute",
-						color: "#fff",
-						fontWeight: 700,
-						fontSize: 14,
-						zIndex: 999,
-						top: 2,
-						left: "50px",
-						transition: "all .2s ease-in-out 0s",
-						"&:before": {
-							content: "''",
+				{!isMobile &&
+					<Box
+						sx={{
+							py: "5px",
+							height: 33,
+							borderRadius: "99px",
+							textAlign: "center",
+							background: "#ba3434",
+							padding: "5px 0 5px 0",
+							width: 'auto',
+							px: 2,
 							position: "absolute",
-							left: "-5px",
-							top: "7px",
-							width: 0,
-							height: 0,
-							borderBottom: "10px solid transparent",
-							borderTop: "10px solid transparent",
-							borderRight: "10px solid #ba3434",
-						},
-					}}
-				>
-					{phone}
-				</Box>
+							color: "#fff",
+							fontWeight: 700,
+							fontSize: 14,
+							zIndex: 999,
+							top: 2,
+							left: "50px",
+							transition: "all .2s ease-in-out 0s",
+							"&:before": {
+								content: "''",
+								position: "absolute",
+								left: "-5px",
+								top: "7px",
+								width: 0,
+								height: 0,
+								borderBottom: "10px solid transparent",
+								borderTop: "10px solid transparent",
+								borderRight: "10px solid #ba3434",
+							},
+						}}
+					>
+						{phone}
+					</Box>
+				}
 			</Box>
 		</GridFadeIn>
 	);

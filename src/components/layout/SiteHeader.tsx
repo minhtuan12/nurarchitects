@@ -160,7 +160,7 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 				<Container
 					maxWidth="xl"
 					sx={{
-						px: "30px !important",
+						px: isMobile ? '15px' : "30px !important",
 						height: "100%",
 						maxWidth: 1920,
 						margin: "0 auto",
@@ -180,7 +180,7 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 								src={Logo}
 								alt="Logo"
 								width={150}
-								style={{ width: 150 }}
+								style={{ width: isMobile ? 120 : 150 }}
 							/>
 						</Link>
 

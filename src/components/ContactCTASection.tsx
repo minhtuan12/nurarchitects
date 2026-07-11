@@ -16,7 +16,6 @@ import { useMutation } from "@tanstack/react-query";
 import { BuildArea, BuildPlan, EBuildPlan } from "@/types/project";
 import { EArea, IContactForm } from "@/types/contact";
 import { toast } from "sonner";
-import ConcreteBg from "@/assets/images/concrete-bg.jpg";
 import BgPattern from "@/assets/images/bg-pattern.jpg";
 import { GridFadeIn } from "./base/Grid";
 
@@ -32,7 +31,7 @@ const initialValues: IContactForm = {
 };
 
 const labelSx = {
-	fontSize: 12,
+	fontSize: { xs: 10, md: 12 },
 	fontWeight: 700,
 	letterSpacing: "0.05em",
 	textTransform: "uppercase" as const,
@@ -190,7 +189,7 @@ export default function ContactCTASection() {
 									borderRadius: 0,
 									py: 1.25,
 									width: 215,
-									fontSize: 14,
+									fontSize: { xs: 10, md: 14 },
 									letterSpacing: "0.12em",
 									textTransform: "uppercase",
 									"&:hover": {
@@ -277,7 +276,7 @@ export default function ContactCTASection() {
 					</Typography>
 
 					<Grid container spacing={2.5}>
-						<Grid size={{ xs: 12, md: 4 }}>
+						<Grid size={{ xs: 6, sm: 4, md: 4 }}>
 							<Typography sx={labelSx}>Họ và tên</Typography>
 							<TextField
 								fullWidth
@@ -288,7 +287,7 @@ export default function ContactCTASection() {
 								focused
 							/>
 						</Grid>
-						<Grid size={{ xs: 12, md: 4 }}>
+						<Grid size={{ xs: 6, sm: 4, md: 4 }}>
 							<Typography sx={labelSx}>Số điện thoại</Typography>
 							<TextField
 								fullWidth
@@ -298,7 +297,7 @@ export default function ContactCTASection() {
 								sx={inputSx}
 							/>
 						</Grid>
-						<Grid size={{ xs: 12, md: 4 }}>
+						<Grid size={{ xs: 6, sm: 4, md: 4 }}>
 							<Typography sx={labelSx}>
 								Dự định xây dựng
 							</Typography>
@@ -320,7 +319,7 @@ export default function ContactCTASection() {
 							</TextField>
 						</Grid>
 
-						<Grid size={{ xs: 12, md: 4 }}>
+						<Grid size={{ xs: 6, sm: 4, md: 4 }}>
 							<Typography sx={labelSx}>
 								Diện tích xây dựng
 							</Typography>
@@ -339,7 +338,7 @@ export default function ContactCTASection() {
 								))}
 							</TextField>
 						</Grid>
-						<Grid size={{ xs: 12, md: 4 }}>
+						<Grid size={{ xs: 6, sm: 4, md: 4 }}>
 							<Typography sx={labelSx}>
 								Số tầng xây dựng
 							</Typography>
@@ -352,7 +351,7 @@ export default function ContactCTASection() {
 								sx={inputSx}
 							/>
 						</Grid>
-						<Grid size={{ xs: 12, md: 4 }}>
+						<Grid size={{ xs: 6, sm: 4, md: 4 }}>
 							<Typography sx={labelSx}>
 								Địa điểm xây dựng
 							</Typography>

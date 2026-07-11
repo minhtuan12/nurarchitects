@@ -234,7 +234,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 								borderRadius: 0,
 								px: 6,
 								py: 1.2,
-								fontSize: 13,
+								fontSize: { xs: 10, md: 14 },
 								fontWeight: 600,
 								letterSpacing: "0.08em",
 								boxShadow: "none",

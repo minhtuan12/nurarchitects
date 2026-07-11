@@ -14,6 +14,7 @@ interface DiagonalNumberProps {
 	 * more of the number. Keep below 1.
 	 */
 	offset?: number;
+	sx?: any;
 }
 
 export default function DiagonalNumber({
@@ -23,11 +24,12 @@ export default function DiagonalNumber({
 	numberColor = "rgba(255,255,255,0.14)",
 	lineColor = "rgba(255,255,255,0.35)",
 	offset = 0.2,
+	sx = {},
 }: DiagonalNumberProps) {
 	const f = offset; // shorthand
 	const cutPercent = f * 100;
 	const midPercent = ((1 + f) / 2) * 100;
-	const lineLengthPercent = (1 - f) * 141.42; // remaining diagonal length, sqrt(2) * (1 - f) * 100%
+	const lineLengthPercent = (1 - f) * 125.42; // remaining diagonal length, sqrt(2) * (1 - f) * 100%
 
 	return (
 		<Box
@@ -37,6 +39,7 @@ export default function DiagonalNumber({
 				height: size,
 				overflow: "hidden",
 				backgroundColor: background,
+				...sx,
 			}}
 		>
 			{/* the digit, clipped so only the area above/left of the diagonal shows */}
@@ -69,10 +72,11 @@ export default function DiagonalNumber({
 					top: `${midPercent}%`,
 					left: `${midPercent}%`,
 					width: `${lineLengthPercent}%`,
-					height: "1px",
+					height: "1.5px",
 					backgroundColor: lineColor,
 					transform: "translate(-50%, -50%) rotate(-45deg)",
 					transformOrigin: "center",
+					boxShadow: 'rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px'
 				}}
 			/>
 		</Box>

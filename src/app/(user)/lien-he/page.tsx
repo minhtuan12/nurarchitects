@@ -7,6 +7,7 @@ import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
 import { IContactConfigPopulated } from "@/types/contact";
 import { MapPin, Phone, Send } from "lucide-react";
 import Link from "next/link";
+import { GridFadeIn } from "@/components/base/Grid";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("lien-he", "page");
@@ -65,12 +66,9 @@ export default async function () {
         }}
       >
         {/* Phone */}
-        <Stack
-          direction="row"
-          spacing={1}
-          justifyContent="center"
-          alignItems="center"
-          sx={{ py: { xs: 2, md: 4 } }}
+        <GridFadeIn
+          fadeInDirection="left"
+          sx={{ py: { xs: 2, md: 4 }, display: 'flex', direction: 'row', gap: 1, justifyContent: 'center', alignItems: 'center' }}
         >
           <Phone size={20} className="text-[#434343]" />
           <Link
@@ -79,17 +77,14 @@ export default async function () {
           >
             {data?.phone}
           </Link>
-        </Stack>
+        </GridFadeIn>
 
         <Divider />
 
         {/* Email */}
-        <Stack
-          direction="row"
-          spacing={1}
-          justifyContent="center"
-          alignItems="center"
-          sx={{ py: { xs: 2, md: 4 } }}
+        <GridFadeIn
+          fadeInDirection="right"
+          sx={{ py: { xs: 2, md: 4 }, display: 'flex', direction: 'row', gap: 1, justifyContent: 'center', alignItems: 'center' }}
         >
           <Send size={20} className="text-[#434343]" />
           <Link
@@ -98,7 +93,7 @@ export default async function () {
           >
             {data?.email}
           </Link>
-        </Stack>
+        </GridFadeIn>
 
         <Divider />
 
@@ -122,13 +117,13 @@ export default async function () {
             const googleMapsUrl = location.link || `https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`;
 
             return (
-              <Box
+              <GridFadeIn
+                fadeInDirection="up"
                 key={`${location.name}-${index}`}
                 sx={{
                   flex: 1,
                   minWidth: 0,
                   py: { xs: 3, md: 5 },
-                  px: { xs: 0, md: 4 },
                   borderBottom: {
                     xs: isLast ? "none" : "1px solid #ececec",
                     md: "none",
@@ -137,7 +132,6 @@ export default async function () {
                     xs: "none",
                     md: isLast ? "none" : "1px solid #ececec",
                   },
-                  "&:first-of-type": { pl: { md: 0 } },
                 }}
               >
                 <Link
@@ -187,7 +181,7 @@ export default async function () {
                     }}
                   />
                 </Box>
-              </Box>
+              </GridFadeIn>
             );
           })}
         </Box>

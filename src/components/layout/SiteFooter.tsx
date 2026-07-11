@@ -83,7 +83,7 @@ export default async function SiteFooter() {
 						justifyContent: "center",
 					}}
 				>
-					<AppImage src={Logo} alt="Logo" style={{ width: 300 }} />
+					<AppImage src={Logo} alt="Logo" className="w-[180px] md:w-[300px]" />
 				</Box>
 
 				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />

@@ -86,7 +86,7 @@ export default function BlueSection({
 											borderRadius: 0,
 											px: 6,
 											py: 1.25,
-											fontSize: "0.72rem",
+											fontSize: { xs: 10, md: 14 },
 											fontWeight: 700,
 											letterSpacing: "0.12em",
 											textTransform: "uppercase",

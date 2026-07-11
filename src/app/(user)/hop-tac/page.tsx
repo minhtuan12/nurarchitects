@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { AppImage } from "@/components/AppImage";
 import { PageIntro, RichContent } from "@/components/PageSections";
-import { getCooperation, getSeoBySlug } from "@/lib/content";
+import { getContact, getCooperation, getSeoBySlug } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 import Developing from "@/components/admin/Developing";
 import { Box } from "@mui/material";
@@ -12,6 +12,10 @@ import { IMedia } from "@/types/media";
 import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
 import NeededFields from "./(components)/NeededFields";
 import Steps from "./(components)/Steps";
+import PartnerRegisterCTA from "./(components)/PartnerRegisterCTA";
+import BlueSection from "@/components/BlueSection";
+import BlueCtaSection from "./(components)/BlueCtaSection";
+import { GridFadeIn } from "@/components/base/Grid";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("hop-tac", "page");
@@ -28,12 +32,14 @@ export async function generateMetadata() {
 }
 
 export default async function CooperationPage() {
-  const data = await getCooperation();
+  const [data, contactConfig] = await Promise.all([
+    getCooperation(),
+    getContact(),
+  ]);
 
   return (
     <>
-      <Developing />
-      {/* <Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
+      <Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
         <Box
           position="relative"
           sx={{ height: { xs: "60vh", md: "100vh" } }}
@@ -66,9 +72,23 @@ export default async function CooperationPage() {
           introductionContent={data.introduction}
           fields={data.neededFields}
           ctaContent={data.firstCtaBtn}
+          image={data.imageIds?.[0]}
         />
-        <Steps/>
-      </Box> */}
+        <Steps
+          ctaContent={data.secondCtaBtn}
+          steps={data.steps || []}
+          email={contactConfig?.email}
+          image={data.imageIds?.[1]}
+        />
+        <Box bgcolor={'white'} width={'100%'}>
+          <GridFadeIn fadeInDirection="left" sx={{ maxWidth: 'lg', mx: 'auto', py: 5, bgcolor: 'white' }}>
+            <BlueCtaSection
+              content={`Trở thành đối tác của Nurarchitects và cùng <span style="color: red">tiến bước</span> với những thành công mới!`}
+              ctaContent={data.thirdCtaBtn}
+            />
+          </GridFadeIn>
+        </Box>
+      </Box>
     </>
   );
 }

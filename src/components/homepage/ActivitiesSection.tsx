@@ -216,7 +216,7 @@ export default function ActivitiesSection({
 									borderRadius: 0,
 									width: 210,
 									py: 1.2,
-									fontSize: 14,
+									fontSize: { xs: 10, md: 14 },
 									fontWeight: 600,
 									letterSpacing: "0.5px",
 									textTransform: "uppercase",
