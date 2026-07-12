@@ -5,8 +5,8 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
-import { ChevronDown, Menu, Search } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { ChevronDown, Menu, Search, X } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "@/components/Link";
 import { AppImage } from "../AppImage";
@@ -15,6 +15,7 @@ import { HotlineBar } from "./HotlineBar";
 import Logo from "@/assets/images/logo.png";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import MobileMenu from "./MobileMenu";
+import SearchOverlay from "../homepage/SearchOverlay";
 
 export interface INavItem {
 	label: string;
@@ -112,6 +113,7 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 	const isHomepage = pathname === "/";
 	const isMobile = useMediaQuery("(max-width:900px)");
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+	const [searchOpen, setSearchOpen] = useState(false);
 	const theme = useTheme();
 	const [scrolled, setScrolled] = useState(false);
 
@@ -128,8 +130,14 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
 
-	// On homepage: transparent until scrolled. On other pages: always has background.
-	const isTransparent = isHomepage && !scrolled;
+	// Đóng search khi chuyển trang
+	useEffect(() => {
+		setSearchOpen(false);
+	}, [pathname]);
+
+	const searchParams = useSearchParams();
+	const searchQuery = searchParams.get("s")?.trim() || undefined;
+	const isTransparent = isHomepage && !searchQuery && !scrolled;
 
 	return (
 		<>
@@ -200,6 +208,7 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 											color: "inherit",
 										}}
 										className="mr-2 hover:text-[black]"
+										onClick={() => setSearchOpen(true)}
 									/>
 									<Box sx={{ bgcolor: 'black', p: 1.25, cursor: 'pointer' }}>
 										<Menu size={22} color="white" onClick={() => setMobileMenuOpen(true)} />
@@ -247,6 +256,7 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 										color: "inherit",
 									}}
 									className="mr-2 hover:text-[black]"
+									onClick={() => setSearchOpen(true)}
 								/>
 
 								<Button
@@ -274,6 +284,8 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 					</Toolbar>
 				</Container>
 			</AppBar>
+
+			<SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 		</>
 	);
 }
