@@ -6,13 +6,14 @@ import {
 	getSeoBySlug,
 	getNewsBySlug,
 } from "@/lib/content";
-import { buildMetadata } from "@/lib/seo";
+import { articleJsonLd, buildMetadata } from "@/lib/seo";
 import NewsSection from "../(components)/NewsSection";
 import { buildQueryString } from "@/helpers";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
 import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
 import NewsDetail from "../(components)/NewsDetail";
+import { JsonLd } from "@/components/JsonLd";
 
 export const runtime = "nodejs";
 
@@ -134,7 +135,10 @@ export default async function NewsPage({ params, searchParams }: PageProps) {
 	if (parsed.type === "detail") {
 		const news = await getNewsBySlug(parsed.newsSlug);
 		if (!news) notFound();
-		return <NewsDetail news={news} />;
+		return <>
+			<JsonLd data={articleJsonLd(news)} />
+			<NewsDetail news={news} />;
+		</>
 	}
 
 	// ---- Nhánh: trang danh sách (giữ nguyên logic cũ) ----

@@ -1,7 +1,7 @@
 import { JsonLd } from "@/components/JsonLd";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { buildMetadata, organizationJsonLd } from "@/lib/seo";
-import { getPublishedNews, getSeoBySlug } from "@/lib/content";
+import { getContact, getPublishedNews, getSeoBySlug } from "@/lib/content";
 import { fetchApi } from "@/helpers";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
@@ -94,9 +94,10 @@ export default async function HomePage({
   }
 
   // ---- Trang chủ mặc định ----
-  const [homepageRes, newsRes] = await Promise.all([
+  const [homepageRes, newsRes, contact] = await Promise.all([
     fetchApi<IHomepageConfigPopulated>("/api/homepage"),
     fetchApi<INewsPopulated>("/api/news"),
+    getContact(),
   ]);
 
   const homepage = homepageRes?.item ?? null;
@@ -104,6 +105,13 @@ export default async function HomePage({
 
   return (
     <SiteShell searchParams={sParams}>
+      <JsonLd
+        data={organizationJsonLd({
+          phone: contact?.phone,
+          email: contact?.email,
+          addresses: contact?.locations?.map((l: any) => l.address).join("; "),
+        })}
+      />
       <Box sx={{ mt: { xs: '-78px', md: "-115px" } }}>
         <Box sx={{ height: { xs: '60vh', md: "100vh" } }}>
           <Box

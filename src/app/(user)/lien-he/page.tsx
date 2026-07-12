@@ -1,6 +1,6 @@
 import { getContact, getSeoBySlug } from "@/lib/content";
-import { buildMetadata } from "@/lib/seo";
-import { Box, Divider, Stack, Typography } from "@mui/material";
+import { buildMetadata, contactJsonLd } from "@/lib/seo";
+import { Box, Divider, Typography } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
 import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
@@ -8,6 +8,7 @@ import { IContactConfigPopulated } from "@/types/contact";
 import { MapPin, Phone, Send } from "lucide-react";
 import Link from "next/link";
 import { GridFadeIn } from "@/components/base/Grid";
+import { JsonLd } from "@/components/JsonLd";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("lien-he", "page");
@@ -29,6 +30,13 @@ export default async function () {
 
   return (
     <Box sx={{ mt: { xs: "-78px", md: "-115px" }, bgcolor: 'white' }}>
+      <JsonLd
+        data={contactJsonLd({
+          phone: data?.phone,
+          email: data?.email,
+          locations,
+        })}
+      />
       <Box
         position="relative"
         sx={{ height: { xs: "400px", md: "620px" } }}

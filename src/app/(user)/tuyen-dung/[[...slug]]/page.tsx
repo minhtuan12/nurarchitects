@@ -5,13 +5,14 @@ import {
   getRecruitingJobs,
   getSeoBySlug,
 } from "@/lib/content";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, jobJsonLd } from "@/lib/seo";
 import { buildQueryString } from "@/helpers";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
 import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
 import JobSection from "../(components)/JobSection";
 import JobDetailSection from "../(components)/JobDetail";
+import { JsonLd } from "@/components/JsonLd";
 
 export const runtime = "nodejs";
 
@@ -126,6 +127,7 @@ export default async function ({ params, searchParams }: PageProps) {
 
     return (
       <Box sx={{ py: { xs: 4, md: 8 }, bgcolor: "white" }}>
+        <JsonLd data={jobJsonLd(job)} />
         <Container maxWidth="lg">
           <JobDetailSection
             job={job}

@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import { AppImage } from "@/components/AppImage";
 import { PageIntro, RichContent } from "@/components/PageSections";
 import { getContact, getCooperation, getSeoBySlug } from "@/lib/content";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, webPageJsonLd } from "@/lib/seo";
 import Developing from "@/components/admin/Developing";
 import { Box } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
@@ -16,6 +16,7 @@ import PartnerRegisterCTA from "./(components)/PartnerRegisterCTA";
 import BlueSection from "@/components/BlueSection";
 import BlueCtaSection from "./(components)/BlueCtaSection";
 import { GridFadeIn } from "@/components/base/Grid";
+import { JsonLd } from "@/components/JsonLd";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("hop-tac", "page");
@@ -39,6 +40,13 @@ export default async function CooperationPage() {
 
   return (
     <>
+      <JsonLd
+        data={webPageJsonLd({
+          name: "Hợp tác cùng NUR Architects",
+          description: data?.introduction,
+          slug: "hop-tac",
+        })}
+      />
       <Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
         <Box
           position="relative"

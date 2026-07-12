@@ -1,6 +1,5 @@
-import { getActivities, getActivityConfig, getContact, getSeoBySlug } from "@/lib/content";
-import { buildMetadata, organizationJsonLd } from "@/lib/seo";
-import Developing from "@/components/admin/Developing";
+import { getActivities, getActivityConfig, getSeoBySlug } from "@/lib/content";
+import { buildMetadata, webPageJsonLd } from "@/lib/seo";
 import { Box } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
@@ -9,6 +8,7 @@ import { IActivityPopulated } from "@/types/activity";
 import ContactCTASection from "@/components/ContactCTASection";
 import ProcessSection from "./(components)/ProcessSection";
 import AdvantagesSection from "./(components)/AdvantagesSection";
+import { JsonLd } from "@/components/JsonLd";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("activity", "page");
@@ -29,6 +29,13 @@ export default async function () {
 
   return (
     <>
+      <JsonLd
+        data={webPageJsonLd({
+          name: "Lĩnh vực hoạt động",
+          description: "Lĩnh vực hoạt động ở NUR Architects",
+          slug: "linh-vuc-hoat-dong",
+        })}
+      />
       <Box sx={{ mt: { xs: "-78px", md: "-115px" }, bgcolor: "white" }}>
         <Box
           position="relative"

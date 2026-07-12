@@ -1,5 +1,5 @@
 import { getIntroduction, getSeoBySlug } from "@/lib/content";
-import { buildMetadata } from "@/lib/seo";
+import { aboutPageJsonLd, buildMetadata } from "@/lib/seo";
 import { Box } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
@@ -9,6 +9,7 @@ import BgPattern from "@/assets/images/bg-pattern-1.jpg";
 import MissionAndVision from "./(components)/MissionAndVision";
 import { IIntroductionConfigPopulated } from "@/types/introduction";
 import Members from "./(components)/Members";
+import { JsonLd } from "@/components/JsonLd";
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("gioi-thieu", "page");
@@ -29,6 +30,7 @@ export default async function IntroductionPage() {
 
   return (
     <Box sx={{ mt: { xs: "-78px", md: "-115px" } }}>
+      <JsonLd data={aboutPageJsonLd({ content: data?.content })} />
       <Box
         position="relative"
         sx={{ height: { xs: "60vh", md: "100vh" } }}

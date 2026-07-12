@@ -98,3 +98,55 @@ export function jobJsonLd(item: { title: string; slug: string; description?: str
     },
   };
 }
+
+export function contactJsonLd(data?: {
+  phone?: string;
+  email?: string;
+  locations?: { name?: string; address?: string; lat?: number; lng?: number }[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteName,
+    url: siteUrl(),
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: data?.phone,
+      email: data?.email,
+      contactType: "customer service",
+    },
+    location: (data?.locations ?? []).map((loc) => ({
+      "@type": "Place",
+      name: loc.name,
+      address: loc.address,
+      ...(loc.lat && loc.lng
+        ? { geo: { "@type": "GeoCoordinates", latitude: loc.lat, longitude: loc.lng } }
+        : {}),
+    })),
+  };
+}
+
+export function aboutPageJsonLd(input?: { content?: string; slug?: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: `Về chúng tôi | ${siteName}`,
+    url: siteUrl(input?.slug ?? "gioi-thieu"),
+    description: input?.content,
+    mainEntity: {
+      "@type": "Organization",
+      name: siteName,
+      url: siteUrl(),
+    },
+  };
+}
+
+export function webPageJsonLd(input: { name: string; description?: string; slug?: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: input.name,
+    description: input.description,
+    url: siteUrl(input.slug),
+  };
+}
