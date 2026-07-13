@@ -18,16 +18,34 @@ export function siteUrl(path = "") {
 }
 
 export function buildMetadata(input: SeoInput = {}): Metadata {
-  const title = input.title ? `${input.title} | ${siteName}` : siteName;
+  const title = input.title ? `${input.title}` : siteName;
   const description =
-    input.description || "NUR Architects creates considered architecture, interiors, and built environments.";
+    input.description || "NUR Architects - đơn vị thiết kế kiến trúc, nội thất và xây dựng nhà trọn gói tại Hà Nội. Tư vấn miễn phí, thiết kế độc bản, thi công trọn gói uy tín.";
   const canonical = input.canonicalUrl || siteUrl(input.slug ? `/${input.slug}` : "/");
   const images = input.ogImage ? [{ url: input.ogImage, width: 1200, height: 630 }] : [];
 
   return {
     title,
     description,
-    keywords: input.focusKeywords,
+    keywords: input.focusKeywords || [
+      'thiết kế nội thất',
+      'thiết kế kiến trúc',
+      'xây nhà trọn gói',
+      'công ty kiến trúc nội thất Hà Nội',
+
+      'thiết kế nội thất nhà liền kề',
+      'thiết kế nội thất nhà phố kết hợp kinh doanh',
+      'thiết kế nội thất chung cư đẹp',
+      'xây dựng nhà trọn gói Hà Nội',
+      'công ty thiết kế thi công nội thất trọn gói',
+      'thiết kế nội thất phong cách Wabi Sabi',
+      'mẫu thiết kế nội thất đẹp 2026',
+      'thiết kế kiến trúc nhà ở dân dụng',
+
+      'NUR Architects',
+      'Nurarchitects Hà Nội',
+      'nurarchitects',
+    ],
     alternates: { canonical },
     openGraph: {
       title,
