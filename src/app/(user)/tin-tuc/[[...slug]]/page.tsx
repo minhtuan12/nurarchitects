@@ -137,7 +137,7 @@ export default async function NewsPage({ params, searchParams }: PageProps) {
 		if (!news) notFound();
 		return <>
 			<JsonLd data={articleJsonLd(news)} />
-			<NewsDetail news={news} />;
+			<NewsDetail news={news} />
 		</>
 	}
 
