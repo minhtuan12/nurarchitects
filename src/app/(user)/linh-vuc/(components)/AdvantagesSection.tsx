@@ -22,7 +22,7 @@ const EYEBROW = "ƯU ĐIỂM VƯỢT TRỘI";
 const getMediaUrl = (media?: IMedia | string | null) => {
 	if (!media) return "";
 	if (typeof media === "string") return media;
-	return (media as any).url || (media as any).path || "";
+	return (media as any).secureUrl || (media as any).url || "";
 };
 
 const chunk = <T,>(arr: T[], size: number) => {
@@ -57,6 +57,7 @@ export default function AdvantagesSection({ advantages }: Props) {
 								key={i}
 								sx={{
 									position: "relative",
+									display: 'block',
 									overflow: "hidden",
 									width: { xs: "100%", md: `${100 / MAX_PER_ROW}%` },
 									aspectRatio: { xs: "4 / 5", md: "4 / 5" },
@@ -64,13 +65,13 @@ export default function AdvantagesSection({ advantages }: Props) {
 									isolation: "isolate",
 									// mobile: coi như luôn hover -> áp dụng thẳng style active
 									// desktop: giữ nguyên hành vi hover như cũ
-									"&:hover .adv-overlay": {
+									"&:hover .advan-overlay": {
 										background: { md: "rgba(24, 42, 83, 0.85)" },
 									},
-									"&:hover .adv-header": hasDescription
+									"&:hover .advan-header": hasDescription
 										? { transform: { md: "translateY(80px)" } }
 										: undefined,
-									"&:hover .adv-desc": {
+									"&:hover .advan-desc": {
 										opacity: { md: 1 },
 										transform: { md: "translateY(0)" },
 										visibility: { md: "visible" },
@@ -92,7 +93,7 @@ export default function AdvantagesSection({ advantages }: Props) {
 
 								{/* Overlay tối - mobile luôn đậm, desktop đậm hơn khi hover */}
 								<Box
-									className="adv-overlay"
+									className="advan-overlay"
 									sx={{
 										position: "absolute",
 										inset: 0,
@@ -117,7 +118,7 @@ export default function AdvantagesSection({ advantages }: Props) {
 								>
 									{/* Khối eyebrow + title - mobile luôn ở vị trí "đã dịch xuống" */}
 									<Box
-										className="adv-header"
+										className="advan-header"
 										sx={{
 											transform: {
 												xs: hasDescription ? "translateY(80px)" : "translateY(0)",
@@ -152,7 +153,7 @@ export default function AdvantagesSection({ advantages }: Props) {
 									{/* Description - mobile luôn hiện sẵn, desktop fade in khi hover */}
 									{hasDescription && (
 										<Typography
-											className="adv-desc lg:line-clamp-none line-clamp-3 sm:line-clamp-5"
+											className="advan-desc lg:line-clamp-none line-clamp-3 sm:line-clamp-5"
 											sx={{
 												// display: { xs: 'none', lg: 'unset' },
 												mt: { xs: "calc(100% - 150px)", md: 'calc(100% - 200px)', lg: "calc(100% - 250px)" },

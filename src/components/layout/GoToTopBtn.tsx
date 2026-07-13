@@ -25,7 +25,7 @@ export default function GoToTopBtn() {
 				width: 38,
 				height: 38,
 				borderRadius: "8px",
-				backgroundColor: "transparent",
+				backgroundColor: "white",
 				border: "2px solid #3d3d3d",
 				display: "flex",
 				alignItems: "center",
