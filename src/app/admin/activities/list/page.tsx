@@ -259,7 +259,7 @@ export default function ActivitiesAdminPage() {
 				fixed: "left",
 				render: (value: string, record: ActivityResponse) => (
 					<Flex gap={10} align="center">
-						<Image src={record.thumbnailId?.url} width={40} height={50} alt={record.name} preview={false} />
+						<Image src={record.thumbnailId?.secureUrl} width={40} height={50} alt={record.name} preview={false} />
 						<div className="flex flex-col gap-1">
 							<Text strong>{value}</Text>
 							<Text type="secondary" className="text-xs">

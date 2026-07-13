@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: PageProps) {
       title: job.title,
       slug: `${basePath.slice(1)}/${job.slug}`,
       description: toPlainText(job.description) || `Tuyển dụng: ${job.title}`,
-      ogImage: (job.thumbnailId as IMedia | undefined)?.url,
+      ogImage: (job.thumbnailId as IMedia | undefined)?.secureUrl,
     });
   }
 

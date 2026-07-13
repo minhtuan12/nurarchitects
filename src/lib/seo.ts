@@ -25,6 +25,7 @@ export function buildMetadata(input: SeoInput = {}): Metadata {
   const images = input.ogImage ? [{ url: input.ogImage, width: 1200, height: 630 }] : [];
 
   return {
+    metadataBase: new URL(siteUrl()),
     title,
     description,
     keywords: input.focusKeywords || [
