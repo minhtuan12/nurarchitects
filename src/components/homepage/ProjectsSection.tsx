@@ -3,14 +3,11 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import Image from "next/image";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import ConcreteBg from "@/assets/images/concrete-bg.jpg";
-import { capitalize } from "@/helpers";
-import { getContrastRatio, IconButton, Typography, useTheme } from "@mui/material";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { IconButton, Typography, useTheme } from "@mui/material";
 import FadeIn from "../FadeIn";
 import { GridFadeIn } from "../base/Grid";
-import { EBuildPlan, IProjectPopulated } from "@/types/project";
+import { IProjectPopulated } from "@/types/project";
 import { TypographyFadeIn } from "../base/Typography";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";

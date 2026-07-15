@@ -132,6 +132,7 @@ export default async function HomePage({
             className="h-full"
             fill
             title="Giới thiệu về Công ty Nurarchitects"
+            priority
           />
         </Box>
         <BlueSection

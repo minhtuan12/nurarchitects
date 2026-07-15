@@ -184,6 +184,7 @@ export default function ActivitiesSection({
 											src={(a?.thumbnailId?.secureUrl || a.thumbnailId?.url) as string}
 											alt={a?.name ?? ""}
 											fill
+											sizes="(max-width: 900px) 150px, 300px"
 											style={{
 												objectFit: "cover",
 												filter: "grayscale(100%)",

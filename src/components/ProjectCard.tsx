@@ -5,7 +5,6 @@ import { EBuildPlan, IProjectPopulated } from "@/types/project";
 import { Box, Typography } from "@mui/material";
 import { Plus } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 export default function ProjectCard({ p }: { p: IProjectPopulated }) {
 	return <Box
@@ -45,6 +44,7 @@ export default function ProjectCard({ p }: { p: IProjectPopulated }) {
 				src={p?.thumbnailId?.secureUrl || p?.thumbnailId?.url || ""}
 				alt={p?.name || ""}
 				fill
+				sizes="(max-width: 600px) 100vw, 360px"
 				style={{ objectFit: "cover" }}
 			/>
 		</Box>

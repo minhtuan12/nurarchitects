@@ -16,6 +16,7 @@ import Logo from "@/assets/images/logo.png";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import MobileMenu from "./MobileMenu";
 import SearchOverlay from "../homepage/SearchOverlay";
+import { IContactConfig } from "@/types/contact";
 
 export interface INavItem {
 	label: string;
@@ -108,7 +109,7 @@ function NavItem({
 	);
 }
 
-export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
+export function SiteHeader({ phone, nav, contact }: { phone?: string; nav?: any; contact: IContactConfig }) {
 	const pathname = usePathname();
 	const isHomepage = pathname === "/";
 	const isMobile = useMediaQuery("(max-width:900px)");
@@ -218,6 +219,7 @@ export function SiteHeader({ phone, nav }: { phone?: string; nav?: any }) {
 									open={mobileMenuOpen}
 									onClose={() => setMobileMenuOpen(false)}
 									nav={nav}
+									contact={contact}
 								/>
 							</>
 						) : (

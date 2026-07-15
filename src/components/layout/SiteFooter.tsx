@@ -32,21 +32,25 @@ export const SOCIAL_LINKS = [
 		icon: <FacebookIcon width={14} color="currentColor" />,
 		href: "#",
 		label: "Facebook",
+		key: 'facebookUrl'
 	},
 	{
 		icon: <TiktokIcon width={14} color="currentColor" />,
 		href: "#",
 		label: "TikTok",
+		key: 'tikTokUrl'
 	},
 	{
 		icon: <YoutubeIcon width={14} color="currentColor" fill="currentColor" />,
 		href: "#",
 		label: "YouTube",
+		key: 'youTubeUrl'
 	},
 	{
 		icon: <InstagramIcon width={14} color="currentColor" fill="currentColor" />,
 		href: "#",
 		label: "Instagram",
+		key: 'instagramUrl'
 	},
 ];
 
@@ -86,10 +90,10 @@ export default async function SiteFooter() {
 					<AppImage src={Logo} alt="Logo" className="w-[180px] md:w-[300px]" />
 				</Box>
 
-				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
+				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)", display: { xs: 'none', md: 'unset' } }} />
 
 				{/* ── Nav links ────────────────────────────────────────────────────── */}
-				<Container maxWidth="lg">
+				<Container maxWidth="lg" sx={{ display: { xs: 'none', md: 'unset' } }}>
 					<Stack
 						direction="row"
 						flexWrap="wrap"
@@ -127,13 +131,13 @@ export default async function SiteFooter() {
 				<Container maxWidth="md">
 					<Box sx={{ py: 4, textAlign: "center" }}>
 						<Typography
-								sx={{
-									fontSize: { xs: "1.25rem", md: "1.5rem" },
-									fontWeight: 700,
-									color: "inherit",
-									lineHeight: 1.5,
-									mb: 2.5,
-								}}
+							sx={{
+								fontSize: { xs: "1.25rem", md: "1.5rem" },
+								fontWeight: 700,
+								color: "inherit",
+								lineHeight: 1.5,
+								mb: 2.5,
+							}}
 						>
 							Công ty TNHH Kiến trúc và Nội thất
 							<br />
@@ -146,7 +150,7 @@ export default async function SiteFooter() {
 								<IconButton
 									key={social.label}
 									component="a"
-									href={social.href}
+									href={contact?.[social.key as keyof typeof contact] as string || '#'}
 									aria-label={social.label}
 									size="small"
 									sx={{
@@ -168,6 +172,7 @@ export default async function SiteFooter() {
 					</Box>
 				</Container>
 
+				{/* <Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} /> */}
 				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)" }} />
 
 				{/* ── Contact bar ──────────────────────────────────────────────────── */}
@@ -203,7 +208,7 @@ export default async function SiteFooter() {
 										fontSize: 14,
 										color: "inherit",
 										fontWeight: 400,
-										mt: 3.5,
+										mt: { xs: 0, md: 3.5 },
 									}}
 								>
 									{contact?.phone || "Đang cập nhật"}
@@ -234,7 +239,7 @@ export default async function SiteFooter() {
 								{contact?.locations?.length === 0 ? (
 									"Đang cập nhật"
 								) : (
-									<Box sx={{ textAlign: "center" }} mt={3}>
+									<Box sx={{ textAlign: "center" }} mt={{ xs: 0, md: 3.5 }}>
 										{contact?.locations.map((l, index) => (
 											<Typography
 												key={index}
@@ -267,7 +272,7 @@ export default async function SiteFooter() {
 										fontSize: 14,
 										color: "inherit",
 										fontWeight: 400,
-										mt: 3.5,
+										mt: { xs: 0, md: 3.5 },
 									}}
 								>
 									{contact?.email ||
@@ -286,7 +291,7 @@ export default async function SiteFooter() {
 						justifyContent="center"
 						sx={{ py: 3.75 }}
 					>
-						<Typography sx={{ fontSize: 14, color: "inherit" }}>
+						<Typography sx={{ fontSize: 14, color: "inherit" }} textAlign={'center'}>
 							Copyright © 2026{" "}
 							<Box component="strong" sx={{ fontWeight: 700 }}>
 								Nurarchitects Vietnam

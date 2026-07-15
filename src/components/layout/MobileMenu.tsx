@@ -11,28 +11,24 @@ import Collapse from "@mui/material/Collapse";
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/assets/images/logo.png"; // thay path logo thật
-import ConcreteBg from "@/assets/images/concrete-bg.jpg";
 import { ChevronDown, X } from "lucide-react";
 import { SOCIAL_LINKS } from "./SiteFooter";
 import { GridFadeIn } from "../base/Grid";
 import { usePathname } from "next/navigation";
 import { Grid } from "@mui/material";
 import { INavItem } from "./SiteHeader";
-
-interface IMenuItem {
-	label: string;
-	href?: string;
-	children?: { label: string; href: string }[];
-}
+import { IContactConfig } from "@/types/contact";
 
 export default function MobileMenu({
 	open,
 	onClose,
-	nav
+	nav,
+	contact,
 }: {
 	open: boolean;
 	onClose: () => void;
 	nav: INavItem[];
+	contact: IContactConfig;
 }) {
 	const pathname = usePathname();
 	const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -88,7 +84,7 @@ export default function MobileMenu({
 						<Grid key={social.label} size={2}>
 							<IconButton
 								component="a"
-								href={social.href}
+								href={contact?.[social.key as keyof typeof contact] as string || '#'}
 								aria-label={social.label}
 								size="small"
 								sx={{

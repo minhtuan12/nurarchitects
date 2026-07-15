@@ -41,6 +41,7 @@ export default function NewsResultsGrid({ news }: { news: INewsPopulated[] }) {
 										alt={item.title as string}
 										fill
 										style={{ objectFit: "cover" }}
+										sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 25vw"
 									/>
 								)}
 							</Box>
@@ -55,7 +56,7 @@ export default function NewsResultsGrid({ news }: { news: INewsPopulated[] }) {
 									color: "#8a8a8a",
 								}}
 							>
-								<Clock size={18} fill="#8a8a8a" color="white"/>
+								<Clock size={18} fill="#8a8a8a" color="white" />
 								<Typography sx={{ fontSize: 13, color: "#8a8a8a" }}>
 									{formatDate(item.createdAt as any)}
 								</Typography>

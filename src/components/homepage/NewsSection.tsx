@@ -84,6 +84,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 										alt={featured.title}
 										fill
 										style={{ objectFit: "cover" }}
+										sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 600px"
 									/>
 								</Box>
 							</Box>
@@ -166,6 +167,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 														style={{
 															objectFit: "cover",
 														}}
+														sizes="(max-width: 600px) 33vw, (max-width: 1200px) 25vw, 300px"
 													/>
 												</Box>
 											</Grid>

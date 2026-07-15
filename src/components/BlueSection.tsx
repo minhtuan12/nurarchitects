@@ -28,8 +28,12 @@ export default function BlueSection({
 			<Image
 				src={bgImage || BgPattern.src}
 				fill
+				sizes="100vw"
+				priority
+				fetchPriority="high"
 				className="w-full h-full absolute"
-				alt={title?.toUpperCase() || "NURARCHITECTS CHÚNG TÔI LÀ AI?"}
+				alt=""
+				aria-hidden="true"
 			/>
 			<Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
 				<Grid
@@ -133,7 +137,6 @@ export default function BlueSection({
 									fill
 									sizes="(max-width: 900px) 100vw, 50vw"
 									style={{ objectFit: "cover" }}
-									priority
 								/>
 							</Box>
 						</GridFadeIn>

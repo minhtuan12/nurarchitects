@@ -96,7 +96,7 @@ export async function SiteShell({
         />
 
         {/* SiteHeader handles: HotlineBar + AppBar + scroll/route logic */}
-        <SiteHeader phone={contact?.phone} nav={nav} />
+        <SiteHeader phone={contact?.phone} nav={nav} contact={contact as IContactConfig} />
 
         {!!contact?.phone && <FlyingContact phone={contact?.phone} />}
 
