@@ -244,7 +244,7 @@ function NewsCardView({ item }: { item: NewsCard }) {
   return (
     <Paper
       component={Link}
-      href={`/tin-tuc/${item.slug}`}
+      href={`/tin-tuc/chi-tiet/${item.slug}`}
       variant="outlined"
       sx={{
         height: "100%",

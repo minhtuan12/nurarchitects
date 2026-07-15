@@ -84,7 +84,7 @@ export function articleJsonLd(item: { title: string; shortDescription?: string; 
     "@type": "Article",
     headline: item.title,
     description: item.shortDescription,
-    url: siteUrl(`/tin-tuc/${item.slug}`),
+    url: siteUrl(`/tin-tuc/chi-tiet/${item.slug}`),
     datePublished: item.createdAt,
     dateModified: item.updatedAt,
   };

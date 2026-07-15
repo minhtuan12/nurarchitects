@@ -57,7 +57,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 					{/* ===== Featured news (trái) ===== */}
 					<GridFadeIn size={{ xs: 12, lg: 6 }} fadeInDirection="left">
 						<Link
-							href={`/tin-tuc/${featured.slug}`}
+							href={`/tin-tuc/chi-tiet/${featured.slug}`}
 							style={{ textDecoration: "none" }}
 						>
 							<Box
@@ -131,7 +131,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 							{gridItems.map((item) => (
 								<Grid key={String(item._id)} size={{ xs: 12, sm: 6 }} flexDirection={{ xs: 'row' }}>
 									<Link
-										href={`/tin-tuc/${item.slug}`}
+										href={`/tin-tuc/chi-tiet/${item.slug}`}
 										style={{ textDecoration: "none" }}
 									>
 										<Grid display="flex" flexDirection={{ xs: 'row' }} container spacing={{ xs: 1, sm: 0 }}>
