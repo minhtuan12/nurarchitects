@@ -15,8 +15,6 @@ import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
 import NewsDetail from "../(components)/NewsDetail";
 import { JsonLd } from "@/components/JsonLd";
 
-export const runtime = "nodejs";
-
 const PAGE_SIZE = 12;
 
 // ---- Kiểu dữ liệu sau khi parse slug ----
@@ -190,6 +188,7 @@ export default async function NewsPage({ params, searchParams }: PageProps) {
 						className="h-full"
 						fill
 						title="Các dự án tiêu biểu của Nurarchitects"
+						priority
 					/>
 					<BannerBreadcrumb
 						breadcrumbString="Trang chủ / Tin tức"

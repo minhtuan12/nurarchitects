@@ -58,6 +58,7 @@ export default async function () {
           className="h-full"
           fill
           title="Giới thiệu về Nurarchitects"
+          priority
         />
         <BannerBreadcrumb
           breadcrumbString="Trang chủ / Liên hệ"

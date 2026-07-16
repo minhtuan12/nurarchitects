@@ -184,7 +184,10 @@ export default function PartnerRegistrationDialog({
 					Trở thành đối tác của Nurarchitects
 				</Typography>
 
-				<Grid container spacing={2.5}>
+				<Grid container spacing={2.5} sx={{
+					maxHeight: { xs: '50vh', lg: 'unset' },
+					overflowY: { xs: 'auto', lg: 'unset' },
+				}}>
 					<Grid size={{ xs: 12, md: 6 }}>
 						<Typography sx={labelSx}>TÊN ĐƠN VỊ*</Typography>
 						<TextField
@@ -341,19 +344,21 @@ export default function PartnerRegistrationDialog({
 					Vui lòng mở quyền truy cập các file thông tin gửi kèm!
 				</Typography>
 
-				{errorMsg && (
-					<Typography sx={{ color: "#c0392b", fontSize: 13, mt: 2 }}>
-						{errorMsg}
-					</Typography>
-				)}
-
 				<Box
 					sx={{
 						display: "flex",
-						justifyContent: "flex-end",
+						justifyContent: "space-between",
+						alignItems: 'center',
 						mt: 3,
+						flexDirection: { xs: 'column', md: 'row' },
+						spacing: { xs: 2, md: 0 }
 					}}
 				>
+					{errorMsg && (
+						<Typography sx={{ color: "#c0392b", fontSize: 13 }}>
+							Email hoặc SĐT không đúng định dạng
+						</Typography>
+					)}
 					<Button
 						onClick={handleSubmit}
 						disabled={mutation.isPending}

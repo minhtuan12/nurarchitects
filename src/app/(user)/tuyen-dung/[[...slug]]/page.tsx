@@ -14,8 +14,6 @@ import JobSection from "../(components)/JobSection";
 import JobDetailSection from "../(components)/JobDetail";
 import { JsonLd } from "@/components/JsonLd";
 
-export const runtime = "nodejs";
-
 const PAGE_SIZE = 12;
 const basePath = "/tuyen-dung";
 
@@ -174,6 +172,7 @@ export default async function ({ params, searchParams }: PageProps) {
             className="h-full"
             fill
             title="Nurarchitects tuyển dụng"
+            priority
           />
           <BannerBreadcrumb
             breadcrumbString="Trang chủ / Tuyển dụng"

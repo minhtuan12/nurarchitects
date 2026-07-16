@@ -55,6 +55,7 @@ export default async function () {
 						className="h-full"
 						fill
 						title="Đăng ký, tư vấn hỗ trợ xây nhà trọn gói từ NUR Architects"
+						priority
 					/>
 				</Box>
 			</Box>

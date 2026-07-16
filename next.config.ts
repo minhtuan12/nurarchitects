@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME ?? "demo";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['smokeless-annabelle-overwily.ngrok-free.dev'],
+  // cacheComponents: true,
   images: {
     remotePatterns: [
       {

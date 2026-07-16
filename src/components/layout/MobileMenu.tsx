@@ -12,12 +12,42 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/assets/images/logo.png"; // thay path logo thật
 import { ChevronDown, X } from "lucide-react";
-import { SOCIAL_LINKS } from "./SiteFooter";
 import { GridFadeIn } from "../base/Grid";
 import { usePathname } from "next/navigation";
 import { Grid } from "@mui/material";
 import { INavItem } from "./SiteHeader";
 import { IContactConfig } from "@/types/contact";
+import FacebookIcon from "../icons/Facebook";
+import TiktokIcon from "../icons/Tiktok";
+import YoutubeIcon from "../icons/Youtube";
+import InstagramIcon from "../icons/Instagram";
+
+export const SOCIAL_LINKS = [
+	{
+		icon: <FacebookIcon width={14} color="currentColor" />,
+		href: "#",
+		label: "Facebook",
+		key: 'facebookUrl'
+	},
+	{
+		icon: <TiktokIcon width={14} color="currentColor" />,
+		href: "#",
+		label: "TikTok",
+		key: 'tikTokUrl'
+	},
+	{
+		icon: <YoutubeIcon width={14} color="currentColor" fill="currentColor" />,
+		href: "#",
+		label: "YouTube",
+		key: 'youTubeUrl'
+	},
+	{
+		icon: <InstagramIcon width={14} color="currentColor" fill="currentColor" />,
+		href: "#",
+		label: "Instagram",
+		key: 'instagramUrl'
+	},
+];
 
 export default function MobileMenu({
 	open,

@@ -67,6 +67,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             className="h-full"
             fill
             title="Các dự án tiêu biểu của Nurarchitects"
+            priority
           />
 
           {/* Nội dung text canh giữa Box */}

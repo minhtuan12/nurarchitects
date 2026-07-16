@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Box, Container, Grid, IconButton, Tooltip, useTheme } from "@mui/material";
+import { Box, Container, IconButton, Tooltip, useTheme } from "@mui/material";
 import Image from "next/image";
 import { RichContent } from "@/components/PageSections";
 import { IntroductionMember } from "@/types/introduction";
@@ -13,13 +13,9 @@ type DirectorSpotlightProps = {
 	members: IntroductionMember[];
 };
 
-const ITEMS_PER_PAGE = 3;
-const DRAG_THRESHOLD = 60; // px kéo tối thiểu để tính là 1 lần chuyển trang
-
 export default function Members({ members }: DirectorSpotlightProps) {
 	const theme = useTheme();
 	const primaryColor = theme.palette.primary.main;
-	const constrastBgColor = theme.palette.getContrastText(primaryColor);
 
 	const firstMember = members[0];
 
@@ -27,86 +23,84 @@ export default function Members({ members }: DirectorSpotlightProps) {
 	const teamMembers = members.slice(1);
 	const total = teamMembers.length;
 
-	// ---- State điều khiển carousel ----
-	const [dragX, setDragX] = React.useState(0);
-	const trackRef = React.useRef<HTMLDivElement>(null);
-	const dragState = React.useRef({
-		isDragging: false,
-		startX: 0,
-	});
-	const hasMountedRef = React.useRef(false);
+	// ---- Carousel: dùng overflow-x scroll tự nhiên, tất cả item luôn render sẵn ----
+	// (đơn giản hơn nhiều so với việc tự tính "trang" + slice item hiển thị,
+	// và tránh unmount/remount ảnh mỗi lần chuyển trang gây layout shift)
+	const GAP_PX = 24; // tương ứng gap: 3 (theme spacing mặc định 8px)
+	const itemsPerViewDesktop = Math.min(3, total) || 1;
 
-	React.useEffect(() => {
-		hasMountedRef.current = true;
+	const scrollRef = React.useRef<HTMLDivElement>(null);
+	const [canScrollLeft, setCanScrollLeft] = React.useState(false);
+	const [canScrollRight, setCanScrollRight] = React.useState(false);
+	// isDragging cần là state (không chỉ ref) để trigger re-render tắt/bật
+	// scroll-snap — đây là chỗ mấu chốt để thấy item di chuyển mượt khi kéo.
+	const [isDragging, setIsDragging] = React.useState(false);
+
+	const dragState = React.useRef({
+		startX: 0,
+		startScrollLeft: 0,
+	});
+
+	const updateScrollState = React.useCallback(() => {
+		const el = scrollRef.current;
+		if (!el) return;
+		setCanScrollLeft(el.scrollLeft > 4);
+		setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
 	}, []);
 
-	const pageCount = total > 0 ? Math.ceil(total / ITEMS_PER_PAGE) : 0;
+	React.useEffect(() => {
+		updateScrollState();
+		const el = scrollRef.current;
+		if (!el) return;
+		el.addEventListener("scroll", updateScrollState, { passive: true });
+		window.addEventListener("resize", updateScrollState);
+		return () => {
+			el.removeEventListener("scroll", updateScrollState);
+			window.removeEventListener("resize", updateScrollState);
+		};
+	}, [updateScrollState, total]);
 
-	// Điểm bắt đầu (index) của từng trang. Trang cuối luôn "ghim" về total - 3
-	// để tự mượn các item ngay phía trước bù vào cho đủ 3, thay vì để trống hoặc lặp lộn xộn.
-	const pageStarts = React.useMemo(() => {
-		if (total === 0) return [0];
-		return Array.from({ length: pageCount }, (_, page) => {
-			const raw = page * ITEMS_PER_PAGE;
-			const maxStart = Math.max(total - ITEMS_PER_PAGE, 0);
-			return Math.min(raw, maxStart);
+	// Cuộn đúng bằng độ rộng khung nhìn (= đúng 3 item + khoảng cách đã canh khít
+	// bằng flex-basis calc() bên dưới) -> luôn sang trọn bộ item tiếp theo,
+	// không bị cắt dở như khi cuộn theo độ rộng 1 item.
+	const scrollByAmount = (direction: "left" | "right") => {
+		const el = scrollRef.current;
+		if (!el) return;
+		const amount = el.clientWidth;
+		el.scrollBy({
+			left: direction === "left" ? -amount : amount,
+			behavior: "smooth",
 		});
-	}, [pageCount, total]);
+	};
 
-	const [activePage, setActivePage] = React.useState(0);
-	const startIndex = pageStarts[activePage] ?? 0;
-
-	// Lấy đúng 3 item hiển thị theo trang hiện tại
-	const visibleItems = React.useMemo(() => {
-		if (total === 0) return [];
-		const count = Math.min(ITEMS_PER_PAGE, total);
-		return Array.from({ length: count }, (_, i) => {
-			const index = startIndex + i;
-			return { item: teamMembers[index], index };
-		});
-	}, [teamMembers, startIndex, total]);
-
-	const goToPage = React.useCallback(
-		(page: number) => {
-			if (pageCount === 0) return;
-			setActivePage(((page % pageCount) + pageCount) % pageCount);
-		},
-		[pageCount],
-	);
-
-	const goNext = React.useCallback(() => {
-		if (pageCount === 0) return;
-		setActivePage((prev) => (prev + 1) % pageCount);
-	}, [pageCount]);
-
-	const goPrev = React.useCallback(() => {
-		if (pageCount === 0) return;
-		setActivePage((prev) => (prev - 1 + pageCount) % pageCount);
-	}, [pageCount]);
-
-	// ---- Kéo chuột để lướt (pointer events, hoạt động cả chuột lẫn cảm ứng) ----
+	// ---- Kéo chuột để lướt (overflow-x scroll không hỗ trợ kéo chuột mặc định) ----
 	const handlePointerDown = (e: React.PointerEvent) => {
-		dragState.current.isDragging = true;
-		dragState.current.startX = e.clientX;
-		trackRef.current?.setPointerCapture(e.pointerId);
+		const el = scrollRef.current;
+		if (!el) return;
+		dragState.current = {
+			startX: e.clientX,
+			startScrollLeft: el.scrollLeft,
+		};
+		setIsDragging(true);
+		el.setPointerCapture(e.pointerId);
 	};
 
 	const handlePointerMove = (e: React.PointerEvent) => {
-		if (!dragState.current.isDragging) return;
-		setDragX(e.clientX - dragState.current.startX);
+		const el = scrollRef.current;
+		if (!el || !isDragging) return;
+		const delta = e.clientX - dragState.current.startX;
+		// Set trực tiếp scrollLeft mỗi lần move -> item di chuyển theo tay ngay lập tức.
+		// (Trước đó scroll-snap: mandatory làm trình duyệt "níu" scrollLeft về vị trí
+		// snap trong lúc đang kéo, khiến chỉ thấy nhảy khựng ở cuối thay vì trượt mượt —
+		// nên phải tắt snap trong lúc isDragging, xem sx bên dưới.)
+		el.scrollLeft = dragState.current.startScrollLeft - delta;
 	};
 
 	const endDrag = (e: React.PointerEvent) => {
-		if (!dragState.current.isDragging) return;
-		dragState.current.isDragging = false;
-		trackRef.current?.releasePointerCapture(e.pointerId);
-
-		if (dragX <= -DRAG_THRESHOLD) {
-			goNext();
-		} else if (dragX >= DRAG_THRESHOLD) {
-			goPrev();
-		}
-		setDragX(0);
+		const el = scrollRef.current;
+		if (!el) return;
+		setIsDragging(false);
+		el.releasePointerCapture(e.pointerId);
 	};
 
 	return (
@@ -267,173 +261,163 @@ export default function Members({ members }: DirectorSpotlightProps) {
 								Đội ngũ nhân sự chủ chốt
 							</Box>
 
-							<Box sx={{ position: "relative" }} height={{ lg: 700 }}>
-								{/* Track kéo/lướt */}
+							<Box sx={{ position: "relative" }}>
+								{/* Track cuộn — tất cả item luôn hiển thị, cuộn tự nhiên + kéo chuột */}
 								<Box
-									ref={trackRef}
+									ref={scrollRef}
 									onPointerDown={handlePointerDown}
 									onPointerMove={handlePointerMove}
 									onPointerUp={endDrag}
 									onPointerLeave={endDrag}
 									onPointerCancel={endDrag}
 									sx={{
-										display: "grid",
-										gridTemplateColumns: {
-											xs: "1fr",
-											sm: `repeat(${Math.min(ITEMS_PER_PAGE, total)}, 1fr)`,
-										},
-										gap: 3,
-										cursor: dragState.current.isDragging
-											? "grabbing"
-											: "grab",
+										width: '100%',
+										display: "flex",
+										gap: `${GAP_PX}px`,
+										overflowX: "auto",
+										// Tắt snap trong lúc kéo để thấy item di chuyển mượt theo tay;
+										// bật lại khi thả ra để tự "chốt" đúng vị trí item.
+										scrollSnapType: isDragging ? "none" : "x mandatory",
+										scrollbarWidth: "none",
+										"&::-webkit-scrollbar": { display: "none" },
+										cursor: isDragging ? "grabbing" : "grab",
 										userSelect: "none",
 										touchAction: "pan-y",
-										transform: `translateX(${dragX}px)`,
-										transition: dragState.current.isDragging
-											? "none"
-											: "transform 0.35s ease",
 									}}
 								>
-									{visibleItems.map(
-										({ item, index }, position) => {
-											const content = (
-												<>
-													<Box
-														sx={{
-															position: "relative",
-															width: '100%',
-															aspectRatio: "1 / 1",
-															borderRadius: 1,
-															height: 450,
-															overflow: "hidden",
-															mb: 2.5,
-															bgcolor:
-																"rgba(255,255,255,0.06)",
-															boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
-														}}
-													>
-														{item?.imageId && (
-															<Image
-																src={
-																	(
-																		item.imageId as IMedia
-																	)
-																		?.secureUrl as string
-																}
-																alt={item.name}
-																fill
-																draggable={false}
-																style={{
-																	objectFit: "cover",
-																}}
-															/>
-														)}
-													</Box>
-
-													<Box
-														component="h3"
-														sx={{
-															fontSize: 19,
-															fontWeight: 700,
-															color: "#ffffff",
-															m: 0,
-															mb: 1.5,
-															height: 50,
-														}}
-													>
-														{item?.name}
-													</Box>
-
-													<Tooltip title={<RichContent
-														className="text-justify !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5"
-														html={item.description || ""}
-													/>}>
-														<RichContent
-															className="text-justify text-[15px] !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5 line-clamp-5"
-															html={item.description || ""}
-														/>
-													</Tooltip>
-
-													{/* {position === 1 && (
-													<Box
-														// component="a"
-														// href={`/doi-ngu/${item?.slug ?? item?._id ?? ""}`}
+									{teamMembers.map((item, index) => (
+										<Box
+											key={String((item as any)?._id ?? index)}
+											data-member-item
+											sx={{
+												flex: {
+													// Mobile: mỗi lần hiện trọn 1 item, vẫn cuộn/kéo được sang item kế tiếp
+													xs: "0 0 100%",
+													// Desktop: đúng 3 item (hoặc ít hơn nếu tổng < 3) vừa khít viewport,
+													// không dư/thiếu, không bị cắt dở ở rìa.
+													sm: `0 0 calc((100% - ${GAP_PX * (2 - 1)}px) / ${2})`,
+													md: `0 0 calc((100% - ${GAP_PX * (itemsPerViewDesktop - 1)}px) / ${itemsPerViewDesktop})`,
+												},
+												scrollSnapAlign: "start",
+											}}
+										>
+											<Box
+												sx={{
+													position: "relative",
+													width: "100%",
+													// aspectRatio: "1 / 1",
+													borderRadius: 0.5,
+													height: 450,
+													overflow: "hidden",
+													mb: 2.5,
+													bgcolor: "rgba(255,255,255,0.06)",
+													boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+												}}
+											>
+												{item?.imageId && (
+													<Image
+														src={
+															(item.imageId as IMedia)
+																?.secureUrl as string
+														}
+														alt={item.name}
+														fill
 														draggable={false}
-														sx={{
-															display: "inline-block",
-															mt: 2,
-															fontSize: 14,
-															fontWeight: 600,
-															color: "#ffffff",
-															textDecoration: "none",
-															borderBottom:
-																"1px solid rgba(255,255,255,0.6)",
-															pb: 0.5,
-															"&:hover": {
-																borderColor:
-																	"#ffffff",
-															},
+														sizes="(max-width: 600px) 82vw, 33vw"
+														style={{
+															objectFit: "cover",
 														}}
-													>
-														Xem chi tiết
-													</Box>
-												)} */}
-												</>
-											);
+													/>
+												)}
+											</Box>
 
-											if (!hasMountedRef.current) {
-												return (
-													<GridFadeIn fadeInDirection="up" key={index}>
-														{content}
-													</GridFadeIn>
-												);
-											}
+											<Box
+												component="h3"
+												sx={{
+													fontSize: 19,
+													fontWeight: 700,
+													color: "#ffffff",
+													m: 0,
+													mb: 1.5,
+													height: 50,
+												}}
+											>
+												{item?.name}
+											</Box>
 
-											return <Grid key={index}>{content}</Grid>;
-										}
-									)}
+											<Tooltip
+												title={
+													<RichContent
+														className="!text-sm text-justify !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5"
+														html={item.description || ""}
+													/>
+												}
+											>
+												<RichContent
+													className="text-justify text-[15px] !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5 line-clamp-5"
+													html={item.description || ""}
+												/>
+											</Tooltip>
+										</Box>
+									))}
 								</Box>
 
-								{/* Nút mũi tên 2 bên */}
-								{total > ITEMS_PER_PAGE && (
+								{/* Nút mũi tên 2 bên — chỉ hiện khi có nhiều item hơn số lượng vừa khít viewport */}
+								{total > itemsPerViewDesktop && (
 									<>
 										<IconButton
-											onClick={goPrev}
+											onClick={() => scrollByAmount("left")}
+											disabled={!canScrollLeft}
 											aria-label="Xem nhân sự trước"
 											sx={{
-												display: {
-													xs: "none",
-													md: "inline-flex",
-												},
 												position: "absolute",
 												top: "35%",
-												left: -56,
-												color: "#ffffff",
-												bgcolor: "rgba(255,255,255,0.08)",
+												left: {
+													xs: 0,
+													lg: -56,
+												},
+												color: {
+													xs: 'black',
+													lg: "#ffffff"
+												},
+												bgcolor: {
+													xs: 'white',
+													lg: "rgba(255,255,255,0.08)"
+												},
 												"&:hover": {
-													bgcolor:
-														"rgba(255,255,255,0.18)",
+													bgcolor: "rgba(255,255,255,0.18)",
+												},
+												"&.Mui-disabled": {
+													opacity: 0.25,
 												},
 											}}
 										>
 											<ChevronLeft />
 										</IconButton>
 										<IconButton
-											onClick={goNext}
+											onClick={() => scrollByAmount("right")}
+											disabled={!canScrollRight}
 											aria-label="Xem nhân sự tiếp theo"
 											sx={{
-												display: {
-													xs: "none",
-													md: "inline-flex",
-												},
 												position: "absolute",
 												top: "35%",
-												right: -56,
-												color: "#ffffff",
-												bgcolor: "rgba(255,255,255,0.08)",
+												right: {
+													xs: 0,
+													lg: -56,
+												},
+												color: {
+													xs: 'black',
+													lg: "#ffffff"
+												},
+												bgcolor: {
+													xs: 'white',
+													lg: "rgba(255,255,255,0.08)"
+												},
 												"&:hover": {
-													bgcolor:
-														"rgba(255,255,255,0.18)",
+													bgcolor: "rgba(255,255,255,0.18)",
+												},
+												"&.Mui-disabled": {
+													opacity: 0.25,
 												},
 											}}
 										>
@@ -442,43 +426,6 @@ export default function Members({ members }: DirectorSpotlightProps) {
 									</>
 								)}
 							</Box>
-
-							{/* Chấm tròn điều hướng */}
-							{pageCount > 1 && (
-								<Box
-									sx={{
-										display: "flex",
-										justifyContent: "center",
-										gap: 1,
-										mt: { xs: 4, md: 5 },
-									}}
-								>
-									{Array.from({ length: pageCount }).map(
-										(_, page) => (
-											<Box
-												key={page}
-												component="button"
-												onClick={() => goToPage(page)}
-												aria-label={`Đến trang ${page + 1}`}
-												sx={{
-													width: 8,
-													height: 8,
-													p: 0,
-													border: "none",
-													borderRadius: "50%",
-													cursor: "pointer",
-													bgcolor:
-														page === activePage
-															? "#ffffff"
-															: "rgba(255,255,255,0.3)",
-													transition:
-														"background-color 0.2s ease",
-												}}
-											/>
-										),
-									)}
-								</Box>
-							)}
 						</>
 					)}
 				</Container>

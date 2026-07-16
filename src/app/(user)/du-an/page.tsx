@@ -45,6 +45,7 @@ export default async function ProjectsPage() {
             className="h-full"
             fill
             title="Các dự án tiêu biểu của Nurarchitects"
+            priority
           />
           <BannerBreadcrumb
             breadcrumbString="Trang chủ / Dự án"

@@ -27,7 +27,7 @@ const NAV_LINKS = [
 	{ label: "Liên hệ", href: "/lien-he" },
 ];
 
-export const SOCIAL_LINKS = [
+const SOCIAL_LINKS = [
 	{
 		icon: <FacebookIcon width={14} color="currentColor" />,
 		href: "#",
