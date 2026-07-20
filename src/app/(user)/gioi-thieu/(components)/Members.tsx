@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Box, Container, IconButton, Tooltip, useTheme } from "@mui/material";
+import { Box, Container, IconButton, useTheme } from "@mui/material";
 import Image from "next/image";
 import { RichContent } from "@/components/PageSections";
 import { IntroductionMember } from "@/types/introduction";
@@ -12,6 +12,91 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 type DirectorSpotlightProps = {
 	members: IntroductionMember[];
 };
+
+// ---- Item cuộn: chỉ mount Image + RichContent thật khi gần vào viewport ----
+// Giữ nguyên khung (Box) luôn render để không đổi layout/kích thước -> không gây CLS,
+// nhưng trì hoãn phần "nặng" (decode ảnh, sanitize HTML) cho tới khi cần.
+function MemberCard({
+	item,
+	shouldLoadEager,
+}: {
+	item: IntroductionMember;
+	shouldLoadEager: boolean;
+}) {
+	const cardRef = React.useRef<HTMLDivElement>(null);
+	const [isNearViewport, setIsNearViewport] = React.useState(shouldLoadEager);
+
+	React.useEffect(() => {
+		if (isNearViewport) return;
+		const el = cardRef.current;
+		if (!el) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					setIsNearViewport(true);
+					observer.disconnect();
+				}
+			},
+			// rootMargin rộng theo chiều ngang vì đây là carousel cuộn ngang
+			{ root: null, rootMargin: "0px 600px 0px 600px" }
+		);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, [isNearViewport]);
+
+	return (
+		<Box ref={cardRef} data-member-item>
+			<Box
+				sx={{
+					position: "relative",
+					width: "100%",
+					borderRadius: 0.5,
+					height: 450,
+					overflow: "hidden",
+					mb: 2.5,
+					bgcolor: "rgba(255,255,255,0.06)",
+					boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+				}}
+			>
+				{isNearViewport && item?.imageId && (
+					<Image
+						src={(item.imageId as IMedia)?.secureUrl as string}
+						alt={item.name}
+						fill
+						draggable={false}
+						loading={shouldLoadEager ? undefined : "lazy"}
+						sizes="(max-width: 600px) 82vw, 33vw"
+						style={{ objectFit: "cover" }}
+					/>
+				)}
+			</Box>
+
+			<Box
+				component="h3"
+				sx={{
+					fontSize: 19,
+					fontWeight: 700,
+					color: "#ffffff",
+					m: 0,
+					mb: 1.5,
+					height: 50,
+				}}
+			>
+				{item?.name}
+			</Box>
+
+			{/* Bỏ Tooltip: nội dung trùng lặp với phần line-clamp bên dưới,
+			    mỗi Tooltip gắn thêm listener mouse/touch/focus cho từng item ->
+			    cộng dồn TBT khi có nhiều nhân sự. */}
+			{isNearViewport && (
+				<RichContent
+					className="text-justify text-[15px] !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5 line-clamp-5"
+					html={item.description || ""}
+				/>
+			)}
+		</Box>
+	);
+}
 
 export default function Members({ members }: DirectorSpotlightProps) {
 	const theme = useTheme();
@@ -122,20 +207,13 @@ export default function Members({ members }: DirectorSpotlightProps) {
 				>
 					{firstMember?.imageId && (
 						<Image
-							src={
-								(firstMember?.imageId as IMedia)
-									?.secureUrl as string
-							}
+							src={(firstMember?.imageId as IMedia)?.secureUrl as string}
 							alt={firstMember?.name}
 							fill
 							priority
-							style={{
-								objectFit: "cover",
-								objectPosition: "right center",
-							}}
+							style={{ objectFit: "cover", objectPosition: "right center" }}
 						/>
 					)}
-					{/* Gradient phủ tối bên trái để chữ dễ đọc */}
 					<Box
 						sx={{
 							position: "absolute",
@@ -148,14 +226,7 @@ export default function Members({ members }: DirectorSpotlightProps) {
 					/>
 				</Box>
 
-				<Container
-					maxWidth="lg"
-					sx={{
-						position: "relative",
-						zIndex: 1,
-						py: { xs: 8, md: 12 },
-					}}
-				>
+				<Container maxWidth="lg" sx={{ position: "relative", zIndex: 1, py: { xs: 8, md: 12 } }}>
 					<GridFadeIn fadeInDirection="left" sx={{ maxWidth: "md" }}>
 						<Box
 							component="p"
@@ -191,10 +262,7 @@ export default function Members({ members }: DirectorSpotlightProps) {
 						fadeInDirection="up"
 						sx={{
 							display: "grid",
-							gridTemplateColumns: {
-								xs: "1fr",
-								sm: "repeat(3, minmax(0, 280px))",
-							},
+							gridTemplateColumns: { xs: "1fr", sm: "repeat(3, minmax(0, 280px))" },
 							gap: 2.5,
 						}}
 					>
@@ -213,13 +281,7 @@ export default function Members({ members }: DirectorSpotlightProps) {
 							>
 								<Box
 									component="h3"
-									sx={{
-										fontSize: 19,
-										fontWeight: 700,
-										color: "#ffffff",
-										m: 0,
-										mb: 1.5,
-									}}
+									sx={{ fontSize: 19, fontWeight: 700, color: "#ffffff", m: 0, mb: 1.5 }}
 								>
 									{item.name}
 								</Box>
@@ -233,18 +295,8 @@ export default function Members({ members }: DirectorSpotlightProps) {
 				</Container>
 			</Box>
 
-			<Box
-				sx={{
-					borderTop: "1px solid #4d5a7a",
-					bgcolor: primaryColor,
-				}}
-			>
-				<Container
-					maxWidth="lg"
-					sx={{
-						py: { xs: 8, md: 12 },
-					}}
-				>
+			<Box sx={{ borderTop: "1px solid #4d5a7a", bgcolor: primaryColor }}>
+				<Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
 					{total > 0 && (
 						<>
 							<Box
@@ -261,8 +313,7 @@ export default function Members({ members }: DirectorSpotlightProps) {
 								Đội ngũ nhân sự chủ chốt
 							</Box>
 
-							<Box sx={{ position: "relative" }}>
-								{/* Track cuộn — tất cả item luôn hiển thị, cuộn tự nhiên + kéo chuột */}
+							<GridFadeIn sx={{ position: "relative" }}>
 								<Box
 									ref={scrollRef}
 									onPointerDown={handlePointerDown}
@@ -271,12 +322,10 @@ export default function Members({ members }: DirectorSpotlightProps) {
 									onPointerLeave={endDrag}
 									onPointerCancel={endDrag}
 									sx={{
-										width: '100%',
+										width: "100%",
 										display: "flex",
 										gap: `${GAP_PX}px`,
 										overflowX: "auto",
-										// Tắt snap trong lúc kéo để thấy item di chuyển mượt theo tay;
-										// bật lại khi thả ra để tự "chốt" đúng vị trí item.
 										scrollSnapType: isDragging ? "none" : "x mandatory",
 										scrollbarWidth: "none",
 										"&::-webkit-scrollbar": { display: "none" },
@@ -288,81 +337,25 @@ export default function Members({ members }: DirectorSpotlightProps) {
 									{teamMembers.map((item, index) => (
 										<Box
 											key={String((item as any)?._id ?? index)}
-											data-member-item
 											sx={{
 												flex: {
-													// Mobile: mỗi lần hiện trọn 1 item, vẫn cuộn/kéo được sang item kế tiếp
 													xs: "0 0 100%",
-													// Desktop: đúng 3 item (hoặc ít hơn nếu tổng < 3) vừa khít viewport,
-													// không dư/thiếu, không bị cắt dở ở rìa.
 													sm: `0 0 calc((100% - ${GAP_PX * (2 - 1)}px) / ${2})`,
 													md: `0 0 calc((100% - ${GAP_PX * (itemsPerViewDesktop - 1)}px) / ${itemsPerViewDesktop})`,
 												},
 												scrollSnapAlign: "start",
 											}}
 										>
-											<Box
-												sx={{
-													position: "relative",
-													width: "100%",
-													// aspectRatio: "1 / 1",
-													borderRadius: 0.5,
-													height: 450,
-													overflow: "hidden",
-													mb: 2.5,
-													bgcolor: "rgba(255,255,255,0.06)",
-													boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
-												}}
-											>
-												{item?.imageId && (
-													<Image
-														src={
-															(item.imageId as IMedia)
-																?.secureUrl as string
-														}
-														alt={item.name}
-														fill
-														draggable={false}
-														sizes="(max-width: 600px) 82vw, 33vw"
-														style={{
-															objectFit: "cover",
-														}}
-													/>
-												)}
-											</Box>
-
-											<Box
-												component="h3"
-												sx={{
-													fontSize: 19,
-													fontWeight: 700,
-													color: "#ffffff",
-													m: 0,
-													mb: 1.5,
-													height: 50,
-												}}
-											>
-												{item?.name}
-											</Box>
-
-											<Tooltip
-												title={
-													<RichContent
-														className="!text-sm text-justify !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5"
-														html={item.description || ""}
-													/>
-												}
-											>
-												<RichContent
-													className="text-justify text-[15px] !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5 line-clamp-5"
-													html={item.description || ""}
-												/>
-											</Tooltip>
+											{/* Chỉ 3 item đầu (đúng số lượng vừa khít viewport desktop)
+											    tải eager; các item sau chỉ mount khi cuộn gần tới. */}
+											<MemberCard
+												item={item}
+												shouldLoadEager={index < itemsPerViewDesktop}
+											/>
 										</Box>
 									))}
 								</Box>
 
-								{/* Nút mũi tên 2 bên — chỉ hiện khi có nhiều item hơn số lượng vừa khít viewport */}
 								{total > itemsPerViewDesktop && (
 									<>
 										<IconButton
@@ -372,24 +365,11 @@ export default function Members({ members }: DirectorSpotlightProps) {
 											sx={{
 												position: "absolute",
 												top: "35%",
-												left: {
-													xs: 0,
-													lg: -56,
-												},
-												color: {
-													xs: 'black',
-													lg: "#ffffff"
-												},
-												bgcolor: {
-													xs: 'white',
-													lg: "rgba(255,255,255,0.08)"
-												},
-												"&:hover": {
-													bgcolor: "rgba(255,255,255,0.18)",
-												},
-												"&.Mui-disabled": {
-													opacity: 0.25,
-												},
+												left: { xs: 0, lg: -56 },
+												color: { xs: "black", lg: "#ffffff" },
+												bgcolor: { xs: "white", lg: "rgba(255,255,255,0.08)" },
+												"&:hover": { bgcolor: "rgba(255,255,255,0.18)" },
+												"&.Mui-disabled": { opacity: 0.25 },
 											}}
 										>
 											<ChevronLeft />
@@ -401,31 +381,18 @@ export default function Members({ members }: DirectorSpotlightProps) {
 											sx={{
 												position: "absolute",
 												top: "35%",
-												right: {
-													xs: 0,
-													lg: -56,
-												},
-												color: {
-													xs: 'black',
-													lg: "#ffffff"
-												},
-												bgcolor: {
-													xs: 'white',
-													lg: "rgba(255,255,255,0.08)"
-												},
-												"&:hover": {
-													bgcolor: "rgba(255,255,255,0.18)",
-												},
-												"&.Mui-disabled": {
-													opacity: 0.25,
-												},
+												right: { xs: 0, lg: -56 },
+												color: { xs: "black", lg: "#ffffff" },
+												bgcolor: { xs: "white", lg: "rgba(255,255,255,0.08)" },
+												"&:hover": { bgcolor: "rgba(255,255,255,0.18)" },
+												"&.Mui-disabled": { opacity: 0.25 },
 											}}
 										>
 											<ChevronRight />
 										</IconButton>
 									</>
 								)}
-							</Box>
+							</GridFadeIn>
 						</>
 					)}
 				</Container>
