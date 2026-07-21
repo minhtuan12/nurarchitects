@@ -4,8 +4,10 @@ import { getPublishedProjects, getSeoBySlug } from "@/lib/content";
 import { buildMetadata } from "@/lib/seo";
 import { IMedia } from "@/types/media";
 import { Box } from "@mui/material";
+import dynamic from "next/dynamic";
 import ProjectsSection from "./(components)/ProjectsSection";
-import ContactCTASection from "@/components/ContactCTASection";
+
+const ContactCTASection = dynamic(() => import("@/components/ContactCTASection"));
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("du-an", "page");

@@ -3,16 +3,13 @@ import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { notFound } from "next/navigation";
-import { AppImage } from "@/components/AppImage";
 import { JsonLd } from "@/components/JsonLd";
-import { PageIntro, RichContent } from "@/components/PageSections";
+import { RichContent } from "@/components/PageSections";
 import { getProjectBySlug } from "@/lib/content";
 import { buildMetadata, projectJsonLd } from "@/lib/seo";
-import Developing from "@/components/admin/Developing";
 import { Box, Divider } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
-import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
 import { EBuildPlan } from "@/types/project";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -70,7 +67,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             priority
           />
 
-          {/* Nội dung text canh giữa Box */}
           <Stack
             sx={{
               position: "absolute",
@@ -105,7 +101,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </Box>
       </Box>
       <Container maxWidth="lg" sx={{ pb: { xs: 6, md: 8 } }}>
-        {/* Hàng info-table: Chủ đầu tư / Mô hình / Địa điểm */}
         <Grid container>
           <Grid size={{ xs: 12, sm: 4 }} sx={{
             borderBottom: { xs: "1px solid rgba(0, 0, 0, 0.12)", sm: 'none' },
@@ -129,7 +124,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
         <Divider sx={{ mb: 4 }} />
 
-        {/* Mô tả chi tiết */}
         <RichContent html={project.description} className="text-[rgb(61,61,61)] text-[14px]" />
       </Container>
     </Box>
