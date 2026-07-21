@@ -1,11 +1,9 @@
-"use client";
-
 import { Box, Container, Typography } from "@mui/material";
 import Image from "next/image";
 import type { IActivityPopulated } from "@/types/activity"; // adjust to your actual path
 import { capitalize } from "@/helpers";
 import { RichContent } from "@/components/PageSections";
-import DiagonalNumber from "@/components/DiagonalNumber";
+import { GridFadeIn } from "@/components/base/Grid";
 
 interface ActivitiesSectionProps {
 	activities: IActivityPopulated[];
@@ -14,7 +12,6 @@ interface ActivitiesSectionProps {
 export default function ActivitiesSection({ activities }: ActivitiesSectionProps) {
 	return (
 		<Box
-			component="section"
 			sx={{
 				position: "relative",
 				pt: { xs: 8, md: 12 },
@@ -32,11 +29,12 @@ export default function ActivitiesSection({ activities }: ActivitiesSectionProps
 					rowGap: { xs: 8, md: 12 },
 				}}
 			>
-				{activities.map((activity) => {
+				{activities.map((activity, index) => {
 					const thumb = activity.thumbnailId;
 
 					return (
-						<Box
+						<GridFadeIn
+							fadeInDirection={index % 2 === 0 ? 'left' : 'right'}
 							key={String(activity._id)}
 							sx={{
 								display: { xs: 'flex', md: "grid" },
@@ -52,7 +50,7 @@ export default function ActivitiesSection({ activities }: ActivitiesSectionProps
 							}}
 						>
 							<Typography
-								component="h3"
+								variant="h3"
 								sx={{
 									gridRow: 1, // pinned to the "name" track regardless of siblings
 									fontWeight: 600,
@@ -96,7 +94,7 @@ export default function ActivitiesSection({ activities }: ActivitiesSectionProps
 									/>
 								</Box>
 							)}
-						</Box>
+						</GridFadeIn>
 					);
 				})}
 			</Container>

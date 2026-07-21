@@ -1,14 +1,16 @@
 'use client'
 
 import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { m, LazyMotion, useInView } from "framer-motion";
 import { Grid as MuiGrid, GridProps } from "@mui/material";
+
+const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimation);
 
 const GridComponent = React.forwardRef<HTMLDivElement, GridProps>((props, ref) => (
 	<MuiGrid {...props} ref={ref} />
 ));
 
-const Grid = motion.create(GridComponent);
+const Grid = m.create(GridComponent);
 
 export default Grid;
 
@@ -58,20 +60,22 @@ export function GridFadeIn({
 	return (
 		// MuiGrid chỉ lo layout (size, spacing...)
 		// sx của caller được pass vào đây
-		<Grid ref={ref}
-			initial={{ opacity: 0, ...from }}
-			animate={inView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, ...from }}
-			transition={{ duration, delay, ease: [0.25, 0.1, 0.25, 1] }}
-			className={className}
-			style={{
-				willChange: "transform, opacity",
-				...style,
-			}}
-			onClick={props.onClick}
-			sx={props.sx}
-			size={props.size}
-		>
-			{children}
-		</Grid>
+		<LazyMotion features={loadFeatures} strict>
+			<Grid ref={ref}
+				initial={{ opacity: 0, ...from }}
+				animate={inView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, ...from }}
+				transition={{ duration, delay, ease: [0.25, 0.1, 0.25, 1] }}
+				className={className}
+				style={{
+					willChange: "transform, opacity",
+					...style,
+				}}
+				onClick={props.onClick}
+				sx={props.sx}
+				size={props.size}
+			>
+				{children}
+			</Grid>
+		</LazyMotion>
 	);
 }

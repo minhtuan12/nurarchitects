@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   serverExternalPackages: ["mongoose"],
+  experimental: {
+    optimizePackageImports: ["@mui/material", "@mui/icons-material", "lucide-react"],
+  }
 };
 
 export default nextConfig;

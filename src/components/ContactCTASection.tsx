@@ -144,13 +144,13 @@ export default function ContactCTASection() {
 							fadeInDirection="left"
 							sx={{
 								flex: 1,
-								pl: { xs: 0, md: 10 },
+								// pl: { xs: 0, md: 10 },
 								position: "relative",
 								zIndex: 1,
 								display: 'flex',
 								flexDirection: 'column',
 								justifyContent: 'center',
-								alignItems: { xs: 'center', md: 'unset' },
+								alignItems: { xs: 'center', md: 'center' },
 							}}
 						>
 							<Typography
@@ -161,7 +161,7 @@ export default function ContactCTASection() {
 									letterSpacing: "0.05em",
 									textTransform: "uppercase",
 									mb: 0.75,
-									textAlign: { xs: 'center', md: 'unset' },
+									textAlign: { xs: 'center', md: 'center' },
 								}}
 							>
 								Liên hệ ngay với chúng tôi
@@ -218,7 +218,7 @@ export default function ContactCTASection() {
 							/>
 						</Box> */}
 					</Box>
-				</Container >
+				</Container>
 			</Box >
 
 			{/* ===== Modal Form ===== */}

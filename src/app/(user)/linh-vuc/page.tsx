@@ -4,11 +4,12 @@ import { Box } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import BannerBreadcrumb from "@/components/layout/BannerBreadcrumb";
 import ActivitiesSection from "./(components)/ActivitiesSection";
-import { IActivityPopulated } from "@/types/activity";
 import ContactCTASection from "@/components/ContactCTASection";
-import ProcessSection from "./(components)/ProcessSection";
-import AdvantagesSection from "./(components)/AdvantagesSection";
 import { JsonLd } from "@/components/JsonLd";
+import dynamic from "next/dynamic";
+
+const AdvantagesSection = dynamic(() => import("./(components)/AdvantagesSection"));
+const ProcessSection = dynamic(() => import("./(components)/ProcessSection"));
 
 export async function generateMetadata() {
   const seo = await getSeoBySlug("activity", "page");
@@ -52,9 +53,6 @@ export default async function () {
           />
           <MediaRenderer
             media={null}
-            autoPlay
-            controls={false}
-            loop
             className="h-full"
             fill
             title="Lĩnh vực hoạt động ở Nurarchitects"

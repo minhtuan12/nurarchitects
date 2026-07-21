@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import type { IMedia } from "@/types/media"; // đổi path theo project của bạn
+import Image from "next/image";
 
 export interface IActivityAdvantage {
 	name: string;
@@ -79,17 +80,27 @@ export default function AdvantagesSection({ advantages }: Props) {
 								}}
 							>
 								{/* Background image */}
-								<Box
-									sx={{
-										position: "absolute",
-										inset: 0,
-										backgroundImage: imgUrl ? `url(${imgUrl})` : "none",
-										backgroundColor: "grey.900",
-										backgroundSize: "cover",
-										backgroundPosition: "center",
-										transition: "transform .6s ease",
-									}}
-								/>
+								{imgUrl ?
+									<Image
+										className="absolute inset-0 bg-gray-900 bg-cover bg-center transition-[transform_.6s_ease]"
+										src={imgUrl}
+										alt={advantage.name}
+										fill
+										sizes="(max-width: 768px) 100vw, 33vw"
+										priority={rowIndex === 0} // chỉ ưu tiên hàng đầu tiên, phía trên fold
+										style={{ objectFit: "cover" }}
+									/>
+									: <Box
+										sx={{
+											position: "absolute",
+											inset: 0,
+											backgroundColor: "grey.900",
+											backgroundSize: "cover",
+											backgroundPosition: "center",
+											transition: "transform .6s ease",
+										}}
+									/>
+								}
 
 								{/* Overlay tối - mobile luôn đậm, desktop đậm hơn khi hover */}
 								<Box
