@@ -11,6 +11,8 @@ import { Box, Divider } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
 import { EBuildPlan } from "@/types/project";
+import Image from "next/image";
+import GalleryImage from "../(components)/GalleryImage";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -125,6 +127,41 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <Divider sx={{ mb: 4 }} />
 
         <RichContent html={project.description} className="text-[rgb(61,61,61)] text-[14px]" />
+
+
+        {project.galleryMediaIds && project.galleryMediaIds?.length > 0 &&
+          <>
+            <Divider sx={{ mt: 4, mb: 2 }} />
+            <Grid>
+              <Typography
+                variant="h3"
+                fontSize={{ xs: 14, md: 18 }}
+                color="#1d1c18"
+                textAlign={'center'}
+                mb={3}
+              >
+                Hình ảnh dự án {project.name}
+              </Typography>
+              <Grid container spacing={2} mt={1} justifyContent={'center'}>
+                {project.galleryMediaIds.map((i: IMedia) => (
+                  <Grid key={i.publicId} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        aspectRatio: 4 / 3, // hoặc "1 / 1" tùy layout bạn muốn
+                        overflow: "hidden",
+                        borderRadius: 0.5,
+                      }}
+                    >
+                      <GalleryImage src={i.secureUrl as string} alt={project.name} />
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+          </>
+        }
       </Container>
     </Box>
   );

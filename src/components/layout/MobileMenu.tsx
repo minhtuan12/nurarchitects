@@ -142,8 +142,8 @@ export default function MobileMenu({
 				<Divider sx={{ borderColor: "rgba(0,0,0,0.1)", my: 2 }} />
 
 				{/* Menu items */}
-				< Stack sx={{ flex: 1, overflowY: "auto", py: 1 }}>
-					{nav.map((item) => {
+				<Stack sx={{ flex: 1, overflowY: "auto", py: 1 }}>
+					{[...nav, { label: 'Liên hệ', href: '/lien-he' }].map((item) => {
 						const hasChildren = !!item.children?.length;
 						const isExpanded = expandedItem === item.label;
 						const isActiveRoute = item?.href && pathname.includes(item.href) || item.children?.some(i => pathname.includes(i.href));

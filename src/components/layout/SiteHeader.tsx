@@ -144,7 +144,7 @@ export function SiteHeader({ phone, nav, contact }: { phone?: string; nav?: any;
 		<>
 			{/* Hotline bar: normal flow, scrolls away naturally */}
 			{/* Only show on homepage when not scrolled, always show on other pages */}
-			{!isMobile && <HotlineBar isTransparent={isTransparent} phone={phone} />}
+			<HotlineBar isTransparent={isTransparent} phone={phone} />
 
 			<AppBar
 				position="sticky"
@@ -193,66 +193,16 @@ export function SiteHeader({ phone, nav, contact }: { phone?: string; nav?: any;
 							/>
 						</Link>
 
-						{isMobile ? (
-							<>
-								<Grid
-									display="flex"
-									alignItems="center"
-									justifyContent="center"
-									gap={1}
-								>
-									<Search
-										strokeWidth={2.5}
-										size={20}
-										style={{
-											cursor: "pointer",
-											color: "inherit",
-										}}
-										className="mr-2 hover:text-[black]"
-										onClick={() => setSearchOpen(true)}
-									/>
-									<Box sx={{ bgcolor: 'black', p: 1.25, cursor: 'pointer' }}>
-										<Menu size={22} color="white" onClick={() => setMobileMenuOpen(true)} />
-									</Box>
-								</Grid>
-								<MobileMenu
-									open={mobileMenuOpen}
-									onClose={() => setMobileMenuOpen(false)}
-									nav={nav}
-									contact={contact}
-								/>
-							</>
-						) : (
+						<Grid className="block min-[900px]:hidden">
 							<Grid
 								display="flex"
 								alignItems="center"
 								justifyContent="center"
-								gap={3}
+								gap={1}
 							>
-								<Stack
-									direction="row"
-									gap={{ md: 1, lg: 3 }}
-									sx={{ display: { xs: "none", md: "flex" } }}
-								>
-									{nav.map((item: INavItem, index: number) => {
-										const hasChildren = !!item.children?.length;
-										const isActiveRoute =
-											isRouteActive(pathname, item.href) ||
-											item.children?.some((child) => isRouteActive(pathname, child.href));
-										return (
-											<NavItem
-												key={index}
-												item={item}
-												hasChildren={hasChildren}
-												isActiveRoute={!!isActiveRoute}
-												isTransparent={isTransparent}
-											/>
-										);
-									})}
-								</Stack>
-
 								<Search
-									size={18}
+									strokeWidth={2.5}
+									size={20}
 									style={{
 										cursor: "pointer",
 										color: "inherit",
@@ -260,29 +210,77 @@ export function SiteHeader({ phone, nav, contact }: { phone?: string; nav?: any;
 									className="mr-2 hover:text-[black]"
 									onClick={() => setSearchOpen(true)}
 								/>
-
-								<Button
-									component={Link}
-									href="/lien-he"
-									variant="outlined"
-									sx={{
-										width: 140,
-										py: 1,
-										borderRadius: 1.2,
-										fontSize: 12.5,
-										color: "inherit",
-										borderColor: "currentColor",
-										'&:hover': {
-											bgcolor: 'primary.main',
-											color: theme.palette.getContrastText(theme.palette.primary.main)
-										},
-									}}
-									fillHovered
-								>
-									LIÊN HỆ
-								</Button>
+								<Box sx={{ bgcolor: 'black', p: 1.25, cursor: 'pointer' }}>
+									<Menu size={22} color="white" onClick={() => setMobileMenuOpen(true)} />
+								</Box>
 							</Grid>
-						)}
+							<MobileMenu
+								open={mobileMenuOpen}
+								onClose={() => setMobileMenuOpen(false)}
+								nav={nav}
+								contact={contact}
+							/>
+						</Grid>
+						<Grid
+							display="flex"
+							alignItems="center"
+							justifyContent="center"
+							gap={3}
+							className="hidden min-[900px]:flex"
+						>
+							<Stack
+								direction="row"
+								gap={{ md: 1, lg: 3 }}
+								sx={{ display: { xs: "none", md: "flex" } }}
+							>
+								{nav.map((item: INavItem, index: number) => {
+									const hasChildren = !!item.children?.length;
+									const isActiveRoute =
+										isRouteActive(pathname, item.href) ||
+										item.children?.some((child) => isRouteActive(pathname, child.href));
+									return (
+										<NavItem
+											key={index}
+											item={item}
+											hasChildren={hasChildren}
+											isActiveRoute={!!isActiveRoute}
+											isTransparent={isTransparent}
+										/>
+									);
+								})}
+							</Stack>
+
+							<Search
+								size={18}
+								style={{
+									cursor: "pointer",
+									color: "inherit",
+								}}
+								className="mr-2 hover:text-[black]"
+								onClick={() => setSearchOpen(true)}
+							/>
+
+							<Button
+								component={Link}
+								href="/lien-he"
+								variant="outlined"
+								sx={{
+									width: 140,
+									py: 1,
+									borderRadius: 1.2,
+									fontSize: 12.5,
+									color: "inherit",
+									borderColor: "currentColor",
+									'&:hover': {
+										bgcolor: 'primary.main',
+										color: theme.palette.getContrastText(theme.palette.primary.main)
+									},
+								}}
+								fillHovered
+							>
+								LIÊN HỆ
+							</Button>
+						</Grid>
 					</Toolbar>
 				</Container>
 			</AppBar>

@@ -131,3 +131,15 @@ h5.ant-typography {
         opacity: 0.3;
     }
 }
+
+.ant-upload-list-item-actions button[title="Remove file"] {
+    svg {
+        fill: red;
+    }
+}
+
+.ant-upload-list-item-actions span[aria-label="eye"] {
+    svg {
+        fill: rgb(85, 85, 243);
+    }
+}

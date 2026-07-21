@@ -1,8 +1,7 @@
-"use client";
-
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
+import Link from "next/link";
 
 export function HotlineBar({
 	isTransparent,
@@ -22,6 +21,7 @@ export function HotlineBar({
 				zIndex: 9999,
 				position: "relative",
 			}}
+			className="block max-[900px]:hidden"
 		>
 			<Container maxWidth="xl" sx={{ px: "80px !important" }}>
 				<Box
@@ -42,21 +42,12 @@ export function HotlineBar({
 						}}
 					>
 						Hotline:{" "}
-						<Typography
-							component="a"
+						<Link
 							href={`tel:${phone}`}
-							variant="body2"
-							sx={{
-								color: isTransparent
-									? "white"
-									: "var(--color-header-text)",
-								fontWeight: 600,
-								fontSize: 13,
-								textDecoration: "none",
-							}}
+							className={`${isTransparent ? 'white' : 'black'} font-[600] text-[13px] no-underline`}
 						>
 							{phone}
-						</Typography>
+						</Link>
 					</Typography>
 				</Box>
 			</Container>

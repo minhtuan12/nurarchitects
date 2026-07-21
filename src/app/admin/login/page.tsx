@@ -12,6 +12,7 @@ import { AppImage } from "@/components/AppImage";
 import Logo from "@/assets/images/logo.png";
 import { styled } from "@mui/material/styles";
 import MuiCard from '@mui/material/Card';
+import { useMediaQuery } from "@mui/material";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -36,6 +37,7 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
+  const isMobile = useMediaQuery('(max-width:1024px)');
 
   return (
     <Box
@@ -44,10 +46,10 @@ export default function AdminLoginPage() {
         bgcolor: "#f8fafc",
         display: "flex",
         placeItems: "center",
-        px: 40,
       }}
-    >
-      <Box
+      className="px-[320px] max-[900px]:px-[20px]"
+>
+      {!isMobile && <Box
         sx={{
           width: 1 / 2,
           minHeight: "100vh",
@@ -61,11 +63,14 @@ export default function AdminLoginPage() {
       >
         <AppImage src={Logo} alt="Logo" />
       </Box>
+      }
       <Box sx={{
-        width: 1 / 2, display: "flex",
+        display: "flex",
         justifyContent: "center",
         alignItems: "center",
-      }}>
+      }}
+        className="max-[1024px]:w-full w-1/2"
+      >
         <Card variant="outlined">
           <Stack
             component="form"

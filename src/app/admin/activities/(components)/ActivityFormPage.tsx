@@ -442,7 +442,7 @@ export default function ActivityFormPage({
 									</Upload>
 								</Space>
 							</Form.Item>
-							<Form.Item label="Gallery ảnh lĩnh vực">
+							{/* <Form.Item label="Gallery ảnh lĩnh vực">
 								<Space
 									orientation="vertical"
 									className="w-full"
@@ -475,7 +475,7 @@ export default function ActivityFormPage({
 										{uploadButton}
 									</Upload>
 								</Space>
-							</Form.Item>
+							</Form.Item> */}
 						</Col>
 					</Row>
 					<Row>

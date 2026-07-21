@@ -343,6 +343,7 @@ export default function CooperationPage() {
 		{
 			key: "banner",
 			label: "Banner & CTA",
+			forceRender: true,
 			children: (
 				<Row gutter={[16, 16]}>
 					{/* Banner */}
@@ -408,6 +409,7 @@ export default function CooperationPage() {
 		{
 			key: "gallery",
 			label: "Thư viện ảnh",
+			forceRender: true,
 			children: (
 				<Row gutter={[16, 16]}>
 					<Col span={24}>
@@ -446,6 +448,7 @@ export default function CooperationPage() {
 		{
 			key: "coop-fields",
 			label: "Lĩnh vực hợp tác",
+			forceRender: true,
 			children: (
 				<Row gutter={[16, 16]}>
 					<Col span={24}>
@@ -461,6 +464,7 @@ export default function CooperationPage() {
 		{
 			key: "content",
 			label: "Nội dung",
+			forceRender: true,
 			children: (
 				<Row gutter={[16, 16]}>
 					<Col xs={24} lg={12}>
@@ -486,6 +490,7 @@ export default function CooperationPage() {
 		{
 			key: "seo",
 			label: "Quản lý SEO",
+			forceRender: true,
 			children: (
 				<Row gutter={[16, 16]}>
 					<Col span={24}>
