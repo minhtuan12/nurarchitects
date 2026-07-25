@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Box, Container, Typography } from "@mui/material";
 import { RichContent } from "@/components/PageSections";
@@ -31,7 +29,6 @@ const nameSx = {
 	color: "#1c1c1c",
 	mb: 1.5,
 	maxWidth: { xs: "100%", lg: "80%" },
-	minHeight: { xs: 'auto', lg: 65 },
 };
 
 export default function MissionAndVision({
@@ -58,7 +55,6 @@ export default function MissionAndVision({
 
 	return (
 		<Box
-			component="section"
 			sx={{
 				position: "relative",
 				py: { xs: 8, lg: 12 },
@@ -89,7 +85,7 @@ export default function MissionAndVision({
 								sx={{
 									mb:
 										index < column.milestones.length - 1
-											? 5
+											? 3
 											: 0,
 								}}
 							>
