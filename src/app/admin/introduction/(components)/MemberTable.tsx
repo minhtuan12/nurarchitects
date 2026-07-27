@@ -40,6 +40,7 @@ import {
 	Form,
 	Input,
 	Modal,
+	Popconfirm,
 	Row,
 	Space,
 	Table,
@@ -460,8 +461,10 @@ const MemberTable = forwardRef<MemberTableHandle, MemberTableProps>(
 			closeModal();
 		};
 
-		const handleDelete = (index: number) => {
-			onChange(members.filter((_, i) => i !== index));
+		const handleDelete = async (index: number) => {
+			const nextMembers = members.filter((_, i) => i !== index);
+			onChange(nextMembers);
+			await onSave(nextMembers);
 		};
 
 		const handleDragEnd = (event: DragEndEvent) => {
@@ -554,14 +557,23 @@ const MemberTable = forwardRef<MemberTableHandle, MemberTableProps>(
 							disabled={disabled}
 							onClick={() => openEdit(index)}
 						/>
-						<Button
-							type="text"
-							size="small"
-							danger
-							icon={<DeleteOutlined />}
+						<Popconfirm
+							title="Xóa nhân sự"
+							description="Bạn có chắc chắn muốn xóa nhân sự này?"
+							okText="Xóa"
+							cancelText="Hủy"
+							okButtonProps={{ danger: true }}
 							disabled={disabled}
-							onClick={() => handleDelete(index)}
-						/>
+							onConfirm={() => handleDelete(index)}
+						>
+							<Button
+								type="text"
+								size="small"
+								danger
+								icon={<DeleteOutlined />}
+								disabled={disabled}
+							/>
+						</Popconfirm>
 					</Space>
 				),
 			},
