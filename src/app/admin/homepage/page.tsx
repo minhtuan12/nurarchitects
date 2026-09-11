@@ -357,7 +357,6 @@ export default function () {
 					open
 					title="Chọn banner"
 					multiple={false}
-					resourceType="auto"
 					selectedIds={
 						bannerFiles[0]?.mediaId ? [bannerFiles[0].mediaId] : []
 					}
