@@ -80,6 +80,13 @@ export const homepageConfigSchema = z.object({
   mediaIds: z.array(objectIdSchema).default([]),
 });
 
+export const projectCtaSchema = z.object({
+  title: z.string().max(200).default(""),
+  description: z.string().max(500).default(""),
+  buttonText: z.string().max(100).default(""),
+  backgroundImageId: optionalObjectIdSchema,
+});
+
 export const introductionConfigSchema = z.object({
   content: htmlSchema,
   bannerId: optionalObjectIdSchema,

@@ -5,14 +5,14 @@ import Typography from "@mui/material/Typography";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/JsonLd";
 import { RichContent } from "@/components/PageSections";
-import { getProjectBySlug } from "@/lib/content";
+import { getProjectBySlug, getProjectCta } from "@/lib/content";
 import { buildMetadata, projectJsonLd } from "@/lib/seo";
 import { Box, Divider } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import { IMedia } from "@/types/media";
 import { EBuildPlan } from "@/types/project";
-import Image from "next/image";
 import GalleryImage from "../(components)/GalleryImage";
+import ContactCTASection from "@/components/ContactCTASection";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -41,6 +41,8 @@ function InfoCell({ label, value }: { label: string; value?: string | null }) {
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
+  const cta = await getProjectCta();
+  console.log(cta)
   if (!project) notFound();
 
   return (
@@ -128,7 +130,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
         <RichContent html={project.description} className="text-[rgb(61,61,61)] text-[14px]" />
 
-
         {project.galleryMediaIds && project.galleryMediaIds?.length > 0 &&
           <>
             <Divider sx={{ mt: 4, mb: 2 }} />
@@ -162,6 +163,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             </Grid>
           </>
         }
+
+        <div className="mt-10">
+          <ContactCTASection
+            title={cta.title}
+            description={cta.description}
+            ctaContent={cta.buttonText}
+            image={cta.backgroundImageId.secureUrl}
+          />
+        </div>
       </Container>
     </Box>
   );

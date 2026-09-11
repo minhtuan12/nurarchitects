@@ -34,6 +34,20 @@ export const ADMIN_ROUTES = [
         label: "Quản lý Công trình/Dự án",
         href: "/admin/projects",
         icon: Building2,
+        children: [
+            {
+                key: "projects-list",
+                label: "Danh sách Công trình",
+                href: "/admin/projects/list",
+                icon: ListOrdered,
+            },
+            {
+                key: "projects-cta",
+                label: "Cài đặt CTA",
+                href: "/admin/projects/cta",
+                icon: Info,
+            },
+        ],
     },
     {
         key: "activities",

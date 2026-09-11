@@ -11,6 +11,7 @@ import {
   News,
   NewsCategory,
   Project,
+  ProjectCta,
   SeoSetting,
   SettingsConfig,
 } from "@/models";
@@ -117,6 +118,11 @@ export async function getPublishedProjects(limit = 24) {
 export async function getProjectBySlug(slug: string) {
   if (!(await tryConnectDb())) return null;
   return serialize(await Project.findOne({ slug, status: "published" }).populate("thumbnailId galleryMediaIds").lean());
+}
+
+export async function getProjectCta() {
+  if (!(await tryConnectDb())) return null;
+  return serialize(await ProjectCta.findOne({}).populate("backgroundImageId").lean());
 }
 
 export async function getNewsCategories() {

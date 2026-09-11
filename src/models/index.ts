@@ -62,6 +62,17 @@ const HomepageConfigSchema = new Schema(
   { timestamps: true },
 );
 
+const ProjectCtaSchema = new Schema(
+  {
+    _type: { type: String, required: true, default: "project-cta", immutable: true, unique: true },
+    title: { type: String, default: "" },
+    description: { type: String, default: "" },
+    buttonText: { type: String, default: "" },
+    backgroundImageId: { type: objectId, ref: "Media" },
+  },
+  { timestamps: true },
+);
+
 const introductionContentSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -365,6 +376,7 @@ const SettingsConfigSchema = new Schema(
 
 export const Media = model("Media", MediaSchema);
 export const HomepageConfig = model("HomepageConfig", HomepageConfigSchema);
+export const ProjectCta = model("ProjectCta", ProjectCtaSchema);
 export const IntroductionConfig = model("IntroductionConfig", IntroductionConfigSchema);
 export const Project = model("Project", ProjectSchema);
 export const Activity = model("Activity", ActivitySchema);
@@ -385,6 +397,7 @@ export const CooperationForm = model("CooperationForm", CooperationFormSchema);
 export const registry = {
   media: Media,
   homepage: HomepageConfig,
+  projectCta: ProjectCta,
   introduction: IntroductionConfig,
   projects: Project,
   activities: Activity,

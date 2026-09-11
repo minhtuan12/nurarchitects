@@ -75,7 +75,17 @@ async function submitContactForm(payload: IContactForm) {
 	return res.json();
 }
 
-export default function ContactCTASection() {
+export default function ContactCTASection({
+	title,
+	description,
+	ctaContent,
+	image,
+}: {
+	title?: string;
+	description?: string;
+	ctaContent?: string;
+	image?: string;
+}) {
 	const [open, setOpen] = useState(false);
 	const [values, setValues] = useState<IContactForm>(initialValues);
 	const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -144,13 +154,13 @@ export default function ContactCTASection() {
 							fadeInDirection="left"
 							sx={{
 								flex: 1,
-								// pl: { xs: 0, md: 10 },
 								position: "relative",
 								zIndex: 1,
 								display: 'flex',
 								flexDirection: 'column',
 								justifyContent: 'center',
-								alignItems: { xs: 'center', md: 'center' },
+								paddingLeft: image ? 8 : 0,
+								alignItems: { xs: 'center', md: image ? 'flex-start' : 'center' },
 							}}
 						>
 							<Typography
@@ -161,10 +171,10 @@ export default function ContactCTASection() {
 									letterSpacing: "0.05em",
 									textTransform: "uppercase",
 									mb: 0.75,
-									textAlign: { xs: 'center', md: 'center' },
+									textAlign: { xs: 'center', md: image ? 'left' : 'center' },
 								}}
 							>
-								Liên hệ ngay với chúng tôi
+								{title || 'Liên hệ ngay với chúng tôi'}
 							</Typography>
 							<Typography
 								sx={{
@@ -173,12 +183,15 @@ export default function ContactCTASection() {
 									fontWeight: 700,
 									lineHeight: 1.5,
 									mb: 3.625,
-									textAlign: { xs: 'center', md: 'unset' },
+									pr: image ? 12 : 0,
+									textAlign: { xs: 'center', md: image ? 'left' : 'center' },
 								}}
 							>
-								Liên hệ với Nurarchitects
-								<br />
-								để nhận tư vấn miễn phí
+								{description || <>
+									Liên hệ với Nurarchitects
+									<br />
+									để nhận tư vấn miễn phí
+								</>}
 							</Typography>
 							<Button
 								onClick={() => setOpen(true)}
@@ -198,25 +211,28 @@ export default function ContactCTASection() {
 									},
 								}}
 							>
-								Đặt lịch ngay
+								{ctaContent || 'Đặt lịch ngay'}
 							</Button>
 						</GridFadeIn>
 
 						{/* Right: image */}
-						{/* <Box
-							sx={{
-								flex: 1,
-								position: "relative",
-								minHeight: { xs: 260, md: "auto" },
-							}}
-						>
-							<Image
-								src={ConsultImage}
-								alt="Tư vấn Nurarchitects"
-								fill
-								style={{ objectFit: "cover" }}
-							/>
-						</Box> */}
+						{!!image &&
+							<Box
+								sx={{
+									flex: 1,
+									position: "relative",
+									minHeight: { xs: 260, md: "auto" },
+									ml: 10
+								}}
+							>
+								<Image
+									src={image}
+									alt="Tư vấn Nurarchitects"
+									fill
+									style={{ objectFit: "cover" }}
+								/>
+							</Box>
+						}
 					</Box>
 				</Container>
 			</Box >

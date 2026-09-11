@@ -28,6 +28,16 @@ export interface IProjectPopulated extends Omit<
 	galleryMediaIds: IMedia[];
 }
 
+export interface IProjectCta {
+	_id: Types.ObjectId | string;
+	title: string;
+	description: string;
+	buttonText: string;
+	backgroundImageId?: Types.ObjectId | string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
 export type BuildPlan = 'home' | 'businessHome' | 'villa' | 'office' | 'others';
 export type BuildArea = 'under' | 'between' | 'above';
 
