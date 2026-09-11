@@ -17,6 +17,15 @@ import { useMessage } from "@/contexts/AdminMessageContext";
 
 const { Title, Text } = Typography;
 
+const getMediaId = (value: unknown): string | undefined => {
+	if (!value) return undefined;
+	if (typeof value === "string") return value;
+	if (typeof value === "object" && value !== null && "_id" in value) {
+		return String((value as { _id: unknown })._id);
+	}
+	return String(value);
+};
+
 export default function ProjectCtaPage() {
 	const messageApi = useMessage();
 	const [title, setTitle] = useState("");
@@ -34,12 +43,14 @@ export default function ProjectCtaPage() {
 				setTitle(item?.title ?? "");
 				setDescription(item?.description ?? "");
 				setButtonText(item?.buttonText ?? "");
-				if (item?.backgroundImageId)
-					setBackground([
-						await mediaIdToUploadFile(
-							String(item.backgroundImageId),
-						),
-					]);
+				const mediaId = getMediaId(item?.backgroundImageId);
+				if (mediaId) {
+					if (typeof item.backgroundImageId === "object" && item.backgroundImageId.url) {
+						setBackground([mediaToUploadFile({ ...item.backgroundImageId, _id: mediaId })]);
+					} else {
+						setBackground([await mediaIdToUploadFile(mediaId)]);
+					}
+				}
 			})
 			.catch(() => messageApi.error("Không thể tải cấu hình CTA"))
 			.finally(() => setLoading(false));
