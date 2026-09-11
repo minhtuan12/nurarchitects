@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ["mongoose"],
   experimental: {
+    proxyClientMaxBodySize: "50mb",
     optimizePackageImports: ["@mui/material", "@mui/icons-material", "lucide-react"],
   }
 };
