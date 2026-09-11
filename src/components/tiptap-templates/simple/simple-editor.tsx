@@ -292,7 +292,14 @@ export function SimpleEditor({ value, onChange, className, setUploading }: any) 
             TaskList,
             TaskItem.configure({ nested: true }),
             Highlight.configure({ multicolor: true }),
-            Image,
+            Image.configure({
+                resize: {
+                    enabled: true,
+                    directions: ["left", "right"],
+                    minWidth: 50,
+                    alwaysPreserveAspectRatio: true,
+                },
+            }),
             Typography,
             Superscript,
             Subscript,

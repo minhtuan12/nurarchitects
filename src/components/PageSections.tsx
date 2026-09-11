@@ -270,7 +270,7 @@ export function RichContent({ html, className, ...props }: RichContentProps) {
       },
 
       // Media
-      "& img": { maxWidth: "100%", height: "auto", borderRadius: 1, my: 1 },
+      "& img": { position: 'relative', left: '50%', transform: 'translateX(-50%)', marginBlock: '14px', borderRadius: 0.5 },
       "& video": { maxWidth: "100%", height: "auto", my: 1 },
       "& iframe": { maxWidth: "100%", my: 1 },
 

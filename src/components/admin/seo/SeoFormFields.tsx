@@ -68,7 +68,7 @@ export default function SeoFormFields({ names, disabled }: SeoFormFieldsProps) {
 				label="Từ khóa trọng tâm (focus keywords)"
 				name={fieldNames.focusKeywords}
 				tooltip="Ngăn cách các từ khóa bằng Enter hoặc dấu phẩy"
-				className="[&_.ant-select-content]:!h-full"
+				className="[&_.ant-select-content]:!h-full [&_.ant-select]:!h-auto"
 			>
 				<Select
 					mode="tags"
