@@ -489,7 +489,7 @@ export default function ProjectsAdminPage() {
                     <Space className="gap-4">
                         <SquarePen
                             onClick={() =>
-                                router.push(`/admin/projects/${String(record._id)}`)
+                                router.push(`/admin/projects/list/${String(record._id)}`)
                             }
                             className="cursor-pointer"
                             color="#2b7fff"
@@ -573,7 +573,7 @@ export default function ProjectsAdminPage() {
                     type="primary"
                     size="large"
                     icon={<PlusOutlined />}
-                    onClick={() => router.push("/admin/projects/create")}
+                    onClick={() => router.push("/admin/projects/list/create")}
                 >
                     Thêm
                 </Button>
