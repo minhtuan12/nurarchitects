@@ -352,7 +352,7 @@ export default function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
 						: "Tạo dự án mới"}
 				</Title>
 				<div className="flex justify-end gap-3">
-					<Button onClick={() => router.push("/admin/projects")}>
+					<Button onClick={() => router.push("/admin/projects/list")}>
 						Quay lại
 					</Button>
 					<Button
