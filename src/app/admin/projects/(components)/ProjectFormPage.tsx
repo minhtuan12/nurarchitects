@@ -333,7 +333,7 @@ export default function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
 					? "Cập nhật thành công"
 					: "Tạo dự án thành công",
 			);
-			router.push("/admin/projects");
+			router.push("/admin/projects/list");
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : "Đã có lỗi xảy ra";
