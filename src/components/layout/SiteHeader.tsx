@@ -236,6 +236,7 @@ export function SiteHeader({ phone, nav, contact, logoUrl }: { phone?: string; n
 								onClose={() => setMobileMenuOpen(false)}
 								nav={nav}
 								contact={contact}
+								logoUrl={logoUrl}
 							/>
 						</Grid>
 						<Grid

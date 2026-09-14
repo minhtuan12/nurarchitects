@@ -54,11 +54,13 @@ export default function MobileMenu({
 	onClose,
 	nav,
 	contact,
+	logoUrl,
 }: {
 	open: boolean;
 	onClose: () => void;
 	nav: INavItem[];
 	contact: IContactConfig;
+	logoUrl?: string;
 }) {
 	const pathname = usePathname();
 	const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -96,7 +98,7 @@ export default function MobileMenu({
 				>
 					<Box sx={{ position: "relative", width: 240, height: 85 }}>
 						<Image
-							src={Logo.src}
+							src={logoUrl || Logo.src}
 							alt="Artéco"
 							fill
 							style={{ objectFit: "contain", objectPosition: "left" }}

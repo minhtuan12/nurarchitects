@@ -55,7 +55,7 @@ const SOCIAL_LINKS = [
 ];
 
 // Texture nền đá xám — dùng CSS noise filter để gần giống ảnh
-export default async function SiteFooter() {
+export default async function SiteFooter({ logoUrl }: { logoUrl?: string }) {
 	const [contactRes] = await Promise.all([
 		fetchApi<IContactConfig>("/api/contact"),
 	]);
@@ -87,7 +87,7 @@ export default async function SiteFooter() {
 						justifyContent: "center",
 					}}
 				>
-					<AppImage src={Logo} alt="Logo" className="w-[180px] md:w-[300px]" />
+					<AppImage src={logoUrl || Logo} alt="Logo" className="w-[180px] md:w-[300px]" />
 				</Box>
 
 				<Divider sx={{ borderColor: "rgba(255,255,255,0.12)", display: { xs: 'none', md: 'unset' } }} />

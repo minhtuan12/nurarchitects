@@ -104,7 +104,7 @@ export async function SiteShell({
 
         <Box component="main">{children}</Box>
 
-        <SiteFooter />
+        <SiteFooter logoUrl={settings.logoUrl} />
       </ThemeProvider>
     </AppRouterCacheProvider>
   );
