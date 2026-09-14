@@ -7,7 +7,7 @@ import {
   upsertProjectSeoSetting,
 } from "@/lib/seo-service";
 import { projectSchema } from "@/lib/validation";
-import { Project, SeoSetting } from "@/models";
+import { HomepageConfig, Project, SeoSetting } from "@/models";
 
 export const runtime = "nodejs";
 
@@ -68,4 +68,26 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   }
 }
 
-export const DELETE = handlers.remove;
+export async function DELETE(_request: NextRequest, context: { params: Promise<{ id: string }> }) {
+  try {
+    await requireAdmin();
+    await connectDb();
+
+    const { id } = await context.params;
+
+    const item = await Project.findByIdAndDelete(id).lean();
+    if (!item) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    // Loại bỏ project vừa xoá khỏi featuredProjectIds trên homepage (nếu có)
+    await HomepageConfig.updateOne(
+      { _type: "homepage" },
+      { $pull: { featuredProjectIds: item._id } },
+    );
+
+    return NextResponse.json({ item });
+  } catch (error) {
+    return apiError(error);
+  }
+}

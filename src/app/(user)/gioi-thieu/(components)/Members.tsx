@@ -8,6 +8,7 @@ import { IntroductionMember } from "@/types/introduction";
 import { IMedia } from "@/types/media";
 import { GridFadeIn } from "@/components/base/Grid";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import ContrastTypography from "@/components/base/ContrastTypography";
 
 type DirectorSpotlightProps = {
 	members: IntroductionMember[];
@@ -23,6 +24,7 @@ function MemberCard({
 	item: IntroductionMember;
 	shouldLoadEager: boolean;
 }) {
+	const theme = useTheme();
 	const cardRef = React.useRef<HTMLDivElement>(null);
 	const [isNearViewport, setIsNearViewport] = React.useState(shouldLoadEager);
 
@@ -55,7 +57,6 @@ function MemberCard({
 					overflow: "hidden",
 					mb: 2.5,
 					bgcolor: "rgba(255,255,255,0.06)",
-					boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
 				}}
 			>
 				{isNearViewport && item?.imageId && (
@@ -71,26 +72,26 @@ function MemberCard({
 				)}
 			</Box>
 
-			<Box
+			<ContrastTypography
 				component="h3"
 				sx={{
 					fontSize: 19,
 					fontWeight: 700,
-					color: "#ffffff",
+					// color: "#ffffff",
 					m: 0,
 					mb: 1.5,
-					height: 50,
+					height: 30,
 				}}
 			>
 				{item?.name}
-			</Box>
+			</ContrastTypography>
 
 			{/* Bỏ Tooltip: nội dung trùng lặp với phần line-clamp bên dưới,
 			    mỗi Tooltip gắn thêm listener mouse/touch/focus cho từng item ->
 			    cộng dồn TBT khi có nhiều nhân sự. */}
 			{isNearViewport && (
 				<RichContent
-					className="text-justify text-[15px] !text-[rgba(255,255,255,0.55)] [&_li]:-mb-2.5 line-clamp-5"
+					className={`text-justify text-[15px] !text-[${theme.palette.getContrastText(theme.palette.primary.main)}] [&_li]:-mb-2.5 line-clamp-5`}
 					html={item.description || ""}
 				/>
 			)}
@@ -299,19 +300,18 @@ export default function Members({ members }: DirectorSpotlightProps) {
 				<Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
 					{total > 0 && (
 						<>
-							<Box
-								component="p"
+							<ContrastTypography
 								sx={{
 									fontSize: 12,
 									fontWeight: 700,
 									letterSpacing: "0.05em",
 									textTransform: "uppercase",
-									color: "#9199b0",
+									// color: "#9199b0",
 									mb: 4,
 								}}
 							>
 								Đội ngũ nhân sự chủ chốt
-							</Box>
+							</ContrastTypography>
 
 							<GridFadeIn sx={{ position: "relative" }}>
 								<Box

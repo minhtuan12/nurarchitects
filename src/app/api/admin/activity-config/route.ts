@@ -8,6 +8,9 @@ const handlers = createSingletonHandlers(ActivityConfig, activityConfigSchema, "
 	{
 		path: "bannerId",
 	},
+	{
+		path: "advantages.thumbnailId",
+	},
 ]);
 
 export const GET = handlers.get;

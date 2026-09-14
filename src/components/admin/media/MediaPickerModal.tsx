@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   Button,
   Empty,
-  Image as AntImage,
   Input,
   Modal,
   Pagination,
@@ -34,7 +33,7 @@ interface MediaListResponse {
   error?: string;
 }
 
-const pageSize = 24;
+const pageSize = 12;
 const emptySelectedIds: string[] = [];
 
 function mediaLabel(item: AdminMediaItem) {
@@ -45,6 +44,11 @@ function formatFileSize(size?: number) {
   if (!size) return "";
   if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
   return `${(size / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function toThumbnail(url?: string, size = 320) {
+  if (!url) return url;
+  return url.replace("/upload/", `/upload/w_${size},h_${size},c_fill,q_auto,f_auto/`);
 }
 
 export default function MediaPickerModal({
@@ -154,6 +158,7 @@ export default function MediaPickerModal({
   useEffect(() => {
     if (open) {
       setSelectedSet(new Set(selectedIds));
+      setItemMap({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -201,7 +206,7 @@ export default function MediaPickerModal({
                 const selected = selectedSet.has(item._id);
                 const label = mediaLabel(item);
                 const isImage = item.resourceType === "image";
-                const previewUrl = item.secureUrl ?? item.url;
+                const previewUrl = toThumbnail(item.secureUrl ?? item.url);
 
                 return (
                   <button
@@ -215,12 +220,12 @@ export default function MediaPickerModal({
                   >
                     <div className="flex aspect-[4/3] items-center justify-center bg-[#f3f0e8]">
                       {isImage && previewUrl ? (
-                        <AntImage
+                        <img
                           src={previewUrl}
                           alt={item.alt || label}
-                          preview={false}
-                          rootClassName="h-full w-full"
-                          className="!h-full !w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                          className="h-full w-full object-cover"
                         />
                       ) : (
                         <FileText

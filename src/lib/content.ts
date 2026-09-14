@@ -163,11 +163,12 @@ export async function getSeoBySlug(slug: string, entityType: SeoEntityType = "pa
 
 async function fetchSettingsFromDB(): Promise<SiteSettings | null> {
   if (!(await tryConnectDb())) return null;
-  const doc = await SettingsConfig.findOne({ _type: "settings" }).lean<Partial<SiteSettings>>();
+  const doc = await SettingsConfig.findOne({ _type: "settings" }).populate("logoId").lean<any>();
 
   if (!doc) return defaultSiteSettings;
 
   return {
+    logoUrl: doc.logoId?.secureUrl || doc.logoId?.url || defaultSiteSettings.logoUrl,
     primaryColor: doc.primaryColor || defaultSiteSettings.primaryColor,
     // secondaryColor: doc.secondaryColor || defaultSiteSettings.secondaryColor,
     backgroundColor: doc.backgroundColor || defaultSiteSettings.backgroundColor,

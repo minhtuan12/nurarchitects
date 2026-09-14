@@ -366,6 +366,7 @@ const SettingsConfigSchema = new Schema(
     // secondaryColor: { type: String, default: "#c9a86a" },   // màu phụ / nhấn
     backgroundColor: { type: String },
     backgroundImageId: { type: Schema.Types.ObjectId, ref: "Media", default: null },
+    logoId: { type: Schema.Types.ObjectId, ref: "Media", default: null },
     textColor: { type: String, default: "#1c1c1c" },        // màu chữ mặc định
     headerBackgroundColor: { type: String },
     footerBackgroundColor: { type: String },

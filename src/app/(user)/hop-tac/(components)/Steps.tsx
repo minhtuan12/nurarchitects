@@ -20,6 +20,7 @@ import Link from "next/link";
 import { IMedia } from "@/types/media";
 import DefaultImage from '@/assets/images/default-banner.webp';
 import { GridFadeIn } from "@/components/base/Grid";
+import ContrastTypography from "@/components/base/ContrastTypography";
 
 const infoList = [
 	"Hồ sơ năng lực (nếu có).",
@@ -71,16 +72,17 @@ export default function ProcessSteps({
 						alt="Nurarchitects Logo"
 					/>
 				</div>
-				<Typography
+				<ContrastTypography
 					sx={{
 						mt: 2,
 						fontWeight: 700,
 						fontSize: 25,
 					}}
-					color="primary.main"
+					// color="primary.main"
+					basecolor={theme.palette.background.default}
 				>
 					Quy trình hợp tác
-				</Typography>
+				</ContrastTypography>
 			</GridFadeIn>
 
 			<Stack
@@ -135,8 +137,9 @@ export default function ProcessSteps({
 								size={isMobile ? 0 : 40}
 								strokeWidth={1.5}
 								className="ml-10"
+								color={theme.palette.getContrastText(theme.palette.background.default)}
 							/>
-							<Typography
+							<ContrastTypography
 								sx={{
 									fontWeight: 700,
 									fontSize: { xs: 18, lg: 24 },
@@ -145,7 +148,7 @@ export default function ProcessSteps({
 							>
 								{isMobile ? `${step.order + 1}. ` : ""}
 								{step.name}
-							</Typography>
+							</ContrastTypography>
 
 							{step.description && (
 								<Typography

@@ -29,7 +29,7 @@ export default function FeaturedProjectsSection({
 		let cancelled = false;
 
 		Promise.all([
-			adminFetch("/api/admin/projects?status=published").then((res) => res.json()),
+			adminFetch("/api/admin/projects").then((res) => res.json()),
 			adminFetch("/api/admin/homepage").then((res) => res.json()),
 		])
 			.then(([projectsData, configData]) => {

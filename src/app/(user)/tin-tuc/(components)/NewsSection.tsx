@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Box, Grid, Pagination, PaginationItem, Stack, Typography } from "@mui/material";
+import { Box, Grid, Pagination, PaginationItem, Stack, Typography, useTheme } from "@mui/material";
 import MediaRenderer from "@/components/MediaRenderer";
 import type { IMedia } from "@/types/media";
 import { ClockCircleFilled } from "@ant-design/icons";
 import { formatDate } from "@/lib/utils";
 import { INewsPopulated } from "@/types/news";
 import { withQueryString } from "@/helpers";
+import ContrastTypography from "@/components/base/ContrastTypography";
 
 interface NewsSectionProps {
 	news: INewsPopulated[];
@@ -25,6 +26,7 @@ const clampStyle = (lines: number) => ({
 });
 
 function PostDate({ date }: { date: string }) {
+	const theme = useTheme();
 	return (
 		<Stack
 			direction="row"
@@ -32,15 +34,15 @@ function PostDate({ date }: { date: string }) {
 			alignItems="center"
 			sx={{ color: "text.secondary" }}
 		>
-			<ClockCircleFilled className="text-[#5e657b] text-[16px]" />
-			<Typography
+			<ClockCircleFilled className={`text-[${theme.palette.getContrastText(theme.palette.primary.main)}] text-[16px]`} />
+			<ContrastTypography
 				sx={{
-					color: "#5e657b",
+					// color: "#5e657b",
 					fontSize: 12,
 				}}
 			>
 				{formatDate(date)}
-			</Typography>
+			</ContrastTypography>
 		</Stack>
 	);
 }
@@ -105,24 +107,24 @@ export default function NewsSection({
 					}}
 				>
 					<PostDate date={String(featured.createdAt)} />
-					<Typography
+					<ContrastTypography
 						variant="h5"
 						fontWeight={700}
 						fontSize={20}
 						sx={{ ...clampStyle(2), lineHeight: 1.35 }}
 					>
 						{featured.title}
-					</Typography>
+					</ContrastTypography>
 					{
 						!!featured.shortDescription &&
 						<Box sx={{ borderTop: "1px solid", borderColor: "#00000024", pt: 2, mt: 2 }}>
-							<Typography
+							<ContrastTypography
 								variant="body2"
-								color="#3d3d3d"
+								// color="#3d3d3d"
 								sx={clampStyle(2)}
 							>
 								{featured.shortDescription}
-							</Typography>
+							</ContrastTypography>
 						</Box>
 					}
 				</Box>

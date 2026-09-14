@@ -42,7 +42,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   const cta = await getProjectCta();
-  console.log(cta)
   if (!project) notFound();
 
   return (

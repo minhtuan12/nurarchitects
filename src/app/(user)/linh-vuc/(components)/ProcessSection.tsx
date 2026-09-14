@@ -1,33 +1,16 @@
 "use client";
 
+import ContrastTypography from "@/components/base/ContrastTypography";
 import { GridFadeIn } from "@/components/base/Grid";
 import DiagonalNumber from "@/components/DiagonalNumber";
 import { IActivityProcess } from "@/types/activity";
-import { Box, Typography } from "@mui/material";
-import {
-	Users,
-	CalendarClock,
-	FileCheck2,
-	Building2,
-	PenTool,
-	FileText,
-	ShoppingCart,
-	Blocks,
-	Home,
-	type LucideIcon,
-} from "lucide-react";
+import { Box, Typography, useTheme } from "@mui/material";
 import { useMemo } from "react";
-
-interface Step {
-	number: number;
-	icon: LucideIcon;
-	title: string;
-	bullets: string[];
-}
 
 const MAX_PER_ROW = 5;
 
 export default function ProcessSection({ process }: { process: IActivityProcess[] }) {
+	const theme = useTheme();
 	const rows = useMemo(() => {
 		const chunks: typeof process[] = [];
 		for (let i = 0; i < process.length; i += MAX_PER_ROW) {
@@ -107,29 +90,31 @@ export default function ProcessSection({ process }: { process: IActivityProcess[
 										value={Number(step.order) + 1}
 										size={110}
 										offset={0.3}
-										numberColor="rgba(255,255,255,0.16)"
-										lineColor="rgba(255,255,255,0.3)"
+										// numberColor="rgba(255,255,255,0.16)"
+										// lineColor="rgba(255,255,255,0.3)"
+										numberColor={theme.palette.getContrastText(theme.palette.primary.main)}
+										lineColor={theme.palette.getContrastText(theme.palette.primary.main)}
 									/>
 								</Box>
 
 								<Box sx={{ position: "relative", zIndex: 1, pl: "110px", pt: 3, minHeight: 56, maxWidth: { xs: 'unset', sm: '80%' } }}>
 									<Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-										<Typography
-											sx={{ color: "#fff", fontWeight: 700, fontSize: 15, lineHeight: 1.3 }}
+										<ContrastTypography
+											sx={{ fontWeight: 700, fontSize: 15, lineHeight: 1.3 }}
 										>
 											{step.name}
-										</Typography>
+										</ContrastTypography>
 									</Box>
 								</Box>
 
 								<Box sx={{ position: "relative", zIndex: 1, pl: { xs: 0, sm: "68px" }, pt: { xs: 4, sm: 'unset' } }}>
 									{step.details?.map((bullet, bi) => (
-										<Typography
+										<ContrastTypography
 											key={bi}
-											sx={{ color: "rgba(255,255,255,0.65)", fontSize: 13.5, lineHeight: 1.7 }}
+											sx={{ fontSize: 13.5, lineHeight: 1.7 }}
 										>
 											- {bullet}
-										</Typography>
+										</ContrastTypography>
 									))}
 								</Box>
 							</GridFadeIn>

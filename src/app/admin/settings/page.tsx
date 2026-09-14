@@ -7,8 +7,11 @@ import {
 	ColorPicker,
 	Row,
 	Switch,
+	Tabs,
 	Typography,
+	Upload,
 } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import type { Color } from "antd/es/color-picker";
 import { useCallback, useEffect, useState } from "react";
 import { adminFetch } from "@/components/admin/AdminShell";
@@ -16,8 +19,10 @@ import { useMessage } from "@/contexts/AdminMessageContext";
 import MediaPickerModal from "@/components/admin/media/MediaPickerModal";
 import {
 	mediaToUploadFile,
+	type AdminMediaItem,
 	type MediaUploadFile,
 } from "@/components/admin/media/media-upload-file";
+import { uploadMediaFile, mediaIdToUploadFile } from "@/app/admin/introduction/utils";
 
 const { Title, Text } = Typography;
 
@@ -85,6 +90,8 @@ export default function () {
 	const [value, setValue] = useState<SettingsFormValue>(defaultSettingsValue);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
+	const [logo, setLogo] = useState<MediaUploadFile[]>([]);
+	const [pickerOpen, setPickerOpen] = useState(false);
 	const messageApi = useMessage();
 
 	const previewUrl = new URL(
@@ -97,6 +104,8 @@ export default function () {
 	previewUrl.searchParams.set("headerBackgroundColor", value.headerBackgroundColor);
 	previewUrl.searchParams.set("footerBackgroundColor", value.footerBackgroundColor);
 	previewUrl.searchParams.set("footerTextColor", value.footerTextColor);
+	const previewLogoUrl = logo[0]?.url ?? logo[0]?.thumbUrl;
+	if (previewLogoUrl) previewUrl.searchParams.set("logoUrl", previewLogoUrl);
 
 	// ── Fetch initial data ────────────────────────────────────────────────────
 
@@ -116,6 +125,12 @@ export default function () {
 						item.footerBackgroundColor ?? defaultSettingsValue.footerBackgroundColor,
 					footerTextColor: item.footerTextColor ?? defaultSettingsValue.footerTextColor,
 				});
+				if (item.logoId) {
+					const mediaId = idToString(item.logoId);
+					setLogo([typeof item.logoId === "object" && item.logoId.url
+						? mediaToUploadFile({ ...item.logoId, _id: mediaId! })
+						: await mediaIdToUploadFile(mediaId!)]);
+				}
 			})
 			.catch(() => messageApi.error("Không thể tải cài đặt hệ thống"))
 			.finally(() => setLoading(false));
@@ -138,12 +153,14 @@ export default function () {
 	const handleSave = async () => {
 		setSaving(true);
 		try {
+			const payload = {
+				...value,
+				logoId: logo[0] ? await uploadMediaFile(logo[0]) : null,
+			};
 			const res = await adminFetch("/api/admin/settings", {
 				method: "PATCH",
 				headers: { "content-type": "application/json" },
-				body: JSON.stringify({
-					...value,
-				}),
+				body: JSON.stringify(payload),
 			});
 			const data = await res.json();
 			if (data.error) throw new Error(data.error);
@@ -190,9 +207,74 @@ export default function () {
 				</Button>
 			</div>
 
+			{false && <Tabs
+				className="custom-tabs"
+				type="card"
+				destroyOnHidden
+				items={[
+					{
+						key: "logo",
+						label: "Logo",
+						children: (
+							<Block className='[&_.ant-upload]:!w-full [&_.ant-upload-list]:!w-full'>
+								<Title level={5} className="!mb-1">Logo website</Title>
+								<Text type="secondary">Logo hiển thị trên website</Text>
+								<Button onClick={() => setPickerOpen(true)} disabled={loading || saving} className="w-full mt-4 mb-3 h-[40px]">
+									Chọn logo từ thư viện
+								</Button>
+								<Upload listType="picture-card" accept="image/*" maxCount={1} fileList={logo}
+									beforeUpload={() => false}
+									onChange={({ fileList }) => setLogo(fileList as MediaUploadFile[])}>
+									{logo.length ? null : <button type="button" className="w-full border-0 bg-transparent"><PlusOutlined /><div className="mt-2">Tải logo mới</div></button>}
+								</Upload>
+							</Block>
+						),
+					},
+					{
+						key: "colors",
+						label: "Màu sắc",
+						children: (
+							<Row gutter={[16, 16]}>
+								<Col xs={24} lg={8}>
+									<Row gutter={[16, 16]}>
+										<Col span={24}>
+											<Block>
+												<Title level={5} className="!mb-1">Bảng màu hệ thống</Title>
+												<Text type="secondary">Áp dụng cho toàn bộ giao diện website</Text>
+												<Row gutter={[24, 24]} className="mt-6">
+													<Col span={24}><div className="flex items-center justify-between gap-2"><Text strong>{primaryOnlyField.label}</Text><ColorPicker value={value.primaryColor} disabled={loading} disabledAlpha onChangeComplete={(color) => handleColorChange("primaryColor", color)} /></div></Col>
+													{colorFields.map(renderColorWithImageField)}
+													<Col span={24}><div className="flex items-center justify-between gap-2"><Text strong>{footerTextField.label}</Text><ColorPicker value={value.footerTextColor} disabled={loading} disabledAlpha onChangeComplete={(color) => handleColorChange("footerTextColor", color)} /></div></Col>
+												</Row>
+											</Block>
+										</Col>
+										<Col span={24}><Block><Title level={5} className="!mb-1">Header</Title><Text type="secondary">Màu nền và màu chữ cho thanh header</Text><div className="flex items-center gap-3 mt-6"><Switch checked={value.headerBackgroundColor === ""} disabled={loading} onChange={handleHeaderTransparentToggle} /><Text>Trong suốt</Text></div>{value.headerBackgroundColor !== "" && <div className="flex items-center justify-between gap-2 mt-4"><Text strong>Màu nền Header</Text><ColorPicker value={value.headerBackgroundColor} disabled={loading} disabledAlpha onChangeComplete={(color) => handleColorChange("headerBackgroundColor", color)} /></div>}<div className="flex items-center justify-between gap-2 mt-6"><Text strong>Màu chữ Header</Text><ColorPicker value={value.textColor} disabled={loading} disabledAlpha onChangeComplete={(color) => handleColorChange("textColor", color)} /></div></Block></Col>
+									</Row>
+								</Col>
+								<Col xs={24} lg={16}><Block><Title level={5} className="!mb-1">Xem trước</Title><Text type="secondary" className="!text-xs">Mô phỏng trang chủ theo màu đang chọn</Text><div className="mt-4 overflow-hidden rounded-lg border h-[700px]"><iframe key={previewUrl.toString()} src={previewUrl.toString()} className="w-full h-full border-0" /></div></Block></Col>
+							</Row>
+						),
+					},
+				]}
+			/>}
+			{/* Legacy layout removed from tab content */}
 			<Row gutter={[16, 16]}>
 				<Col xs={24} lg={6}>
 					<Row gutter={[16, 16]}>
+						<Col span={24}>
+							<Block>
+								<Title level={5} className="!mb-1">Logo website</Title>
+								<Text type="secondary">Logo hiển thị trên Website</Text>
+								<Button onClick={() => setPickerOpen(true)} disabled={loading} className="w-full mt-4 mb-3">
+									Chọn logo từ thư viện
+								</Button>
+								<Upload listType="picture-card" accept="image/*" maxCount={1} fileList={logo}
+									beforeUpload={() => false}
+									onChange={({ fileList }) => setLogo(fileList as MediaUploadFile[])}>
+									{logo.length ? null : <button type="button" className="border-0 bg-transparent"><PlusOutlined /><div className="mt-2">Tải logo mới</div></button>}
+								</Upload>
+							</Block>
+						</Col>
 						<Col span={24}>
 							<Block>
 								<Title level={5} className="!mb-1">
@@ -305,6 +387,19 @@ export default function () {
 					</div>
 				</Col>
 			</Row>
+			{pickerOpen && (
+				<MediaPickerModal
+					open
+					title="Chọn logo"
+					resourceType="image"
+					selectedIds={logo[0]?.mediaId ? [logo[0].mediaId] : []}
+					onCancel={() => setPickerOpen(false)}
+					onConfirm={(items: AdminMediaItem[]) => {
+						setLogo(items[0] ? [mediaToUploadFile(items[0])] : []);
+						setPickerOpen(false);
+					}}
+				/>
+			)}
 		</>
 	);
 }

@@ -241,7 +241,7 @@ export default function AdvantagesManager({
 			</div>
 
 			<Table
-				rowKey={(_, index) => `advantage-${index}`}
+				rowKey={'name'}
 				columns={columns}
 				dataSource={advantages}
 				pagination={false}
@@ -267,7 +267,7 @@ export default function AdvantagesManager({
 			>
 				<Form form={form} layout="vertical" className="mt-4">
 					<Form.Item label="Ảnh minh hoạ">
-						<Space direction="vertical" size={8}>
+						<Space orientation="vertical" size={8}>
 							<Button size="small" onClick={() => setPickerOpen(true)}>
 								Chọn từ thư viện
 							</Button>

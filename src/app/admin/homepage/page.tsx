@@ -5,7 +5,7 @@ import { Button, Col, Input, Row, Tabs, Typography, Upload } from "antd";
 import type { UploadProps } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import FeaturedProjectsSection from "./(components)/FeaturedProjectsSection";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FeaturedActivitiesSection from "./(components)/FeaturedActivitiesSection";
 import { adminFetch } from "@/components/admin/AdminShell";
 import { useMessage } from "@/contexts/AdminMessageContext";
@@ -266,7 +266,7 @@ export default function () {
 							</Title>
 							<Input.TextArea
 								placeholder="Nội dung giới thiệu"
-								autoSize={{ minRows: 4, maxRows: 4 }}
+								autoSize={{ minRows: 5 }}
 								value={introContent}
 								onChange={(e) => setIntroContent(e.target.value)}
 								disabled={loading}

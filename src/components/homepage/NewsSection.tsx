@@ -2,16 +2,16 @@
 
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock } from "lucide-react";
 import { GridFadeIn } from "../base/Grid";
 import FadeIn from "../FadeIn";
 import { INewsPopulated } from "@/types/news";
 import { ClockCircleFilled } from '@ant-design/icons';
+import ContrastTypography from "../base/ContrastTypography";
+import { useTheme } from "@mui/material";
 
 function formatDate(date: string | Date) {
 	const d = new Date(date);
@@ -23,6 +23,7 @@ function formatDate(date: string | Date) {
 }
 
 export default function NewsSection({ news }: { news: INewsPopulated[] }) {
+	const theme = useTheme();
 	const hasNews = news?.length > 0;
 	if (!hasNews) return null;
 
@@ -40,18 +41,17 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 		>
 			<Container maxWidth="lg">
 				{/* Section label */}
-				<Typography
+				<ContrastTypography
+					basecolor={theme.palette.primary.main}
 					sx={{
-						color: "rgba(255,255,255,0.55)",
 						fontSize: 12,
 						fontWeight: 600,
 						letterSpacing: "0.12em",
 						textTransform: "uppercase",
 						mb: 4,
-					}}
-				>
+					}}>
 					Tin tức - Sự kiện
-				</Typography>
+				</ContrastTypography>
 
 				<Grid container spacing={4}>
 					{/* ===== Featured news (trái) ===== */}
@@ -98,19 +98,21 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 										mb: 1,
 									}}
 								>
-									<ClockCircleFilled className="text-[rgba(255,255,255,0.5)] text-[14px]" />
-									<Typography
+									<ClockCircleFilled className={`text-[${theme.palette.getContrastText(theme.palette.primary.main)}] text-[14px] !-mt-0.5`} />
+									<ContrastTypography
+										basecolor={theme.palette.primary.main}
 										sx={{
-											color: "rgba(255,255,255,0.5)",
+											// color: "rgba(255,255,255,0.5)",
 											fontSize: 13,
 										}}
 									>
 										{formatDate(featured.createdAt)}
-									</Typography>
+									</ContrastTypography>
 								</Box>
-								<Typography
+								<ContrastTypography
+									basecolor={theme.palette.primary.main}
 									sx={{
-										color: "#fff",
+										// color: "#fff",
 										fontSize: { xs: 17, md: 16 },
 										fontWeight: 700,
 										lineHeight: 1.4,
@@ -121,7 +123,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 									}}
 								>
 									{featured.title}
-								</Typography>
+								</ContrastTypography>
 							</Box>
 						</Link>
 					</GridFadeIn>
@@ -181,21 +183,21 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 														mb: 0.8,
 													}}
 												>
-													<ClockCircleFilled className="text-[rgba(255,255,255,0.5)] text-[14px]" />
-													<Typography
+													<ClockCircleFilled className={`text-[${theme.palette.getContrastText(theme.palette.primary.main)}] text-[14px]`} />
+													<ContrastTypography
+														basecolor={theme.palette.primary.main}
 														sx={{
-															color: "rgba(255,255,255,0.5)",
 															fontSize: 12,
 														}}
 													>
 														{formatDate(
 															item.createdAt,
 														)}
-													</Typography>
+													</ContrastTypography>
 												</Box>
-												<Typography
+												<ContrastTypography
+													basecolor={theme.palette.primary.main}
 													sx={{
-														color: "#fff",
 														fontSize: { xs: 14, md: 14 },
 														fontWeight: 700,
 														lineHeight: 1.45,
@@ -207,7 +209,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 													}}
 												>
 													{item.title}
-												</Typography>
+												</ContrastTypography>
 											</Grid>
 										</Grid>
 									</Link>

@@ -28,6 +28,7 @@ export interface Social {
 }
 
 export type SiteSettings = {
+	logoUrl?: string;
 	primaryColor: string;
 	// secondaryColor: string;
 	backgroundColor: string;
@@ -38,6 +39,7 @@ export type SiteSettings = {
 };
 
 export const defaultSiteSettings: SiteSettings = {
+	logoUrl: "",
 	primaryColor: "#1a2340",
 	// secondaryColor: "#c9a86a",
 	backgroundColor: "#ffffff",

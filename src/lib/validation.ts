@@ -307,6 +307,7 @@ export const settingsConfigSchema = z.object({
   // secondaryColor: hexColorSchema.default("#c9a86a"),
   backgroundColor: hexColorSchema.default("#ffffff"),
   backgroundImageId: mediaIdSchema,
+  logoId: mediaIdSchema,
   textColor: hexColorSchema.default("#1c1c1c"),
   headerBackgroundColor: hexColorSchema.default(""),
   footerBackgroundColor: hexColorSchema.default("#0e1a33"),

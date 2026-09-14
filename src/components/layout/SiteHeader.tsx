@@ -109,7 +109,7 @@ function NavItem({
 	);
 }
 
-export function SiteHeader({ phone, nav, contact }: { phone?: string; nav?: any; contact: IContactConfig }) {
+export function SiteHeader({ phone, nav, contact, logoUrl }: { phone?: string; nav?: any; contact: IContactConfig; logoUrl?: string }) {
 	const pathname = usePathname();
 	const isHomepage = pathname === "/";
 	const isMobile = useMediaQuery("(max-width:900px)");
@@ -184,13 +184,30 @@ export function SiteHeader({ phone, nav, contact }: { phone?: string; nav?: any;
 							justifyContent: "space-between",
 						}}
 					>
-						<Link href="/">
-							<AppImage
-								src={Logo}
-								alt="Logo"
-								width={150}
-								style={{ width: isMobile ? 120 : 150 }}
-							/>
+						<Link href="/" className="!h-full my-auto flex items-center">
+							<Box
+								sx={{
+									width: isMobile ? 120 : 150,
+									height: isMobile ? 40 : 50, // chỉnh theo tỉ lệ khung logo bạn muốn
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+								}}
+							>
+								<AppImage
+									src={logoUrl || Logo}
+									alt="Logo"
+									width={150}
+									height={50}
+									style={{
+										maxWidth: '100%',
+										maxHeight: '100%',
+										width: 'auto',
+										height: 'auto',
+										objectFit: 'contain',
+									}}
+								/>
+							</Box>
 						</Link>
 
 						<Grid className="block min-[900px]:hidden">
