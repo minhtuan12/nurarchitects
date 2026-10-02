@@ -61,7 +61,7 @@ const inputSx = {
 };
 
 async function submitContactForm(payload: IContactForm) {
-	const res = await fetch("/api/cooperation", {
+	const res = await fetch("/api/contact", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
