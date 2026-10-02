@@ -1,5 +1,5 @@
 export const visibleStatuses = ["draft", "published"] as const;
-export const buildPlans = ["home", "businessHome", "villa", "office", "others"] as const;
+export const buildPlans = ["home", 'apartment', 'fnb', "businessHome", "villa", "office", "others"] as const;
 export const buildAreas = ["under", "between", "above"] as const;
 export const contactFormStatuses = ["new", "contacted", "processed"] as const;
 export const workingTypes = ["part-time", "full-time", "remote", "collaborator"] as const;

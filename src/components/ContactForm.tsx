@@ -35,6 +35,8 @@ export function ContactForm() {
       <TextField name="planningToBuild" label="Nhu cầu xây dựng" />
       <TextField name="buildPlan" label="Loại công trình" select defaultValue="home">
         <MenuItem value="home">Nhà ở</MenuItem>
+        <MenuItem value="apartment">Chung cư</MenuItem>
+        <MenuItem value="fnb">Công trình FnB</MenuItem>
         <MenuItem value="businessHome">Nhà ở kinh doanh</MenuItem>
         <MenuItem value="villa">Biệt thự</MenuItem>
         <MenuItem value="others">Khác</MenuItem>

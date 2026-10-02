@@ -38,11 +38,13 @@ export interface IProjectCta {
 	updatedAt: Date;
 }
 
-export type BuildPlan = 'home' | 'businessHome' | 'villa' | 'office' | 'others';
+export type BuildPlan = 'home' | 'apartment' | 'fnb' | 'businessHome' | 'villa' | 'office' | 'others';
 export type BuildArea = 'under' | 'between' | 'above';
 
 export const EBuildPlan = {
 	home: { value: "home", label: "Nhà phố", color: 'magneta' },
+	apartment: { value: "apartment", label: "Chung cư", color: 'blue' },
+	fnb: { value: "fnb", label: "Công trình FnB", color: 'blue' },
 	businessHome: { value: "businessHome", label: "Nhà phố kết hợp kinh doanh", color: 'volcano' },
 	villa: { value: "villa", label: "Biệt thự - Villa", color: 'green' },
 	office: { value: "office", label: "Văn phòng", color: 'blue' },

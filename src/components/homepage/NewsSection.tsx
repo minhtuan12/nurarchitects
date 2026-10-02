@@ -98,7 +98,7 @@ export default function NewsSection({ news }: { news: INewsPopulated[] }) {
 										mb: 1,
 									}}
 								>
-									<ClockCircleFilled className={`text-[${theme.palette.getContrastText(theme.palette.primary.main)}] text-[14px] !-mt-0.5`} />
+									<ClockCircleFilled className={`[&_svg]:!fill-[${theme.palette.getContrastText(theme.palette.primary.main)}] text-[14px] !-mt-0.5`} />
 									<ContrastTypography
 										basecolor={theme.palette.primary.main}
 										sx={{
